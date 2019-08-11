@@ -15,6 +15,10 @@ public class Main {
                 .setAudioEnabled(true)
                 .setBulkDeleteSplittingEnabled(true)
                 .build();
-
+        try {
+            jda.awaitReady();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
