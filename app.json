@@ -1,0 +1,8 @@
+{
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    }
+  ],
+  "repository": "https://github.com/bigibas123/bigidiscordbot"
+}
