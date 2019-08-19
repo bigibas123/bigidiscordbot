@@ -1,10 +1,12 @@
 package com.github.bigibas123.bigidiscordbot;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
+import com.github.bigibas123.bigidiscordbot.util.ReactionSheduler;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
@@ -42,6 +44,14 @@ public class Listener extends ListenerAdapter {
             if (event.getMessage().isMentioned(event.getJDA().getSelfUser(), Message.MentionType.USER)) {
                 handling.handleCommand(event.getMessage());
             }
+        }
+    }
+
+    @Override
+    public void onMessageReactionAdd(MessageReactionAddEvent event) {
+        super.onMessageReactionAdd(event);
+        if (event.getReaction().isSelf()) {
+            ReactionSheduler.check(event.getReaction());
         }
     }
 }

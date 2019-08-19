@@ -1,10 +1,11 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
+import com.github.bigibas123.bigidiscordbot.util.ReactionSheduler;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.HashMap;
 
-import static com.github.bigibas123.bigidiscordbot.Emoji.*;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.*;
 
 public class CommandHandling {
 
@@ -33,7 +34,9 @@ public class CommandHandling {
             if (msg.length > 1) {
                 ICommand cmd;
                 if ((cmd = commands.get(msg[1].toLowerCase())) != null && cmd.hasPermission(message.getAuthor())) {
+                    message.addReaction(STOP_WATCH.s()).queue();
                     boolean cmdSuccess = cmd.execute(message, msg);
+                    ReactionSheduler.sheduleRemoval(message.getIdLong(), STOP_WATCH.s());
                     if (cmdSuccess) {
                         message.addReaction(CHECK_MARK.s()).queue();
                         return true;

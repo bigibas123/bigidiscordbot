@@ -1,4 +1,4 @@
-package com.github.bigibas123.bigidiscordbot;
+package com.github.bigibas123.bigidiscordbot.util;
 
 public enum Emoji {
     STOP_SIGN("\uD83D\uDED1"),
