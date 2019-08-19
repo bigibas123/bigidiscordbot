@@ -4,12 +4,16 @@ import net.dv8tion.jda.core.entities.Message;
 
 import java.util.HashMap;
 
-public class CommandHandling implements ICommandHandler {
+import static com.github.bigibas123.bigidiscordbot.Emoji.*;
+
+public class CommandHandling {
 
     private static HashMap<String, ICommand> commands = new HashMap<>();
 
     static {
         registerCommand(new StopCommand());
+        registerCommand(new NoPermCommand());
+        registerCommand(new LongRunningCommand());
     }
 
     public static void registerCommand(ICommand cmd) {
@@ -23,20 +27,28 @@ public class CommandHandling implements ICommandHandler {
 
     }
 
-    @Override
     public boolean handleCommand(Message message) {
         String[] msg = message.getContentRaw().split(" ");
         if (message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER)) {
             if (msg.length > 1) {
                 ICommand cmd;
                 if ((cmd = commands.get(msg[1].toLowerCase())) != null && cmd.hasPermission(message.getAuthor())) {
-                    message.addReaction("✔").queue();
-                    cmd.execute(message, msg);
+                    boolean cmdSuccess = cmd.execute(message, msg);
+                    if (cmdSuccess) {
+                        message.addReaction(CHECK_MARK.s()).queue();
+                        return true;
+                    } else {
+                        message.addReaction(CROSS.s()).queue();
+                        return false;
+                    }
+
                 } else {
                     if (cmd != null && !cmd.hasPermission(message.getAuthor())) {
-                        message.addReaction("\uD83D\uDED1").queue();
+                        message.addReaction(STOP_SIGN.s()).queue();
+                    } else {
+                        message.addReaction(SHRUG.s()).queue();
                     }
-                    message.addReaction("❌").queue();
+
                 }
             }
         }
