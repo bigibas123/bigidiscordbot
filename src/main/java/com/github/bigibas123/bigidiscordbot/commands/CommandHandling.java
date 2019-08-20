@@ -16,6 +16,7 @@ public class CommandHandling {
 
     static {
         registerCommand(new StopCommand());
+        registerCommand(new Prune());
         registerCommand(new NoPermCommand());
         registerCommand(new LongRunningCommand());
     }
@@ -43,6 +44,7 @@ public class CommandHandling {
                     ReactionSheduler.sheduleRemoval(message.getIdLong(), STOP_WATCH.s());
                     if (cmdSuccess) {
                         message.addReaction(CHECK_MARK.s()).queue();
+                        Main.log.info(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
                         return true;
                     } else {
                         message.addReaction(CROSS.s()).queue();
@@ -52,7 +54,9 @@ public class CommandHandling {
                 } else {
                     if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                         message.addReaction(STOP_SIGN.s()).queue();
+                        Main.log.info(String.format("User: %s got permissison denied for %s", message.getAuthor().toString(), cmd.getName()));
                     } else {
+                        Main.log.info(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
                         message.addReaction(SHRUG.s()).queue();
                     }
 
