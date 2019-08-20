@@ -1,6 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 public class NoPermCommand extends ICommand {
@@ -14,7 +15,7 @@ public class NoPermCommand extends ICommand {
     }
 
     @Override
-    public boolean hasPermission(User user) {
+    public boolean hasPermission(User user, MessageChannel channel) {
         return false;
     }
 }

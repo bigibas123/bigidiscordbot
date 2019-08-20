@@ -1,14 +1,17 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
+import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.util.ReactionSheduler;
 import net.dv8tion.jda.core.entities.Message;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.github.bigibas123.bigidiscordbot.util.Emoji.*;
 
 public class CommandHandling {
 
+    private static ArrayList<ICommand> helpList = new ArrayList<>();
     private static HashMap<String, ICommand> commands = new HashMap<>();
 
     static {
@@ -18,6 +21,7 @@ public class CommandHandling {
     }
 
     public static void registerCommand(ICommand cmd) {
+        helpList.add(cmd);
         commands.put(cmd.getName().toLowerCase(), cmd);
         for (String alias : cmd.getAliases()) {
             commands.put(alias.toLowerCase(), cmd);
@@ -33,7 +37,7 @@ public class CommandHandling {
         if (message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER)) {
             if (msg.length > 1) {
                 ICommand cmd;
-                if ((cmd = commands.get(msg[1].toLowerCase())) != null && cmd.hasPermission(message.getAuthor())) {
+                if ((cmd = commands.get(msg[1].toLowerCase())) != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                     message.addReaction(STOP_WATCH.s()).queue();
                     boolean cmdSuccess = cmd.execute(message, msg);
                     ReactionSheduler.sheduleRemoval(message.getIdLong(), STOP_WATCH.s());
@@ -42,11 +46,11 @@ public class CommandHandling {
                         return true;
                     } else {
                         message.addReaction(CROSS.s()).queue();
+                        Main.log.info(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
                         return false;
                     }
-
                 } else {
-                    if (cmd != null && !cmd.hasPermission(message.getAuthor())) {
+                    if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                         message.addReaction(STOP_SIGN.s()).queue();
                     } else {
                         message.addReaction(SHRUG.s()).queue();

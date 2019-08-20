@@ -2,6 +2,7 @@ package com.github.bigibas123.bigidiscordbot.commands;
 
 import com.github.bigibas123.bigidiscordbot.Reference;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 public class StopCommand extends ICommand {
@@ -18,7 +19,7 @@ public class StopCommand extends ICommand {
     }
 
     @Override
-    public boolean hasPermission(User user) {
+    public boolean hasPermission(User user, MessageChannel channel) {
         return Reference.ownerID.equals(user.getId());
     }
 }
