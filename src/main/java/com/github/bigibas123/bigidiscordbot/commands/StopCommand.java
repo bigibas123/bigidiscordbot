@@ -1,5 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
+import com.github.bigibas123.bigidiscordbot.Reference;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 
@@ -18,6 +19,6 @@ public class StopCommand extends ICommand {
 
     @Override
     public boolean hasPermission(User user) {
-        return user.getIdLong() == 166980806877642752L;
+        return Reference.ownerID.equals(user.getId());
     }
 }

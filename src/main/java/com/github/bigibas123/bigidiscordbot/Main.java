@@ -13,8 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws LoginException {
         log = Logger.getLogger(Main.class.getCanonicalName());
-        String token = System.getenv("DISCORD_TOKEN");
-        JDA jda = new JDABuilder(token)
+        JDA jda = new JDABuilder(Reference.token)
                 .addEventListener(new Listener())
                 .setAudioEnabled(true)
                 .setBulkDeleteSplittingEnabled(true)

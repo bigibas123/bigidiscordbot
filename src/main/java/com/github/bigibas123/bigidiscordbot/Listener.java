@@ -19,7 +19,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         super.onReady(event);
-        event.getJDA().getUserById(System.getenv("OWNER_ID")).openPrivateChannel()
+        event.getJDA().getUserById(Reference.ownerID).openPrivateChannel()
                 .queue(c -> c.sendMessage("Started at " + LocalDateTime.now().toString()).queue());
         this.handling = new CommandHandling();
     }

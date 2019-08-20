@@ -1,6 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
 import com.github.bigibas123.bigidiscordbot.Main;
+import com.github.bigibas123.bigidiscordbot.Reference;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 
@@ -23,6 +24,6 @@ public class LongRunningCommand extends ICommand {
 
     @Override
     public boolean hasPermission(User user) {
-        return user.getId().equals(System.getenv("OWNER_ID"));
+        return user.getId().equals(Reference.ownerID);
     }
 }
