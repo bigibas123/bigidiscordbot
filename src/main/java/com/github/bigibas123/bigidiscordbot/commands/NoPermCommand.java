@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class NoPermCommand extends ICommand {
     public NoPermCommand() {
-        super("noPerm", "noPermTest", "stopMe");
+        super("noPerm", "**TESTCOMMAND** Nobody is allowed to run this", "", "noPermTest", "stopMe");
     }
 
     @Override

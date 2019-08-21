@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class Prune extends ICommand {
     public Prune() {
-        super("Prune", "Purge", "Delete");
+        super("Prune", "Removes messages", "[amount def=5]", "Purge", "Delete");
     }
 
     @Override

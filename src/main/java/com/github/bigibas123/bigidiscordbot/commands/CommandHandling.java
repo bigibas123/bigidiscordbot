@@ -15,6 +15,7 @@ public class CommandHandling {
     private static HashMap<String, ICommand> commands = new HashMap<>();
 
     static {
+        registerCommand(new HelpCommand(helpList));
         registerCommand(new StopCommand());
         registerCommand(new Prune());
         registerCommand(new NoPermCommand());
@@ -27,6 +28,10 @@ public class CommandHandling {
         for (String alias : cmd.getAliases()) {
             commands.put(alias.toLowerCase(), cmd);
         }
+    }
+
+    public static ArrayList<ICommand> getHelpList() {
+        return helpList;
     }
 
     public CommandHandling() {

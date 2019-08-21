@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class StopCommand extends ICommand {
     public StopCommand() {
-        super("stop", "exit", "end", "quit");
+        super("Stop", "Stops the bot", "", "exit", "end", "quit");
     }
 
     @Override

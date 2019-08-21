@@ -8,7 +8,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class LongRunningCommand extends ICommand {
     public LongRunningCommand() {
-        super("long", "waitCommand", "sleepTest");
+        super("Long", "**TESTCOMMAND** takes 4s", "", "waitCommand", "sleepTest");
     }
 
     @Override

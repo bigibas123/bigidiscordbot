@@ -10,10 +10,17 @@ public abstract class ICommand {
     private final String name;
     @Getter
     private final String[] aliases;
+    @Getter
+    private final String description;
+    @Getter
+    private final String syntax;
 
-    public ICommand(String name, String... aliases) {
+    public ICommand(String name, String description, String syntax, String... aliases) {
         this.name = name;
+        if (syntax == null || syntax.equals("")) syntax = " ";
+        this.syntax = syntax;
         this.aliases = aliases;
+        this.description = description;
     }
 
     public abstract boolean execute(Message message, String... args);
