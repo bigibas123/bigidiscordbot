@@ -5,6 +5,8 @@ import com.github.bigibas123.bigidiscordbot.commands.general.ExitCommand;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.commands.moderation.Prune;
 import com.github.bigibas123.bigidiscordbot.commands.music.PlayCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.SkipCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.StopCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReactionSheduler;
@@ -27,7 +29,8 @@ public class CommandHandling {
         registerCommand(new NoPermCommand());
         registerCommand(new LongRunningCommand());
         registerCommand(new PlayCommand());
-        registerCommand(new ExitCommand());
+        registerCommand(new StopCommand());
+        registerCommand(new SkipCommand());
     }
 
     public static void registerCommand(ICommand cmd) {

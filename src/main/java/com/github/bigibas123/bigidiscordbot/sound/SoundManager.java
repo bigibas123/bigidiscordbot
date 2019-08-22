@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
@@ -24,15 +23,13 @@ public class SoundManager {
     private final AudioPlayerManager apm;
 
     public enum AudioSourceType {
+        YOUTUBE(new YoutubeAudioSourceManager()),
         BANDCAMP(new BandcampAudioSourceManager()),
         BEAM(new BeamAudioSourceManager()),
         HTTP(new HttpAudioSourceManager()),
-        LOCAL(new LocalAudioSourceManager()),
-        //NICO(new NicoAudioSourceManager()),
         SOUNDCLOUD(new SoundCloudAudioSourceManager()),
         TWITCH(new TwitchStreamAudioSourceManager()),
-        VIMEO(new VimeoAudioSourceManager()),
-        YOUTUBE(new YoutubeAudioSourceManager());
+        VIMEO(new VimeoAudioSourceManager());
 
         @Getter
         private final AudioSourceManager manager;

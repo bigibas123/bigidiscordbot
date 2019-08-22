@@ -1,14 +1,12 @@
 package com.github.bigibas123.bigidiscordbot.sound;
 
 import com.github.bigibas123.bigidiscordbot.Main;
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lombok.Getter;
 import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -16,11 +14,11 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
+@Getter
 public class GuildMusicManager {
 
     private final AudioPlayer player;
@@ -29,6 +27,7 @@ public class GuildMusicManager {
 
     private final AudioPlayerManager manager;
 
+    @Getter
     private final Guild guild;
 
     private final ATL atl;
@@ -41,6 +40,23 @@ public class GuildMusicManager {
         this.player = manager.createPlayer();
         this.player.addListener(this.atl);
         this.player.setVolume(100);
+    }
+
+    /**
+     * joins the specified voice channel
+     * returns false if it couldn't
+     *
+     * @param channel the {@link VoiceChannel} to connect to
+     * @return if it could connect to the specified channel or are already connected to it
+     */
+    public boolean connect(VoiceChannel channel) {
+        if (AM().isConnected()) {
+            return AM().getConnectedChannel().getId().equals(channel.getId());
+        } else {
+            AM().openAudioConnection(channel);
+            AM().setSendingHandler(new AudioPlayerWrapper(this.player));
+            return true;
+        }
     }
 
     public void queue(String trackName, TextChannel channel, User user) {
@@ -61,35 +77,23 @@ public class GuildMusicManager {
     }
 
     /**
-     * joins the specified voice channel
-     * returns false if it couldn't
-     *
-     * @param channel the {@link VoiceChannel} to connect to
-     * @return if it could connect to the specified channel
-     */
-    public boolean connect(VoiceChannel channel) {
-        if (AM().isConnected()) {
-            return AM().getConnectedChannel().getId().equals(channel.getId());
-        } else {
-            AM().openAudioConnection(channel);
-            AM().setSendingHandler(new AudioPlayerWrapper(this.player));
-            return true;
-        }
-    }
-
-    /**
      * starts the next track or stops playback if queue is done
      */
     public void playNextTrack() {
         if (queue.remainingCapacity() > 0) {
-            player.startTrack(queue.poll(), false);
+            this.player.startTrack(queue.poll(), false);
         } else {
             setPlaying(false);
+            this.stop();
         }
     }
 
-    public Guild getGuild() {
-        return guild;
+    public void stop() {
+        this.player.stopTrack();
+        AM().closeAudioConnection();
+        this.player.destroy();
+        this.queue.clear();
+        Main.soundManager.removeGuildMusicManager(this);
     }
 
     /**
@@ -115,14 +119,6 @@ public class GuildMusicManager {
             AM().setSpeakingMode(SpeakingMode.getModes(0));
             AM().setSelfMuted(true);
         }
-    }
-
-    public void stop() {
-        this.player.stopTrack();
-        AM().closeAudioConnection();
-        this.player.destroy();
-        this.queue.clear();
-        Main.soundManager.removeGuildMusicManager(this);
     }
 
     private static class ATL extends AudioEventAdapter {
@@ -157,38 +153,4 @@ public class GuildMusicManager {
         }
     }
 
-    private static class ARL implements AudioLoadResultHandler {
-        private final GuildMusicManager gmm;
-        private final TextChannel channel;
-        private User author;
-
-        public ARL(GuildMusicManager guildMusicManager, TextChannel channel, User author) {
-            this.gmm = guildMusicManager;
-            this.channel = channel;
-            this.author = author;
-        }
-
-        @Override
-        public void trackLoaded(AudioTrack track) {
-            gmm.queue(track);
-            channel.sendMessage(this.author.getAsMention() + " track " + track.getInfo().title + " queued").queue();
-        }
-
-        @Override
-        public void playlistLoaded(AudioPlaylist playlist) {
-            channel.sendMessage(this.author.getAsMention() + " loaded playlist of " + playlist.getTracks().size() + " songs").queue();
-        }
-
-        @Override
-        public void noMatches() {
-            channel.sendMessage(this.author.getAsMention() + " found nothing").queue();
-        }
-
-        @Override
-        public void loadFailed(FriendlyException exception) {
-            channel.sendMessage(this.author.getAsMention() + " search failed:" + exception.getLocalizedMessage() + "\r\n" +
-                    String.join("\r\n", (String[]) Arrays.stream(exception.getStackTrace()).map(StackTraceElement::getClassName).toArray())).queue();
-        }
-
-    }
 }
