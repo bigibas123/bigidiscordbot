@@ -20,7 +20,7 @@ public class CommandHandling {
     private static HashMap<String, ICommand> commands = new HashMap<>();
 
     static {
-        registerCommand(new HelpCommand(helpList));
+        registerCommand(new HelpCommand());
         registerCommand(new StopCommand());
         registerCommand(new Prune());
         registerCommand(new NoPermCommand());
@@ -37,6 +37,10 @@ public class CommandHandling {
 
     public static ArrayList<ICommand> getHelpList() {
         return helpList;
+    }
+
+    public static HashMap<String, ICommand> getCommandList() {
+        return commands;
     }
 
     public CommandHandling() {
