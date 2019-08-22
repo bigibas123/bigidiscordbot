@@ -6,7 +6,8 @@ public enum Emoji {
     CHECK_MARK("\u2705"),
     CROSS("❌"),
     STOP_WATCH("\u23F1"),
-    SHRUG("\uD83E\uDD37");
+    SHRUG("\uD83E\uDD37"),
+    WAVE("\uD83D\uDC4B");
 
     private final String toString;
 
