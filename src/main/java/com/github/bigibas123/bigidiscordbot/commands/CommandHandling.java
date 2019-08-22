@@ -1,6 +1,11 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
 import com.github.bigibas123.bigidiscordbot.Main;
+import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
+import com.github.bigibas123.bigidiscordbot.commands.general.StopCommand;
+import com.github.bigibas123.bigidiscordbot.commands.moderation.Prune;
+import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
+import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReactionSheduler;
 import net.dv8tion.jda.core.entities.Message;
 

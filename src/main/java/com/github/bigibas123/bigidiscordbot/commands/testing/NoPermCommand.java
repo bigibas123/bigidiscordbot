@@ -1,5 +1,6 @@
-package com.github.bigibas123.bigidiscordbot.commands;
+package com.github.bigibas123.bigidiscordbot.commands.testing;
 
+import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
