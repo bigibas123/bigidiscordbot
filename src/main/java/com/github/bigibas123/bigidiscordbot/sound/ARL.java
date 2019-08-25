@@ -22,11 +22,12 @@ class ARL implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        gmm.queue(track);
-        if (track.getInfo().title.equals("Unknown title")) {
-            channel.sendMessage(this.author.getAsMention() + " track " + track.getIdentifier() + " queued").queue();
-        } else {
-            channel.sendMessage(this.author.getAsMention() + " track " + track.getInfo().title + " queued").queue();
+        String title = track.getInfo().title;
+        if(title.equals("Unknown title"))title = track.getIdentifier();
+        if(gmm.queue(track)>0) {
+            channel.sendMessage(this.author.getAsMention() + " track " + title + " queued").queue();
+        }else {
+            channel.sendMessage(this.author.getAsMention()+ "track " + title + " not queued something went wrong").queue();
         }
     }
 
