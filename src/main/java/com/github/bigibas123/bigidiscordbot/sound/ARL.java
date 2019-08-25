@@ -23,14 +23,20 @@ class ARL implements AudioLoadResultHandler {
     @Override
     public void trackLoaded(AudioTrack track) {
         gmm.queue(track);
-        channel.sendMessage(this.author.getAsMention() + " track " + track.getInfo().title + " queued").queue();
+        if (track.getInfo().title.equals("Unknown title")) {
+            channel.sendMessage(this.author.getAsMention() + " track " + track.getIdentifier() + " queued").queue();
+        } else {
+            channel.sendMessage(this.author.getAsMention() + " track " + track.getInfo().title + " queued").queue();
+        }
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-        channel.sendMessage(this.author.getAsMention() + " loaded playlist of " + playlist.getTracks().size() + " songs").queue();
-        for (AudioTrack track : playlist.getTracks()) {
-            gmm.queue(track);
+        int amount = gmm.queue(playlist.getTracks());
+        if (amount >= playlist.getTracks().size()) {
+            channel.sendMessage(this.author.getAsMention() + " loaded playlist " + playlist.getName() + " (" + playlist.getTracks().size() + " songs)").queue();
+        } else {
+            channel.sendMessage(this.author.getAsMention() + " failed loading full playlist " + playlist.getName() + " (" + amount + "/" + playlist.getTracks().size() + ")").queue();
         }
     }
 

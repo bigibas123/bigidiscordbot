@@ -14,6 +14,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -68,12 +69,30 @@ public class GuildMusicManager {
      * If nothing is currently playing starts playback as well
      *
      * @param track the audio track to queue
+     * @return amount of tracks queued or started playing
      */
-    public void queue(AudioTrack track) {
-        Main.log.info("Queued:" + track.getInfo().title);
+    public int queue(AudioTrack track) {
+        Main.log.fine("Queued:" + track.getInfo().title);
         if (!player.startTrack(track, true)) {
-            queue.offer(track);
+            return queue.offer(track) ? 1 : 0;
+        } else {
+            return 1;
         }
+    }
+
+    public int queue(Collection<AudioTrack> playlist) {
+        int songCount = 0;
+        for (AudioTrack track : playlist) {
+            if (this.queue.offer(track)) {
+                songCount++;
+            } else {
+                return songCount;
+            }
+        }
+        if (this.queue.remainingCapacity() > 0) {
+            player.startTrack(queue.poll(), true);
+        }
+        return songCount;
     }
 
     /**
