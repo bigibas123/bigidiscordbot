@@ -8,6 +8,13 @@
     <artifactId>bigidiscordbot</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
+        <main_class>com.github.bigibas123.bigidiscordbot.Main</main_class>
+
+        <jda_version>3.8.3_463</jda_version>
+        <lavaplayer_version>1.3.20</lavaplayer_version>
+        <log4j_version>2.12.0</log4j_version>
+        <lombok_version>1.18.8</lombok_version>
+
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,22 +25,22 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.8.3_463</version>
+            <version>${jda_version}</version>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>1.3.20</version>
+            <version>${lavaplayer_version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.12.0</version>
+            <version>${log4j_version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
+            <version>${lombok_version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -46,9 +53,12 @@
                 <version>3.1.2</version>
                 <configuration>
                     <archive>
+                        <index>true</index>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.github.bigibas123.bigidiscordbot.Main</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addBuildEnvironmentEntries>true</addBuildEnvironmentEntries>
+                            <mainClass>${main_class}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -65,24 +75,11 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.github.bigibas123.bigidiscordbot.Main</mainClass>
-                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <compilerArgs>--enable-preview</compilerArgs>
-                </configuration>
             </plugin>
         </plugins>
     </build>
