@@ -1,7 +1,5 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
-import com.github.bigibas123.bigidiscordbot.Main;
-import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
 import net.dv8tion.jda.core.entities.*;
@@ -9,7 +7,7 @@ import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 
 import java.util.Optional;
 
-public class PlayCommand extends ICommand {
+public class PlayCommand extends MusicCommand {
     public PlayCommand() {
         super("play", "plays some music in your channel", "[url]", "p");
     }
@@ -26,7 +24,7 @@ public class PlayCommand extends ICommand {
                 return false;
             }
             VoiceChannel vc = ovc.get();
-            GuildMusicManager gmm = Main.soundManager.getGuildMusicManager(message.getGuild());
+            GuildMusicManager gmm = this.getGuildManager(message);
             if (args.length <= 2) {
                 HelpCommand.sendCommandDescription(message, "empty", "empty", "play");
                 return false;
@@ -40,10 +38,5 @@ public class PlayCommand extends ICommand {
             message.getChannel().sendMessage("Wrong channel type").queue();
         }
         return false;
-    }
-
-    @Override
-    public boolean hasPermission(User user, MessageChannel channel) {
-        return channel.getType().isGuild();
     }
 }

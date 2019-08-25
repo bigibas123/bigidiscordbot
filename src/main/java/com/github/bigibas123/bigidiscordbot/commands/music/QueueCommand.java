@@ -1,24 +1,20 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
-import com.github.bigibas123.bigidiscordbot.Main;
-import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
 
-public class QueueCommand extends ICommand {
+public class QueueCommand extends MusicCommand {
     public QueueCommand() {
         super("queue", "list all queued songs for this guild", "", "qeueu");
     }
 
     @Override
     public boolean execute(Message message, String... args) {
-        if (Main.soundManager.guildMusicManagerExists(message.getGuild())) {
-            GuildMusicManager gmm = Main.soundManager.getGuildMusicManager(message.getGuild());
+        if (this.guildManagerExists(message)) {
+            GuildMusicManager gmm = this.getGuildManager(message);
             AudioTrack[] tracks = gmm.getQueued();
             EmbedBuilder ebb = new EmbedBuilder();
             ebb.setTitle(String.format("Queue for %s", message.getGuild().getName()));
@@ -60,10 +56,5 @@ public class QueueCommand extends ICommand {
         } else {
             return String.format("%02d:%02d", mns, scs);
         }
-    }
-
-    @Override
-    public boolean hasPermission(User user, MessageChannel channel) {
-        return channel.getType().isGuild();
     }
 }
