@@ -152,7 +152,7 @@ public class GuildMusicManager {
     }
 
     private static class ATL extends AudioEventAdapter {
-        private GuildMusicManager gmm;
+        private final GuildMusicManager gmm;
 
         public ATL(GuildMusicManager guildMusicManager) {
             this.gmm = guildMusicManager;

@@ -5,8 +5,8 @@ import net.dv8tion.jda.core.entities.MessageReaction;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ReactionSheduler {
-
+public class ReactionScheduler {
+//TODO make this more robust
     public static HashMap<Long, ArrayList<String>> toFind = new HashMap<>();
 
     public static void check(MessageReaction reaction) {
@@ -21,7 +21,7 @@ public class ReactionSheduler {
         }
     }
 
-    public static void sheduleRemoval(long messageID, String emoteName) {
+    public static void scheduleRemoval(long messageID, String emoteName) {
         if (!toFind.containsKey(messageID)) {
             toFind.put(messageID, new ArrayList<>());
         }

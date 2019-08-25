@@ -1,7 +1,7 @@
 package com.github.bigibas123.bigidiscordbot;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
-import com.github.bigibas123.bigidiscordbot.util.ReactionSheduler;
+import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -51,7 +51,7 @@ public class Listener extends ListenerAdapter {
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         super.onMessageReactionAdd(event);
         if (event.getReaction().isSelf()) {
-            ReactionSheduler.check(event.getReaction());
+            ReactionScheduler.check(event.getReaction());
         }
     }
 }

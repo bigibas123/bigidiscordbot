@@ -12,7 +12,7 @@ import java.util.Arrays;
 class ARL implements AudioLoadResultHandler {
     private final GuildMusicManager gmm;
     private final TextChannel channel;
-    private User author;
+    private final User author;
 
     public ARL(GuildMusicManager guildMusicManager, TextChannel channel, User author) {
         this.gmm = guildMusicManager;
