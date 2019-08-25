@@ -5,6 +5,7 @@ import com.github.bigibas123.bigidiscordbot.commands.general.ExitCommand;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.commands.moderation.Prune;
 import com.github.bigibas123.bigidiscordbot.commands.music.PlayCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.QueueCommand;
 import com.github.bigibas123.bigidiscordbot.commands.music.SkipCommand;
 import com.github.bigibas123.bigidiscordbot.commands.music.StopCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
@@ -31,6 +32,7 @@ public class CommandHandling {
         registerCommand(new PlayCommand());
         registerCommand(new StopCommand());
         registerCommand(new SkipCommand());
+        registerCommand(new QueueCommand());
     }
 
     public static void registerCommand(ICommand cmd) {

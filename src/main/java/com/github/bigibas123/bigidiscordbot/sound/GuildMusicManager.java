@@ -96,6 +96,17 @@ public class GuildMusicManager {
     }
 
     /**
+     * @return the currently queued songs
+     * <p>
+     * The returned array will be "safe" in that no references to it are
+     * maintained by this queue.  (In other words, this method must allocate
+     * a new array).  The caller is thus free to modify the returned array.
+     */
+    public AudioTrack[] getQueued() {
+        return this.getQueue().toArray(new AudioTrack[0]);
+    }
+
+    /**
      * starts the next track or stops playback if queue is done
      */
     public void playNextTrack() {
