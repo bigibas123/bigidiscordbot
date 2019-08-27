@@ -7,7 +7,9 @@ public enum Emoji {
     CROSS("❌"),
     STOP_WATCH("\u23F1"),
     SHRUG("\uD83E\uDD37"),
-    WAVE("\uD83D\uDC4B");
+    WAVE("\uD83D\uDC4B"),
+    PAUSE("\u23F8"),
+    PLAY("\u23E9");
 
     private final String toString;
 

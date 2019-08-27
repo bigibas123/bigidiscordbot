@@ -31,6 +31,7 @@ public class CommandHandling {
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
         registerCommand(new VolumeCommand());
+        registerCommand(new PauseCommand());
     }
 
     public static void registerCommand(ICommand cmd) {
