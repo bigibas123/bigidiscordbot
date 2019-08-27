@@ -40,7 +40,7 @@ public class GuildMusicManager {
         this.atl = new ATL(this);
         this.player = manager.createPlayer();
         this.player.addListener(this.atl);
-        this.player.setVolume(100);
+        this.player.setVolume(50);
     }
 
     /**
@@ -146,7 +146,6 @@ public class GuildMusicManager {
             AM().setSpeakingMode(SpeakingMode.VOICE);
             AM().setSelfMuted(false);
         } else {
-            AM().setSpeakingMode(SpeakingMode.getModes(0));
             AM().setSelfMuted(true);
         }
     }
@@ -160,25 +159,25 @@ public class GuildMusicManager {
 
         @Override
         public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-            Main.log.info("TrackEnd:" + this.gmm.guild.getName());
+            Main.log.fine("TrackEnd:" + this.gmm.guild.getName());
             gmm.playNextTrack();
         }
 
         @Override
         public void onPlayerPause(AudioPlayer player) {
-            Main.log.info("TrackPause:" + this.gmm.guild.getName());
+            Main.log.fine("TrackPause:" + this.gmm.guild.getName());
             gmm.setPlaying(false);
         }
 
         @Override
         public void onPlayerResume(AudioPlayer player) {
-            Main.log.info("TrackResume:" + this.gmm.guild.getName());
+            Main.log.fine("TrackResume:" + this.gmm.guild.getName());
             gmm.setPlaying(true);
         }
 
         @Override
         public void onTrackStart(AudioPlayer player, AudioTrack track) {
-            Main.log.info("TrackStart:" + this.gmm.guild.getName());
+            Main.log.fine("TrackStart:" + this.gmm.guild.getName());
             gmm.setPlaying(true);
         }
     }
