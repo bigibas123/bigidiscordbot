@@ -33,6 +33,8 @@ public class GuildMusicManager {
 
     private final ATL atl;
 
+    private boolean ignoreNext;
+
     public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
         this.manager = manager;
         this.guild = guild;
@@ -41,6 +43,7 @@ public class GuildMusicManager {
         this.player = manager.createPlayer();
         this.player.addListener(this.atl);
         this.player.setVolume(50);
+        this.ignoreNext = false;
     }
 
     /**
@@ -110,6 +113,20 @@ public class GuildMusicManager {
      * starts the next track or stops playback if queue is done
      */
     public void playNextTrack() {
+        if(this.ignoreNext){
+            this.ignoreNext = false;
+            return;
+        }
+        if (queue.remainingCapacity() > 0) {
+            this.player.startTrack(queue.poll(), false);
+        } else {
+            setPlaying(false);
+            this.stop();
+        }
+    }
+
+    public void skip(){
+        this.ignoreNext = true;
         if (queue.remainingCapacity() > 0) {
             this.player.startTrack(queue.poll(), false);
         } else {

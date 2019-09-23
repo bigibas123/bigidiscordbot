@@ -14,7 +14,7 @@ public class SkipCommand extends MusicCommand {
             return false;
         }
         GuildMusicManager gmm = this.getGuildManager(message);
-        gmm.playNextTrack();
+        gmm.skip();
         return true;
     }
 }
