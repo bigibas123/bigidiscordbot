@@ -30,6 +30,7 @@ public class CommandHandling {
         registerCommand(new StopCommand());
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new NowPlayingCommand());
         registerCommand(new VolumeCommand());
         registerCommand(new PauseCommand());
     }
