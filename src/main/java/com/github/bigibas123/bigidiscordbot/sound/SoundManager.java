@@ -26,10 +26,10 @@ public class SoundManager {
         YOUTUBE(new YoutubeAudioSourceManager()),
         BANDCAMP(new BandcampAudioSourceManager()),
         BEAM(new BeamAudioSourceManager()),
-        HTTP(new HttpAudioSourceManager()),
         SOUNDCLOUD(new SoundCloudAudioSourceManager()),
         TWITCH(new TwitchStreamAudioSourceManager()),
-        VIMEO(new VimeoAudioSourceManager());
+        VIMEO(new VimeoAudioSourceManager()),
+        HTTP(new HttpAudioSourceManager());
 
         @Getter
         private final AudioSourceManager manager;
