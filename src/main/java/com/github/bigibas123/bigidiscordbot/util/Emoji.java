@@ -9,7 +9,7 @@ public enum Emoji {
     SHRUG("\uD83E\uDD37"),
     WAVE("\uD83D\uDC4B"),
     PAUSE("\u23F8"),
-    PLAY("\u23E9");
+    PLAY("\u25B6");
 
     private final String toString;
 
