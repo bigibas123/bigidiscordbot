@@ -34,6 +34,8 @@ public class GuildMusicManager {
     private final ATL atl;
 
     private boolean ignoreNext;
+    @Getter
+    private boolean playing;
 
     public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
         this.manager = manager;
@@ -44,6 +46,7 @@ public class GuildMusicManager {
         this.player.addListener(this.atl);
         this.player.setVolume(50);
         this.ignoreNext = false;
+        this.playing = false;
     }
 
     /**
@@ -165,6 +168,7 @@ public class GuildMusicManager {
         } else {
             AM().setSelfMuted(true);
         }
+        this.playing = playing;
     }
 
     private static class ATL extends AudioEventAdapter {
