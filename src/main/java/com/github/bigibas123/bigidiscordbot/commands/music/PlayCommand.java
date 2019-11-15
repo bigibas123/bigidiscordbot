@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.internal.entities.TextChannelImpl;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class PlayCommand extends MusicCommand {
@@ -32,7 +33,7 @@ public class PlayCommand extends MusicCommand {
                 HelpCommand.sendCommandDescription(message, "empty", "empty", "play");
                 return false;
             }
-            String search = args[2];
+            String search = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if (gmm.connect(vc)) {
                 gmm.queue(search, message.getTextChannel(), message.getAuthor());
                 return true;

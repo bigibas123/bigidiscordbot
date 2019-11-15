@@ -23,10 +23,10 @@ public class SoundManager {
     private final AudioPlayerManager apm;
 
     public enum AudioSourceType {
-        YOUTUBE(new YoutubeAudioSourceManager()),
+        YOUTUBE(new YoutubeAudioSourceManager(true)),
         BANDCAMP(new BandcampAudioSourceManager()),
         BEAM(new BeamAudioSourceManager()),
-        SOUNDCLOUD(new SoundCloudAudioSourceManager()),
+        SOUNDCLOUD(new SoundCloudAudioSourceManager(true)),
         TWITCH(new TwitchStreamAudioSourceManager()),
         VIMEO(new VimeoAudioSourceManager()),
         HTTP(new HttpAudioSourceManager());
