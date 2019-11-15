@@ -2,8 +2,9 @@ package com.github.bigibas123.bigidiscordbot;
 
 
 import com.github.bigibas123.bigidiscordbot.sound.SoundManager;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.factory.DefaultSendSystem;
 
 import javax.security.auth.login.LoginException;
 import java.util.logging.Logger;
@@ -17,8 +18,8 @@ public class Main {
         log = Logger.getLogger(Main.class.getCanonicalName());
         soundManager = new SoundManager();
         JDA jda = new JDABuilder(Reference.token)
-                .addEventListener(new Listener())
-                .setAudioEnabled(true)
+                .addEventListeners(new Listener())
+                .setAudioSendFactory(DefaultSendSystem::new)
                 .setBulkDeleteSplittingEnabled(true)
                 .build();
         try {

@@ -1,7 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 
 public class StopCommand extends MusicCommand {
     public StopCommand() {

@@ -7,12 +7,12 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
-import net.dv8tion.jda.core.audio.SpeakingMode;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.api.audio.SpeakingMode;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
@@ -116,7 +116,7 @@ public class GuildMusicManager {
      * starts the next track or stops playback if queue is done
      */
     public void playNextTrack() {
-        if(this.ignoreNext){
+        if (this.ignoreNext) {
             this.ignoreNext = false;
             return;
         }
@@ -128,7 +128,7 @@ public class GuildMusicManager {
         }
     }
 
-    public void skip(){
+    public void skip() {
         this.ignoreNext = true;
         if (queue.remainingCapacity() > 0) {
             this.player.startTrack(queue.poll(), false);

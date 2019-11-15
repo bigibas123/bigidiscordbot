@@ -2,8 +2,11 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.internal.entities.TextChannelImpl;
 
 import java.util.Optional;
 

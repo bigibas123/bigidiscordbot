@@ -1,12 +1,12 @@
 package com.github.bigibas123.bigidiscordbot.util;
 
-import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.MessageReaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ReactionScheduler {
-//TODO make this more robust
+    //TODO make this more robust
     public static HashMap<Long, ArrayList<String>> toFind = new HashMap<>();
 
     public static void check(MessageReaction reaction) {

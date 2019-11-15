@@ -1,9 +1,9 @@
 package com.github.bigibas123.bigidiscordbot.commands.moderation;
 
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import java.util.Optional;
 
@@ -49,7 +49,7 @@ public class Prune extends ICommand {
                 throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
             } else {
                 member = opt.get();
-                return PermissionUtil.checkPermission((Channel) channel, member, Permission.MESSAGE_MANAGE);
+                return PermissionUtil.checkPermission(member, Permission.MESSAGE_MANAGE);
             }
         }
         return false;

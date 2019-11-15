@@ -4,8 +4,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.Arrays;
 
@@ -23,11 +23,11 @@ class ARL implements AudioLoadResultHandler {
     @Override
     public void trackLoaded(AudioTrack track) {
         String title = track.getInfo().title;
-        if(title.equals("Unknown title"))title = track.getIdentifier();
-        if(gmm.queue(track)>0) {
+        if (title.equals("Unknown title")) title = track.getIdentifier();
+        if (gmm.queue(track) > 0) {
             channel.sendMessage(this.author.getAsMention() + " track " + title + " queued").queue();
-        }else {
-            channel.sendMessage(this.author.getAsMention()+ "track " + title + " not queued something went wrong").queue();
+        } else {
+            channel.sendMessage(this.author.getAsMention() + "track " + title + " not queued something went wrong").queue();
         }
     }
 
