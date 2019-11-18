@@ -35,7 +35,7 @@ public abstract class MusicCommand extends ICommand {
                 return false;
             }
         } else {
-            return channel instanceof TextChannel || channel instanceof PrivateChannel;
+            return channel.getType() == ChannelType.GROUP;
         }
     }
 }

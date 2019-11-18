@@ -2,7 +2,10 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 
 public class NowPlayingCommand extends MusicCommand {
     public NowPlayingCommand() {
@@ -22,5 +25,10 @@ public class NowPlayingCommand extends MusicCommand {
             message.getChannel().sendMessage(message.getAuthor().getAsMention() + " no song is currently playing").queue();
             return false;
         }
+    }
+
+    @Override
+    public boolean hasPermission(User user, MessageChannel channel) {
+        return channel.getType().isGuild() || channel.getType() == ChannelType.GROUP;
     }
 }

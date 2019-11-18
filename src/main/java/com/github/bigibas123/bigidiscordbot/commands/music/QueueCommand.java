@@ -4,7 +4,10 @@ import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 
 public class QueueCommand extends MusicCommand {
     public QueueCommand() {
@@ -45,6 +48,11 @@ public class QueueCommand extends MusicCommand {
             message.getChannel().sendMessage(ebb.build()).queue();
         }
         return false;
+    }
+
+    @Override
+    public boolean hasPermission(User user, MessageChannel channel) {
+        return channel.getType().isGuild() || channel.getType() == ChannelType.GROUP;
     }
 
     private String formatDuration(long dur) {
