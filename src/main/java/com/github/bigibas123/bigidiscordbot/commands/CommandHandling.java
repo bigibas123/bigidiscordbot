@@ -66,19 +66,19 @@ public class CommandHandling {
                     ReactionScheduler.scheduleRemoval(message.getIdLong(), STOP_WATCH.s());
                     if (cmdSuccess) {
                         message.addReaction(CHECK_MARK.s()).queue();
-                        Main.log.info(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
+                        Main.log.fine(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
                         return true;
                     } else {
                         message.addReaction(CROSS.s()).queue();
-                        Main.log.info(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
+                        Main.log.fine(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
                         return false;
                     }
                 } else {
                     if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                         message.addReaction(STOP_SIGN.s()).queue();
-                        Main.log.info(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
+                        Main.log.fine(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
                     } else {
-                        Main.log.info(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
+                        Main.log.fine(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
                         message.addReaction(SHRUG.s()).queue();
                     }
 

@@ -1,5 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.sound;
 
+import com.github.bigibas123.bigidiscordbot.Main;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -22,8 +24,7 @@ class ARL implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        String title = track.getInfo().title;
-        if (title.equals("Unknown title")) title = track.getIdentifier();
+        String title = Utils.getTrackTitle(track);
         if (gmm.queue(track) > 0) {
             channel.sendMessage(this.author.getAsMention() + " track " + title + " queued").queue();
         } else {
@@ -33,11 +34,16 @@ class ARL implements AudioLoadResultHandler {
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-        int amount = gmm.queue(playlist.getTracks());
-        if (amount >= playlist.getTracks().size()) {
-            channel.sendMessage(this.author.getAsMention() + " loaded playlist " + playlist.getName() + " (" + playlist.getTracks().size() + " songs)").queue();
+        if(playlist.isSearchResult()){
+            SearchResultHandler searchResultHandler = new SearchResultHandler(this,this.channel,this.author,playlist,gmm,Main.getJda());
+            searchResultHandler.go();
         } else {
-            channel.sendMessage(this.author.getAsMention() + " failed loading full playlist " + playlist.getName() + " (" + amount + "/" + playlist.getTracks().size() + ")").queue();
+            int amount = gmm.queue(playlist.getTracks());
+            if (amount >= playlist.getTracks().size()) {
+                channel.sendMessage(this.author.getAsMention() + " loaded playlist " + playlist.getName() + " (" + playlist.getTracks().size() + " songs)").queue();
+            } else {
+                channel.sendMessage(this.author.getAsMention() + " failed loading full playlist " + playlist.getName() + " (" + amount + "/" + playlist.getTracks().size() + ")").queue();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.moderation;
 
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -27,7 +28,7 @@ public class Prune extends ICommand {
         }
         if (message.getChannel() instanceof PrivateChannel) {
             message.getChannel().getHistory().retrievePast(amount).queue(hist -> hist.stream()
-                    .filter(msg -> msg.getAuthor().getId().equals(message.getJDA().getSelfUser().getId()))
+                    .filter(msg -> Utils.isSameThing(msg.getAuthor(),message.getJDA().getSelfUser()))
                     .forEach(hm -> hm.delete().queue())
             );
         } else {
@@ -43,7 +44,7 @@ public class Prune extends ICommand {
         } else if (channel instanceof TextChannel) {
             Member member;
             Optional<Member> opt = ((TextChannel) channel).getMembers().stream()
-                    .filter(m -> m.getUser().getId().equals(user.getId()))
+                    .filter(m -> Utils.isSameThing(m.getUser(),user))
                     .findFirst();
             if (opt.isEmpty()) {
                 throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());

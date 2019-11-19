@@ -1,6 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -31,7 +32,7 @@ public class QueueCommand extends MusicCommand {
                         AudioTrackInfo info = track.getInfo();
                         String title = info.title;
                         if (title == null) title = info.identifier;
-                        String duration = formatDuration(info.length);
+                        String duration = Utils.formatDuration(info.length);
                         ebb.appendDescription(String.format("[%d] %s - %s\r\n", i, title, duration));
                         i++;
                     } else {
@@ -46,6 +47,7 @@ public class QueueCommand extends MusicCommand {
                 ebb.appendDescription(String.format("And %d more", more));
             }
             message.getChannel().sendMessage(ebb.build()).queue();
+            return true;
         }
         return false;
     }
@@ -53,16 +55,5 @@ public class QueueCommand extends MusicCommand {
     @Override
     public boolean hasPermission(User user, MessageChannel channel) {
         return channel.getType().isGuild() || channel.getType() == ChannelType.GROUP;
-    }
-
-    private String formatDuration(long dur) {
-        long hrs = (dur / 3600000L);
-        long mns = (dur / 60000L) % 60000L;
-        long scs = dur % 60000L / 1000L;
-        if (hrs > 0) {
-            return String.format("%02d:%02d:%02d", hrs, mns, scs);
-        } else {
-            return String.format("%02d:%02d", mns, scs);
-        }
     }
 }

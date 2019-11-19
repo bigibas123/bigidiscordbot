@@ -1,6 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.sound;
 
 import com.github.bigibas123.bigidiscordbot.Main;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -58,7 +59,7 @@ public class GuildMusicManager {
      */
     public boolean connect(VoiceChannel channel) {
         if (AM().isConnected()) {
-            return AM().getConnectedChannel().getId().equals(channel.getId());
+            return Utils.isSameThing(AM().getConnectedChannel(),channel);
         } else {
             AM().openAudioConnection(channel);
             AM().setSendingHandler(new AudioPlayerWrapper(this.player));
@@ -120,6 +121,10 @@ public class GuildMusicManager {
             this.ignoreNext = false;
             return;
         }
+        tryNext();
+    }
+
+    private void tryNext(){
         if (queue.remainingCapacity() > 0) {
             this.player.startTrack(queue.poll(), false);
         } else {
@@ -130,12 +135,7 @@ public class GuildMusicManager {
 
     public void skip() {
         this.ignoreNext = true;
-        if (queue.remainingCapacity() > 0) {
-            this.player.startTrack(queue.poll(), false);
-        } else {
-            setPlaying(false);
-            this.stop();
-        }
+        tryNext();
     }
 
     public void stop() {

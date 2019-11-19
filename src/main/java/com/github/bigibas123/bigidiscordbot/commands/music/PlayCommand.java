@@ -2,6 +2,7 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -22,7 +23,7 @@ public class PlayCommand extends MusicCommand {
             TextChannel chan = ((TextChannelImpl) message.getChannel());
             Optional<VoiceChannel> ovc = chan.getGuild().getVoiceChannels().stream()
                     .filter(c -> c.getMembers().stream()
-                            .anyMatch(m -> m.getUser().getId().equals(message.getAuthor().getId()))).findAny();
+                            .anyMatch(m -> Utils.isSameThing(m.getUser(),message.getAuthor()))).findAny();
             if (ovc.isEmpty()) {
                 message.getChannel().sendMessage(message.getAuthor().getAsMention() + " you need to join a voice channel for this command to work").queue();
                 return false;
