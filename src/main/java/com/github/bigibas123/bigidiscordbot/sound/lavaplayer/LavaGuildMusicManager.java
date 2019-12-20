@@ -129,7 +129,7 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
 
     @Override
     public void setVolume(int volume) {
-
+        this.player.setVolume(volume);
     }
 
     public void playNextTrack() {
