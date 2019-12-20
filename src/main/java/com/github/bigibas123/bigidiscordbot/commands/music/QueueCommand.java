@@ -1,14 +1,15 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
-import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.sound.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+
+import java.util.List;
 
 public class QueueCommand extends MusicCommand {
     public QueueCommand() {
@@ -18,21 +19,19 @@ public class QueueCommand extends MusicCommand {
     @Override
     public boolean execute(Message message, String... args) {
         if (this.guildManagerExists(message)) {
-            GuildMusicManager gmm = this.getGuildManager(message);
-            AudioTrack[] tracks = gmm.getQueued();
+            IGuildMusicManager gmm = this.getGuildManager(message);
+            List<TrackInfo> tracks = gmm.getQueued();
             EmbedBuilder ebb = new EmbedBuilder();
             ebb.setTitle(String.format("Queue for %s", message.getGuild().getName()));
             ebb.setFooter(String.format("Requested by @%s", message.getAuthor().getName()), message.getAuthor().getEffectiveAvatarUrl());
             int i = 1;
             int more = 0;
 
-            for (AudioTrack track : tracks) {
+            for (TrackInfo track : tracks) {
                 if (more == 0) {
                     if (!(i > 20)) {
-                        AudioTrackInfo info = track.getInfo();
-                        String title = info.title;
-                        if (title == null) title = info.identifier;
-                        String duration = Utils.formatDuration(info.length);
+                        String title = track.getTitle();
+                        String duration = Utils.formatDuration(track.getDuration());
                         ebb.appendDescription(String.format("[%d] %s - %s\r\n", i, title, duration));
                         i++;
                     } else {

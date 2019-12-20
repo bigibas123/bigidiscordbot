@@ -1,7 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
-import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -29,7 +29,7 @@ public class PlayCommand extends MusicCommand {
                 return false;
             }
             VoiceChannel vc = ovc.get();
-            GuildMusicManager gmm = this.getGuildManager(message);
+            IGuildMusicManager gmm = this.getGuildManager(message);
             if (args.length <= 2) {
                 HelpCommand.sendCommandDescription(message, "empty", "empty", "play");
                 return false;

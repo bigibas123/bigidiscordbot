@@ -1,7 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.util;
 
 import com.github.bigibas123.bigidiscordbot.Main;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -47,9 +46,4 @@ public class Utils {
         return result;
     }
 
-    public static String getTrackTitle(AudioTrack track){
-        String title = track.getInfo().title;
-        if (title.equals("Unknown title")) title = track.getIdentifier();
-        return title;
-    }
 }

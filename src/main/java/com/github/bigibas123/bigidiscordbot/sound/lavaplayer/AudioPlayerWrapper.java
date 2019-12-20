@@ -1,4 +1,4 @@
-package com.github.bigibas123.bigidiscordbot.sound;
+package com.github.bigibas123.bigidiscordbot.sound.lavaplayer;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;

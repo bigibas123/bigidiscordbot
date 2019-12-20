@@ -1,10 +1,22 @@
-package com.github.bigibas123.bigidiscordbot.sound;
+package com.github.bigibas123.bigidiscordbot.sound.lavaplayer;
 
 import com.github.bigibas123.bigidiscordbot.Main;
+import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.sound.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
@@ -15,14 +27,14 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
 @Getter
-public class GuildMusicManager {
-
+public class LavaGuildMusicManager implements IGuildMusicManager {
     private final AudioPlayer player;
 
     private final BlockingQueue<AudioTrack> queue;
@@ -38,8 +50,8 @@ public class GuildMusicManager {
     @Getter
     private boolean playing;
 
-    public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
-        this.manager = manager;
+    public LavaGuildMusicManager(Guild guild) {
+        this.manager = getNewAPL();
         this.guild = guild;
         this.queue = new LinkedBlockingQueue<>();
         this.atl = new ATL(this);
@@ -50,16 +62,25 @@ public class GuildMusicManager {
         this.playing = false;
     }
 
-    /**
-     * joins the specified voice channel
-     * returns false if it couldn't
-     *
-     * @param channel the {@link VoiceChannel} to connect to
-     * @return if it could connect to the specified channel or are already connected to it
-     */
+    private static AudioPlayerManager getNewAPL() {
+        DefaultAudioPlayerManager apm = new DefaultAudioPlayerManager();
+        for (LavaGuildMusicManager.AudioSourceType ast : LavaGuildMusicManager.AudioSourceType.values()) {
+            apm.registerSourceManager(ast.getManager());
+        }
+        AudioSourceManagers.registerRemoteSources(apm);
+        return apm;
+    }
+
+    public static String getTrackTitle(AudioTrack track) {
+        String title = track.getInfo().title;
+        if (title.equals("Unknown title")) title = track.getIdentifier();
+        return title;
+    }
+
+    @Override
     public boolean connect(VoiceChannel channel) {
         if (AM().isConnected()) {
-            return Utils.isSameThing(AM().getConnectedChannel(),channel);
+            return Utils.isSameThing(AM().getConnectedChannel(), channel);
         } else {
             AM().openAudioConnection(channel);
             AM().setSendingHandler(new AudioPlayerWrapper(this.player));
@@ -67,17 +88,11 @@ public class GuildMusicManager {
         }
     }
 
+    @Override
     public void queue(String trackName, TextChannel channel, User user) {
         manager.loadItem(trackName, new ARL(this, channel, user));
     }
 
-    /**
-     * Queue's and audio track
-     * If nothing is currently playing starts playback as well
-     *
-     * @param track the audio track to queue
-     * @return amount of tracks queued or started playing
-     */
     public int queue(AudioTrack track) {
         Main.log.fine("Queued:" + track.getInfo().title);
         if (!player.startTrack(track, true)) {
@@ -102,20 +117,21 @@ public class GuildMusicManager {
         return songCount;
     }
 
-    /**
-     * @return the currently queued songs
-     * <p>
-     * The returned array will be "safe" in that no references to it are
-     * maintained by this queue.  (In other words, this method must allocate
-     * a new array).  The caller is thus free to modify the returned array.
-     */
-    public AudioTrack[] getQueued() {
-        return this.getQueue().toArray(new AudioTrack[0]);
+    @Override
+    public ArrayList<TrackInfo> getQueued() {
+        ArrayList<TrackInfo> list = new ArrayList<>();
+        for (AudioTrack track : this.getQueue()) {
+            TrackInfo info = new TrackInfo(getTrackTitle(track), track.getDuration());
+            list.add(info);
+        }
+        return list;
     }
 
-    /**
-     * starts the next track or stops playback if queue is done
-     */
+    @Override
+    public void setVolume(int volume) {
+
+    }
+
     public void playNextTrack() {
         if (this.ignoreNext) {
             this.ignoreNext = false;
@@ -124,7 +140,7 @@ public class GuildMusicManager {
         tryNext();
     }
 
-    private void tryNext(){
+    private void tryNext() {
         if (queue.remainingCapacity() > 0) {
             this.player.startTrack(queue.poll(), false);
         } else {
@@ -133,17 +149,37 @@ public class GuildMusicManager {
         }
     }
 
+    @Override
     public void skip() {
         this.ignoreNext = true;
         tryNext();
     }
 
+    @Override
     public void stop() {
         this.player.stopTrack();
         AM().closeAudioConnection();
         this.player.destroy();
         this.queue.clear();
-        Main.soundManager.removeGuildMusicManager(this);
+        Main.soundManager.removeGuildMusicManager(this.getGuild());
+    }
+
+    @Override
+    public void pause() {
+        this.getPlayer().setPaused(true);
+        this.setPlaying(false);
+    }
+
+    @Override
+    public void unpause() {
+        this.getPlayer().setPaused(false);
+        this.setPlaying(true);
+    }
+
+    @Override
+    public TrackInfo getCurrentTrack() {
+        AudioTrack track = this.getPlayer().getPlayingTrack();
+        return new TrackInfo(getTrackTitle(track), track.getDuration());
     }
 
     /**
@@ -171,11 +207,28 @@ public class GuildMusicManager {
         this.playing = playing;
     }
 
-    private static class ATL extends AudioEventAdapter {
-        private final GuildMusicManager gmm;
+    public enum AudioSourceType {
+        YOUTUBE(new YoutubeAudioSourceManager(true)),
+        BANDCAMP(new BandcampAudioSourceManager()),
+        BEAM(new BeamAudioSourceManager()),
+        SOUNDCLOUD(new SoundCloudAudioSourceManager(true)),
+        TWITCH(new TwitchStreamAudioSourceManager()),
+        VIMEO(new VimeoAudioSourceManager()),
+        HTTP(new HttpAudioSourceManager());
 
-        public ATL(GuildMusicManager guildMusicManager) {
-            this.gmm = guildMusicManager;
+        @Getter
+        private final AudioSourceManager manager;
+
+        AudioSourceType(AudioSourceManager obj) {
+            this.manager = obj;
+        }
+    }
+
+    public static class ATL extends AudioEventAdapter {
+        private final LavaGuildMusicManager gmm;
+
+        public ATL(LavaGuildMusicManager lavaGuildMusicManager) {
+            this.gmm = lavaGuildMusicManager;
         }
 
         @Override

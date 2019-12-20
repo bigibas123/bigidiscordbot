@@ -1,7 +1,7 @@
-package com.github.bigibas123.bigidiscordbot.sound;
+package com.github.bigibas123.bigidiscordbot.sound.lavaplayer;
 
 import com.github.bigibas123.bigidiscordbot.Main;
-import com.github.bigibas123.bigidiscordbot.util.Utils;
+import com.github.bigibas123.bigidiscordbot.sound.SearchResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -11,20 +11,20 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.util.Arrays;
 
-class ARL implements AudioLoadResultHandler {
-    private final GuildMusicManager gmm;
+public class ARL implements AudioLoadResultHandler {
+    private final LavaGuildMusicManager gmm;
     private final TextChannel channel;
     private final User author;
 
-    public ARL(GuildMusicManager guildMusicManager, TextChannel channel, User author) {
-        this.gmm = guildMusicManager;
+    public ARL(LavaGuildMusicManager gmm, TextChannel channel, User author) {
+        this.gmm = gmm;
         this.channel = channel;
         this.author = author;
     }
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        String title = Utils.getTrackTitle(track);
+        String title = LavaGuildMusicManager.getTrackTitle(track);
         if (gmm.queue(track) > 0) {
             channel.sendMessage(this.author.getAsMention() + " track " + title + " queued").queue();
         } else {
@@ -35,7 +35,7 @@ class ARL implements AudioLoadResultHandler {
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
         if(playlist.isSearchResult()){
-            SearchResultHandler searchResultHandler = new SearchResultHandler(this,this.channel,this.author,playlist,gmm,Main.getJda());
+            SearchResultHandler searchResultHandler = new LavaSearchResultHandler(this, this.channel, this.author, playlist, gmm, Main.getJda());
             searchResultHandler.go();
         } else {
             int amount = gmm.queue(playlist.getTracks());

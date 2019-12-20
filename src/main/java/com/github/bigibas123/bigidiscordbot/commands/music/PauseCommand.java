@@ -1,6 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
-import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -15,12 +15,14 @@ public class PauseCommand extends MusicCommand {
             message.getChannel().sendMessage(message.getAuthor().getAsMention() + " no song is currently playing").queue();
             return false;
         } else {
-            GuildMusicManager gmm = this.getGuildManager(message);
-            boolean playing = !gmm.getPlayer().isPaused();
-            gmm.getPlayer().setPaused(playing);
+            IGuildMusicManager gmm = this.getGuildManager(message);
+
+            boolean playing = gmm.isPlaying();
             if (playing) {
+                gmm.pause();
                 message.addReaction(Emoji.PAUSE.s()).queue();
             } else {
+                gmm.unpause();
                 message.addReaction(Emoji.PLAY.s()).queue();
             }
             return true;

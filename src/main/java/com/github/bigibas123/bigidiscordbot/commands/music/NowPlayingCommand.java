@@ -1,8 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
-import com.github.bigibas123.bigidiscordbot.sound.GuildMusicManager;
-import com.github.bigibas123.bigidiscordbot.util.Utils;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -15,10 +13,9 @@ public class NowPlayingCommand extends MusicCommand {
 
     @Override
     public boolean execute(Message message, String... args) {
-        GuildMusicManager gmm;
+        IGuildMusicManager gmm;
         if (this.guildManagerExists(message) && (gmm = this.getGuildManager(message)).isPlaying()) {
-            AudioTrack track = gmm.getPlayer().getPlayingTrack();
-            String title = Utils.getTrackTitle(track);
+            String title = gmm.getCurrentTrack().getTitle();
             message.getChannel().sendMessage(message.getAuthor().getAsMention() + " Currently playing: " + title).queue();
             return true;
         } else {
