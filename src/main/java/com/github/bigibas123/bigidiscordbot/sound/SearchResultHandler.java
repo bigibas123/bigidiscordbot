@@ -1,8 +1,8 @@
 package com.github.bigibas123.bigidiscordbot.sound;
 
-import com.github.bigibas123.bigidiscordbot.sound.lavaplayer.ARL;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
+import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,17 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class SearchResultHandler extends ListenerAdapter {
-    private Emoji[] oneToTen = new Emoji[]{Emoji.ONE, Emoji.TWO, Emoji.THREE, Emoji.FOUR, Emoji.FIVE, Emoji.SIX, Emoji.SEVEN, Emoji.EIGHT, Emoji.NINE, Emoji.TEN};
+public abstract class SearchResultHandler<T> extends ListenerAdapter {
+    @Getter
+    private final List<TrackInfo<T>> assignments;
 
     private final TextChannel channel;
     private final User author;
     private JDA jda;
-    private final List<TrackInfo> assignments;
+    private Emoji[] oneToTen = new Emoji[]{Emoji.ONE, Emoji.TWO, Emoji.THREE, Emoji.FOUR, Emoji.FIVE, Emoji.SIX, Emoji.SEVEN, Emoji.EIGHT, Emoji.NINE, Emoji.TEN};
     private final MessageEmbed embed;
     private Message message;
 
-    public SearchResultHandler(ARL arl, TextChannel channel, User author, ArrayList<TrackInfo> playlist, IGuildMusicManager gmm, JDA jda) {
+    public SearchResultHandler(TextChannel channel, User author, ArrayList<TrackInfo<T>> playlist, JDA jda) {
         this.channel = channel;
         this.author = author;
         this.jda = jda;
@@ -46,7 +47,7 @@ public abstract class SearchResultHandler extends ListenerAdapter {
         StringBuilder title = new StringBuilder();
         StringBuilder time = new StringBuilder();
         boolean first = true;
-        for (TrackInfo track : assignments) {
+        for (TrackInfo<T> track : assignments) {
             if (first) {
                 first = false;
             } else {
@@ -78,16 +79,16 @@ public abstract class SearchResultHandler extends ListenerAdapter {
             int nummer = -1;
             for (int i = 0; i <= oneToTen.length; i++) {
                 if (oneToTen[i].s().equals(toCompare)) {
-                    nummer = i;
+                    nummer = i + 1;
                     break;
                 }
             }
             if (nummer != -1) {
                 this.jda.removeEventListener(this);
                 int finalNummer = nummer;
-                TrackInfo t = this.assignments.stream().filter(l -> l.getNumber() == finalNummer).findAny().get();
+                TrackInfo<T> t = this.assignments.stream().filter(l -> l.getNumber() == finalNummer).findAny().get();
                 String title = t.getTitle();
-                if (this.selected(nummer)) {
+                if (this.selected(t)) {
                     channel.sendMessage(this.author.getAsMention() + " track " + title + " queued").queue();
                 } else {
                     channel.sendMessage(this.author.getAsMention() + "track " + title + " not queued something went wrong").queue();
@@ -96,7 +97,7 @@ public abstract class SearchResultHandler extends ListenerAdapter {
         }
     }
 
-    protected abstract boolean selected(int nummer);
+    protected abstract boolean selected(TrackInfo<T> track);
 
     public void go() {
 

@@ -20,14 +20,14 @@ public class QueueCommand extends MusicCommand {
     public boolean execute(Message message, String... args) {
         if (this.guildManagerExists(message)) {
             IGuildMusicManager gmm = this.getGuildManager(message);
-            List<TrackInfo> tracks = gmm.getQueued();
+            List<TrackInfo<?>> tracks = gmm.getQueued();
             EmbedBuilder ebb = new EmbedBuilder();
             ebb.setTitle(String.format("Queue for %s", message.getGuild().getName()));
             ebb.setFooter(String.format("Requested by @%s", message.getAuthor().getName()), message.getAuthor().getEffectiveAvatarUrl());
             int i = 1;
             int more = 0;
 
-            for (TrackInfo track : tracks) {
+            for (TrackInfo<?> track : tracks) {
                 if (more == 0) {
                     if (!(i > 20)) {
                         String title = track.getTitle();

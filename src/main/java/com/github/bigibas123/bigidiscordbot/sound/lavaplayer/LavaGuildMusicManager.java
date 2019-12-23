@@ -118,10 +118,10 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
     }
 
     @Override
-    public ArrayList<TrackInfo> getQueued() {
-        ArrayList<TrackInfo> list = new ArrayList<>();
+    public ArrayList<TrackInfo<?>> getQueued() {
+        ArrayList<TrackInfo<?>> list = new ArrayList<>();
         for (AudioTrack track : this.getQueue()) {
-            TrackInfo info = new TrackInfo(getTrackTitle(track), track.getDuration());
+            TrackInfo<AudioTrack> info = new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
             list.add(info);
         }
         return list;
@@ -177,9 +177,9 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
     }
 
     @Override
-    public TrackInfo getCurrentTrack() {
+    public TrackInfo<?> getCurrentTrack() {
         AudioTrack track = this.getPlayer().getPlayingTrack();
-        return new TrackInfo(getTrackTitle(track), track.getDuration());
+        return new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
     }
 
     /**

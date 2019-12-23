@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface IGuildMusicManager {
     /**
@@ -31,9 +31,9 @@ public interface IGuildMusicManager {
 
     boolean isPlaying();
 
-    TrackInfo getCurrentTrack();
+    TrackInfo<?> getCurrentTrack();
 
-    List<TrackInfo> getQueued();
+    ArrayList<TrackInfo<?>> getQueued();
 
     void setVolume(int volume);
 }
