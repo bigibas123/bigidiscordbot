@@ -11,7 +11,7 @@
         <main_class>com.github.bigibas123.bigidiscordbot.Main</main_class>
 
         <jda_version>4.0.0_61</jda_version>
-        <lavaplayer_version>1.3.25</lavaplayer_version>
+        <lavaplayer_version>1.3.32</lavaplayer_version>
         <log4j_version>2.12.1</log4j_version>
         <lombok_version>1.18.10</lombok_version>
 

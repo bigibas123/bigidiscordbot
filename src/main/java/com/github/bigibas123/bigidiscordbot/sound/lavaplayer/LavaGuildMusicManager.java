@@ -211,7 +211,7 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
         YOUTUBE(new YoutubeAudioSourceManager(true)),
         BANDCAMP(new BandcampAudioSourceManager()),
         BEAM(new BeamAudioSourceManager()),
-        SOUNDCLOUD(new SoundCloudAudioSourceManager(true)),
+        SOUNDCLOUD(SoundCloudAudioSourceManager.createDefault()),
         TWITCH(new TwitchStreamAudioSourceManager()),
         VIMEO(new VimeoAudioSourceManager()),
         HTTP(new HttpAudioSourceManager());
