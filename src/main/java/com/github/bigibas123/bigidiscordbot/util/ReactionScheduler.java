@@ -14,8 +14,8 @@ public class ReactionScheduler {
             ArrayList<String> list = toFind.get(reaction.getMessageIdLong());
             list.stream().filter(toRemove -> reaction.getReactionEmote().getName().equals(toRemove))
                     .findFirst().ifPresent(s -> {
-                reaction.removeReaction().queue();
                 list.remove(s);
+                reaction.removeReaction().queue();
             });
             if (list.size() == 0) toFind.remove(reaction.getMessageIdLong(), list);
         }
