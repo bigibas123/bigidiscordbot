@@ -33,18 +33,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-@Getter
 public class LavaGuildMusicManager implements IGuildMusicManager {
+    @Getter
     private final AudioPlayer player;
 
+    @Getter
     private final BlockingQueue<AudioTrack> queue;
 
     private final AudioPlayerManager manager;
 
-    @Getter
     private final Guild guild;
-
-    private final ATL atl;
 
     private boolean ignoreNext;
     @Getter
@@ -54,9 +52,8 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
         this.manager = getNewAPL();
         this.guild = guild;
         this.queue = new LinkedBlockingQueue<>();
-        this.atl = new ATL(this);
         this.player = manager.createPlayer();
-        this.player.addListener(this.atl);
+        this.player.addListener(new ATL(this));
         this.player.setVolume(50);
         this.ignoreNext = false;
         this.playing = false;
@@ -145,7 +142,6 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
             this.player.startTrack(queue.poll(), false);
         } else {
             setPlaying(false);
-            this.stop();
         }
     }
 
@@ -161,7 +157,6 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
         AM().closeAudioConnection();
         this.player.destroy();
         this.queue.clear();
-        Main.soundManager.removeGuildMusicManager(this.getGuild());
     }
 
     @Override

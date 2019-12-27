@@ -1,6 +1,5 @@
 package com.github.bigibas123.bigidiscordbot.sound;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -26,8 +25,6 @@ public interface IGuildMusicManager {
     void pause();
 
     void unpause();
-
-    Guild getGuild();
 
     boolean isPlaying();
 

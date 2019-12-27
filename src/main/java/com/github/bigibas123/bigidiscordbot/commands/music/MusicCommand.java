@@ -20,6 +20,10 @@ public abstract class MusicCommand extends ICommand {
         return Main.soundManager.guildMusicManagerExists(message.getGuild());
     }
 
+    protected void stopGuildManager(Message message) {
+        Main.soundManager.removeGuildMusicManager(message.getGuild());
+    }
+
     @Override
     public boolean hasPermission(User user, MessageChannel channel) {
         if (channel.getType().isGuild()) {
