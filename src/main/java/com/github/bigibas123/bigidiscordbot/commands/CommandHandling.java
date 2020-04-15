@@ -76,6 +76,8 @@ public class CommandHandling {
                         }
                     }catch (Throwable e){
                         message.addReaction(WARNING.s()).queue();
+                        Main.log.severe("Command failed:");
+                        Main.log.throwing(this.getClass().getSimpleName(),"handleCommand",e);
                     }
                 } else {
                     if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
