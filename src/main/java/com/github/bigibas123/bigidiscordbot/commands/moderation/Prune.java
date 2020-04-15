@@ -3,12 +3,19 @@ package com.github.bigibas123.bigidiscordbot.commands.moderation;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
+import java.util.List;
 import java.util.Optional;
 
 public class Prune extends ICommand {
+
     public Prune() {
         super("Prune", "Removes messages", "[amount def=5]", "Purge", "Delete");
     }
@@ -28,27 +35,29 @@ public class Prune extends ICommand {
         }
         if (message.getChannel() instanceof PrivateChannel) {
             if (amount <= 100) {
-                message.getChannel().getHistory().retrievePast(amount).queue(hist -> hist.stream()
+                List<Message> hist = message.getChannel().getHistory().retrievePast(amount).complete();
+                hist.parallelStream()
                         .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
-                        .forEach(hm -> hm.delete().queue())
-                );
+                        .forEach(hm -> hm.delete().complete());
             } else {
                 while (amount > 0) {
-                    message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).queue(hist -> hist.stream()
+                    List<Message> hist = message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).complete();
+                    hist.parallelStream()
                             .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
-                            .forEach(hm -> hm.delete().queue())
-                    );
+                            .forEach(hm -> hm.delete().complete());
                     amount -= 100;
                 }
             }
         } else {
             if (amount <= 100) {
-                message.getChannel().getHistory().retrievePast(amount).queue(s -> s.forEach(msg -> msg.delete().queue()));
-            }else{
+                List<Message> hist = message.getChannel().getHistory().retrievePast(amount).complete();
+                hist.parallelStream()
+                        .forEach(hm -> hm.delete().complete());
+            } else {
                 while (amount > 0) {
-                    message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).queue(hist -> hist
-                            .forEach(hm -> hm.delete().queue())
-                    );
+                    List<Message> hist = message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).complete();
+                    hist.parallelStream()
+                            .forEach(hm -> hm.delete().complete());
                     amount -= 100;
                 }
             }
@@ -63,7 +72,7 @@ public class Prune extends ICommand {
         } else if (channel instanceof TextChannel) {
             Member member;
             Optional<Member> opt = ((TextChannel) channel).getMembers().stream()
-                    .filter(m -> Utils.isSameThing(m.getUser(),user))
+                    .filter(m -> Utils.isSameThing(m.getUser(), user))
                     .findFirst();
             if (opt.isEmpty()) {
                 throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
@@ -74,5 +83,6 @@ public class Prune extends ICommand {
         }
         return false;
     }
+
 }
 
