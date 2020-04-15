@@ -19,7 +19,7 @@ public class Utils {
     }
 
     public static boolean isDJ(User user, Guild guild) {
-        Member member = guild.getMember(user);
+        Member member = guild.retrieveMember(user).complete();
         boolean result;
         if (member == null) {
             result = false;

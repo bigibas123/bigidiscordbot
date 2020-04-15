@@ -62,16 +62,20 @@ public class CommandHandling {
                 ICommand cmd;
                 if ((cmd = commands.get(msg[1].toLowerCase())) != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                     message.addReaction(STOP_WATCH.s()).queue();
-                    boolean cmdSuccess = cmd.execute(message, msg);
-                    ReactionScheduler.scheduleRemoval(message.getIdLong(), STOP_WATCH.s());
-                    if (cmdSuccess) {
-                        message.addReaction(CHECK_MARK.s()).queue();
-                        Main.log.fine(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
-                        return true;
-                    } else {
-                        message.addReaction(CROSS.s()).queue();
-                        Main.log.fine(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
-                        return false;
+                    try {
+                        boolean cmdSuccess = cmd.execute(message, msg);
+                        ReactionScheduler.scheduleRemoval(message.getIdLong(), STOP_WATCH.s());
+                        if (cmdSuccess) {
+                            message.addReaction(CHECK_MARK.s()).queue();
+                            Main.log.fine(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
+                            return true;
+                        } else {
+                            message.addReaction(CROSS.s()).queue();
+                            Main.log.fine(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
+                            return false;
+                        }
+                    }catch (Throwable e){
+                        message.addReaction(WARNING.s()).queue();
                     }
                 } else {
                     if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {

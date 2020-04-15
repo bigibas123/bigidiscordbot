@@ -10,10 +10,10 @@
     <properties>
         <main_class>com.github.bigibas123.bigidiscordbot.Main</main_class>
 
-        <jda_version>4.0.0_61</jda_version>
-        <lavaplayer_version>1.3.32</lavaplayer_version>
-        <log4j_version>2.12.1</log4j_version>
-        <lombok_version>1.18.10</lombok_version>
+        <jda_version>4.1.1_136</jda_version>
+        <lavaplayer_version>1.3.47</lavaplayer_version>
+        <log4j_version>2.13.1</log4j_version>
+        <lombok_version>1.18.12</lombok_version>
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -50,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <index>true</index>
@@ -66,7 +66,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -90,7 +90,7 @@
         <repository>
             <id>jcenter</id>
             <name>jcenter-bintray</name>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
 </project>

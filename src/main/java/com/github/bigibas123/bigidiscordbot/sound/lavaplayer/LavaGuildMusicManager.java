@@ -87,7 +87,7 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
 
     @Override
     public void queue(String trackName, TextChannel channel, User user) {
-        manager.loadItem(trackName, new ARL(this, channel, user));
+        manager.loadItem(trackName, new ARL(this, channel, user,channel.getJDA()));
     }
 
     public int queue(AudioTrack track) {

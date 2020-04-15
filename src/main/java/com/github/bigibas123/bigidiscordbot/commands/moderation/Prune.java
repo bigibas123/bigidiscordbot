@@ -27,12 +27,31 @@ public class Prune extends ICommand {
             }
         }
         if (message.getChannel() instanceof PrivateChannel) {
-            message.getChannel().getHistory().retrievePast(amount).queue(hist -> hist.stream()
-                    .filter(msg -> Utils.isSameThing(msg.getAuthor(),message.getJDA().getSelfUser()))
-                    .forEach(hm -> hm.delete().queue())
-            );
+            if (amount <= 100) {
+                message.getChannel().getHistory().retrievePast(amount).queue(hist -> hist.stream()
+                        .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
+                        .forEach(hm -> hm.delete().queue())
+                );
+            } else {
+                while (amount > 0) {
+                    message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).queue(hist -> hist.stream()
+                            .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
+                            .forEach(hm -> hm.delete().queue())
+                    );
+                    amount -= 100;
+                }
+            }
         } else {
-            message.getChannel().getHistory().retrievePast(amount).queue(s -> s.forEach(msg -> msg.delete().queue()));
+            if (amount <= 100) {
+                message.getChannel().getHistory().retrievePast(amount).queue(s -> s.forEach(msg -> msg.delete().queue()));
+            }else{
+                while (amount > 0) {
+                    message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).queue(hist -> hist
+                            .forEach(hm -> hm.delete().queue())
+                    );
+                    amount -= 100;
+                }
+            }
         }
         return true;
     }

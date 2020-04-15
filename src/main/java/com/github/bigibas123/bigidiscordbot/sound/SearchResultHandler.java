@@ -33,7 +33,7 @@ public abstract class SearchResultHandler<T> extends ListenerAdapter {
         this.channel = channel;
         this.author = author;
         this.jda = jda;
-        this.assignments = playlist.subList(0, playlist.size() > 10 ? 10 : playlist.size());
+        this.assignments = playlist.subList(0, Math.min(playlist.size(), 10));
         this.embed = buildEmbed();
 
     }
@@ -57,7 +57,7 @@ public abstract class SearchResultHandler<T> extends ListenerAdapter {
             }
             String t = track.getTitle();
             number.append(track.getNumber());
-            title.append(t, 0, t.length() <= 40 ? t.length() : 40);
+            title.append(t, 0, Math.min(t.length(), 40));
             time.append(Utils.formatDuration(track.getDuration()));
         }
 

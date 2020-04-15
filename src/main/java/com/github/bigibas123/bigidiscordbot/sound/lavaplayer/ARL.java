@@ -1,11 +1,11 @@
 package com.github.bigibas123.bigidiscordbot.sound.lavaplayer;
 
-import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.sound.SearchResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -15,11 +15,13 @@ public class ARL implements AudioLoadResultHandler {
     private final LavaGuildMusicManager gmm;
     private final TextChannel channel;
     private final User author;
+    private JDA jda;
 
-    public ARL(LavaGuildMusicManager gmm, TextChannel channel, User author) {
+    public ARL(LavaGuildMusicManager gmm, TextChannel channel, User author, JDA jda) {
         this.gmm = gmm;
         this.channel = channel;
         this.author = author;
+        this.jda = jda;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class ARL implements AudioLoadResultHandler {
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
         if(playlist.isSearchResult()){
-            SearchResultHandler searchResultHandler = new LavaSearchResultHandler(this, this.channel, this.author, playlist, gmm, Main.getJda());
+            SearchResultHandler<?> searchResultHandler = new LavaSearchResultHandler(this, this.channel, this.author, playlist, gmm, this.jda);
             searchResultHandler.go();
         } else {
             int amount = gmm.queue(playlist.getTracks());
