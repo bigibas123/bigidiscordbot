@@ -1,9 +1,10 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+
 
 public abstract class ICommand {
     @Getter

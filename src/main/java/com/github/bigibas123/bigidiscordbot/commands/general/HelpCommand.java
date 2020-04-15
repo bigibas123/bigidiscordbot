@@ -2,10 +2,10 @@ package com.github.bigibas123.bigidiscordbot.commands.general;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
 
