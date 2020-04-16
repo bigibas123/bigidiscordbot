@@ -19,8 +19,8 @@ public class QueueCommand extends MusicCommand {
     @Override
     public boolean execute(Message message, String... args) {
         if (this.guildManagerExists(message)) {
-            IGuildMusicManager gmm = this.getGuildManager(message);
-            List<TrackInfo<?>> tracks = gmm.getQueued();
+            IGuildMusicManager<?> gmm = this.getGuildManager(message);
+            List<? extends TrackInfo<?>> tracks = gmm.getQueued();
             EmbedBuilder ebb = new EmbedBuilder();
             ebb.setTitle(String.format("Queue for %s", message.getGuild().getName()));
             ebb.setFooter(String.format("Requested by @%s", message.getAuthor().getName()), message.getAuthor().getEffectiveAvatarUrl());

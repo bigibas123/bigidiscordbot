@@ -5,16 +5,23 @@ import com.github.bigibas123.bigidiscordbot.util.Utils;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.internal.entities.UserImpl;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -68,6 +75,26 @@ public abstract class SearchResultHandler<T> extends ListenerAdapter {
     }
 
     @Override
+    public void onMessageEmbed(@Nonnull MessageEmbedEvent event) {
+        if(Utils.isSameThing(event.getChannel(),message.getChannel())) {
+            if(!event.getMessageId().equals(message.getId())){
+                MessageHistory mh = event.getChannel().getHistoryAround(event.getMessageId(), 1).complete();
+                Message newMessage = mh.getRetrievedHistory().get(0);
+                if(Utils.isSameThing(newMessage.getAuthor(),jda.getSelfUser())){
+                    message.clearReactions().queue(s->{},f->{
+                        if(f instanceof InsufficientPermissionException){
+                            Stream.of(oneToTen).forEach(a -> message.removeReaction(a.s()).queue());
+                        }
+                    });
+                    this.jda.removeEventListener(this);
+                }
+            }
+        }
+    }
+
+
+
+    @Override
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
         if ((!Utils.isSameThing(event.getUser(), jda.getSelfUser())) &&
                 Utils.isDJ(event.getUser(), event.getGuild()) &&
@@ -84,7 +111,6 @@ public abstract class SearchResultHandler<T> extends ListenerAdapter {
                 }
             }
             if (nummer != -1) {
-                this.jda.removeEventListener(this);
                 int finalNummer = nummer;
                 TrackInfo<T> t = this.assignments.stream().filter(l -> l.getNumber() == finalNummer).findAny().get();
                 String title = t.getTitle();
@@ -93,6 +119,11 @@ public abstract class SearchResultHandler<T> extends ListenerAdapter {
                 } else {
                     channel.sendMessage(this.author.getAsMention() + "track " + title + " not queued something went wrong").queue();
                 }
+                if(event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                    //this is unsafe but it doesn't need caching
+                    message.removeReaction(oneToTen[finalNummer - 1].s(), new UserImpl(event.getUserIdLong(), null)).queue();
+                }
+
             }
         }
     }

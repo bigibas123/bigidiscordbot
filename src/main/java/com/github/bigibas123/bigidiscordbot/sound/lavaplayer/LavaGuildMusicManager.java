@@ -12,6 +12,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
@@ -33,7 +34,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-public class LavaGuildMusicManager implements IGuildMusicManager {
+public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
     @Getter
     private final AudioPlayer player;
 
@@ -108,15 +109,15 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
                 return songCount;
             }
         }
-        if (this.queue.remainingCapacity() > 0) {
+        if (this.queue.size() > 0) {
             player.startTrack(queue.poll(), true);
         }
         return songCount;
     }
 
     @Override
-    public ArrayList<TrackInfo<?>> getQueued() {
-        ArrayList<TrackInfo<?>> list = new ArrayList<>();
+    public ArrayList<TrackInfo<AudioTrack>> getQueued() {
+        ArrayList<TrackInfo<AudioTrack>> list = new ArrayList<>();
         for (AudioTrack track : this.getQueue()) {
             TrackInfo<AudioTrack> info = new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
             list.add(info);
@@ -172,7 +173,7 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
     }
 
     @Override
-    public TrackInfo<?> getCurrentTrack() {
+    public TrackInfo<AudioTrack> getCurrentTrack() {
         AudioTrack track = this.getPlayer().getPlayingTrack();
         return new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
     }
@@ -206,10 +207,12 @@ public class LavaGuildMusicManager implements IGuildMusicManager {
         YOUTUBE(new YoutubeAudioSourceManager(true)),
         BANDCAMP(new BandcampAudioSourceManager()),
         BEAM(new BeamAudioSourceManager()),
+        YARN(new GetyarnAudioSourceManager()),
         SOUNDCLOUD(SoundCloudAudioSourceManager.createDefault()),
         TWITCH(new TwitchStreamAudioSourceManager()),
         VIMEO(new VimeoAudioSourceManager()),
-        HTTP(new HttpAudioSourceManager());
+        HTTP(new HttpAudioSourceManager()),
+        ;
 
         @Getter
         private final AudioSourceManager manager;
