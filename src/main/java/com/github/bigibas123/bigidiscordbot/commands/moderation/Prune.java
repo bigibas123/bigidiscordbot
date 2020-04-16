@@ -35,13 +35,13 @@ public class Prune extends ICommand {
         }
         if (message.getChannel() instanceof PrivateChannel) {
             if (amount <= 100) {
-                List<Message> hist = message.getChannel().getHistory().retrievePast(amount).complete();
+                List<Message> hist = message.getChannel().getHistoryBefore(message,amount).complete().getRetrievedHistory();
                 hist.parallelStream()
                         .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
                         .forEach(hm -> hm.delete().complete());
             } else {
                 while (amount > 0) {
-                    List<Message> hist = message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).complete();
+                    List<Message> hist = message.getChannel().getHistoryBefore(message,Math.max(amount,100)).complete().getRetrievedHistory();
                     hist.parallelStream()
                             .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
                             .forEach(hm -> hm.delete().complete());
@@ -50,12 +50,12 @@ public class Prune extends ICommand {
             }
         } else {
             if (amount <= 100) {
-                List<Message> hist = message.getChannel().getHistory().retrievePast(amount).complete();
+                List<Message> hist = message.getChannel().getHistoryBefore(message,amount).complete().getRetrievedHistory();
                 hist.parallelStream()
                         .forEach(hm -> hm.delete().complete());
             } else {
                 while (amount > 0) {
-                    List<Message> hist = message.getChannel().getHistory().retrievePast(Math.min(amount, 100)).complete();
+                    List<Message> hist = message.getChannel().getHistoryBefore(message,Math.min(amount, 100)).complete().getRetrievedHistory();
                     hist.parallelStream()
                             .forEach(hm -> hm.delete().complete());
                     amount -= 100;
