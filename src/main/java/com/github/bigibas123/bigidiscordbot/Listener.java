@@ -21,8 +21,8 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         super.onReady(event);
-        event.getJDA().retrieveUserById(Reference.ownerID, false).queue(u ->
-                u.openPrivateChannel().queue(c -> c.sendMessage("Started at " + LocalDateTime.now().toString()).queue())
+        event.getJDA().openPrivateChannelById(Reference.ownerID).queue(c ->
+                c.sendMessage("Started at " + LocalDateTime.now().toString()).queue()
         );
         event.getJDA().getPresence().setActivity(
                 Activity.watching("you from shard: " + (event.getJDA().getShardInfo().getShardId() + 1) + "/" + event.getJDA().getShardInfo().getShardTotal())
