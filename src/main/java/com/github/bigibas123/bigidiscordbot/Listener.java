@@ -2,6 +2,7 @@ package com.github.bigibas123.bigidiscordbot;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -24,8 +25,10 @@ public class Listener extends ListenerAdapter {
         event.getJDA().openPrivateChannelById(Reference.ownerID).queue(c ->
                 c.sendMessage("Started at " + LocalDateTime.now().toString()).queue()
         );
-        event.getJDA().getPresence().setActivity(
-                Activity.watching("you from shard: " + (event.getJDA().getShardInfo().getShardId() + 1) + "/" + event.getJDA().getShardInfo().getShardTotal())
+        event.getJDA().getPresence().setPresence(
+                OnlineStatus.ONLINE,
+                Activity.of(Activity.ActivityType.DEFAULT, "@mention help\t| [" + (event.getJDA().getShardInfo().getShardId() + 1) + "/" + event.getJDA().getShardInfo().getShardTotal() + "]"),
+                false
         );
         this.handling = new CommandHandling();
     }
