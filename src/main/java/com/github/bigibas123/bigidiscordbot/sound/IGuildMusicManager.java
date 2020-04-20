@@ -33,4 +33,7 @@ public interface IGuildMusicManager<T> {
     ArrayList<TrackInfo<T>> getQueued();
 
     void setVolume(int volume);
+
+    boolean seek(long location);
+
 }

@@ -9,10 +9,11 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.util.Collections;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 import static net.dv8tion.jda.api.requests.GatewayIntent.*;
 import static net.dv8tion.jda.api.utils.cache.CacheFlag.ACTIVITY;
@@ -31,14 +32,14 @@ public class Main {
         if(!Reference.varsSet){
             System.exit(1);
         }
-        log = Logger.getLogger(Main.class.getCanonicalName());
+        log = LoggerFactory.getLogger("BigiDiscordBot");
         soundManager = new SoundManager();
-        ShardManager b = DefaultShardManagerBuilder.create(Reference.token, Collections.EMPTY_LIST)
-                .enableIntents(GUILD_VOICE_STATES,GUILD_MESSAGES,GUILD_MESSAGE_REACTIONS,DIRECT_MESSAGES,DIRECT_MESSAGE_REACTIONS)
-                .disableIntents(GUILD_MEMBERS,GUILD_BANS,GUILD_EMOJIS,GUILD_INVITES,GUILD_PRESENCES,GUILD_MESSAGE_TYPING,DIRECT_MESSAGE_TYPING)
+        ShardManager b = DefaultShardManagerBuilder.create(Reference.token, new ArrayList<>())
+                .enableIntents(GUILD_VOICE_STATES, GUILD_MESSAGES, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS)
+                .disableIntents(GUILD_MEMBERS, GUILD_BANS, GUILD_EMOJIS, GUILD_INVITES, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING)
                 .addEventListeners(new Listener())
-                .enableCache(MEMBER_OVERRIDES,VOICE_STATE)
-                .disableCache(ACTIVITY,EMOTE,CLIENT_STATUS)
+                .enableCache(MEMBER_OVERRIDES, VOICE_STATE)
+                .disableCache(ACTIVITY, EMOTE, CLIENT_STATUS)
                 .setActivity(null)
                 .setAudioSendFactory(DefaultSendSystem::new)
                 .setAutoReconnect(true)
@@ -58,7 +59,7 @@ public class Main {
                 .setToken(Reference.token)
                 .build();
         /*
-        jda = JDABuilder.create(Reference.token, Collections.EMPTY_LIST)
+        jda = JDABuilder.create(Reference.token, new ArrayList<>())
                 .enableIntents(GUILD_VOICE_STATES,GUILD_MESSAGES,GUILD_MESSAGE_REACTIONS,DIRECT_MESSAGES,DIRECT_MESSAGE_REACTIONS)
                 .disableIntents(GUILD_MEMBERS,GUILD_BANS,GUILD_EMOJIS,GUILD_INVITES,GUILD_PRESENCES,GUILD_MESSAGE_TYPING,DIRECT_MESSAGE_TYPING)
                 .addEventListeners(new Listener())

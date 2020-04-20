@@ -4,7 +4,14 @@ import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.commands.general.ExitCommand;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.commands.moderation.Prune;
-import com.github.bigibas123.bigidiscordbot.commands.music.*;
+import com.github.bigibas123.bigidiscordbot.commands.music.NowPlayingCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.PauseCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.PlayCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.QueueCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.SeekCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.SkipCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.StopCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.VolumeCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
@@ -13,7 +20,12 @@ import net.dv8tion.jda.api.entities.Message;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.*;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.CHECK_MARK;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.CROSS;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.SHRUG;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.STOP_SIGN;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.STOP_WATCH;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.WARNING;
 
 public class CommandHandling {
 
@@ -30,6 +42,7 @@ public class CommandHandling {
         registerCommand(new StopCommand());
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new SeekCommand());
         registerCommand(new NowPlayingCommand());
         registerCommand(new VolumeCommand());
         registerCommand(new PauseCommand());
@@ -59,32 +72,31 @@ public class CommandHandling {
         String[] msg = message.getContentRaw().split(" ");
         if (message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER)) {
             if (msg.length > 1) {
-                ICommand cmd;
-                if ((cmd = commands.get(msg[1].toLowerCase())) != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {
+                ICommand cmd = commands.get(msg[1].toLowerCase());
+                if (cmd != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                     message.addReaction(STOP_WATCH.s()).queue();
                     try {
                         boolean cmdSuccess = cmd.execute(message, msg);
                         ReactionScheduler.scheduleRemoval(message.getIdLong(), STOP_WATCH.s());
                         if (cmdSuccess) {
                             message.addReaction(CHECK_MARK.s()).queue();
-                            Main.log.fine(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
+                            Main.log.trace(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
                             return true;
                         } else {
                             message.addReaction(CROSS.s()).queue();
-                            Main.log.fine(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
+                            Main.log.trace(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
                             return false;
                         }
                     }catch (Throwable e){
                         message.addReaction(WARNING.s()).queue();
-                        Main.log.severe("Command failed:");
-                        Main.log.throwing(this.getClass().getSimpleName(),"handleCommand",e);
+                        Main.log.error("Command failed:", e);
                     }
                 } else {
                     if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
                         message.addReaction(STOP_SIGN.s()).queue();
-                        Main.log.fine(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
+                        Main.log.debug(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
                     } else {
-                        Main.log.fine(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
+                        Main.log.trace(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
                         message.addReaction(SHRUG.s()).queue();
                     }
 

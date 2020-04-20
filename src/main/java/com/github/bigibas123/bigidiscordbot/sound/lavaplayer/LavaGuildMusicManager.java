@@ -8,19 +8,11 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -35,6 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
+
     @Getter
     private final AudioPlayer player;
 
@@ -44,8 +37,8 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
     private final AudioPlayerManager manager;
 
     private final Guild guild;
+    private final ATL listener;
 
-    private boolean ignoreNext;
     @Getter
     private boolean playing;
 
@@ -54,25 +47,16 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
         this.guild = guild;
         this.queue = new LinkedBlockingQueue<>();
         this.player = manager.createPlayer();
-        this.player.addListener(new ATL(this));
+        this.listener = new ATL(this);
+        this.player.addListener(this.listener);
         this.player.setVolume(50);
-        this.ignoreNext = false;
         this.playing = false;
     }
 
     private static AudioPlayerManager getNewAPL() {
         DefaultAudioPlayerManager apm = new DefaultAudioPlayerManager();
-        for (LavaGuildMusicManager.AudioSourceType ast : LavaGuildMusicManager.AudioSourceType.values()) {
-            apm.registerSourceManager(ast.getManager());
-        }
         AudioSourceManagers.registerRemoteSources(apm);
         return apm;
-    }
-
-    public static String getTrackTitle(AudioTrack track) {
-        String title = track.getInfo().title;
-        if (title.equals("Unknown title")) title = track.getIdentifier();
-        return title;
     }
 
     @Override
@@ -88,68 +72,19 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
 
     @Override
     public void queue(String trackName, TextChannel channel, User user) {
-        manager.loadItem(trackName, new ARL(this, channel, user,channel.getJDA()));
-    }
-
-    public int queue(AudioTrack track) {
-        Main.log.fine("Queued:" + track.getInfo().title);
-        if (!player.startTrack(track, true)) {
-            return queue.offer(track) ? 1 : 0;
-        } else {
-            return 1;
-        }
-    }
-
-    public int queue(Collection<AudioTrack> playlist) {
-        int songCount = 0;
-        for (AudioTrack track : playlist) {
-            if (this.queue.offer(track)) {
-                songCount++;
-            } else {
-                return songCount;
-            }
-        }
-        if (this.queue.size() > 0) {
-            player.startTrack(queue.poll(), true);
-        }
-        return songCount;
-    }
-
-    @Override
-    public ArrayList<TrackInfo<AudioTrack>> getQueued() {
-        ArrayList<TrackInfo<AudioTrack>> list = new ArrayList<>();
-        for (AudioTrack track : this.getQueue()) {
-            TrackInfo<AudioTrack> info = new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
-            list.add(info);
-        }
-        return list;
-    }
-
-    @Override
-    public void setVolume(int volume) {
-        this.player.setVolume(volume);
-    }
-
-    public void playNextTrack() {
-        if (this.ignoreNext) {
-            this.ignoreNext = false;
-            return;
-        }
-        tryNext();
-    }
-
-    private void tryNext() {
-        if (queue.remainingCapacity() > 0) {
-            this.player.startTrack(queue.poll(), false);
-        } else {
-            setPlaying(false);
-        }
+        manager.loadItem(trackName, new ARL(this, channel, user, channel.getJDA(), trackName));
     }
 
     @Override
     public void skip() {
-        this.ignoreNext = true;
-        tryNext();
+        if (this.player.getPlayingTrack() != null && this.player.getPlayingTrack().isSeekable()) {
+            this.seek(this.player.getPlayingTrack().getDuration() - 1);
+        } else {
+            if (this.player.getPlayingTrack() != null) {
+                this.listener.setSkipped(true);
+                this.tryNext();
+            }
+        }
     }
 
     @Override
@@ -178,6 +113,40 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
         return new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
     }
 
+    @Override
+    public ArrayList<TrackInfo<AudioTrack>> getQueued() {
+        ArrayList<TrackInfo<AudioTrack>> list = new ArrayList<>();
+        for (AudioTrack track: this.getQueue()) {
+            TrackInfo<AudioTrack> info = new TrackInfo<>(getTrackTitle(track), track.getDuration(), track);
+            list.add(info);
+        }
+        return list;
+    }
+
+    public static String getTrackTitle(AudioTrack track) {
+        if (track == null) {
+            return "";
+        }
+        String title = track.getInfo().title;
+        if (title.equals("Unknown title")) title = track.getIdentifier();
+        return title;
+    }
+
+    @Override
+    public void setVolume(int volume) {
+        this.player.setVolume(volume);
+    }
+
+    @Override
+    public boolean seek(long location) {
+        if (!this.player.getPlayingTrack().isSeekable()) {
+            return false;
+        } else {
+            this.player.getPlayingTrack().setPosition(location);
+            return true;
+        }
+    }
+
     /**
      * utility method for less clutter
      *
@@ -187,6 +156,42 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
         return guild.getAudioManager();
     }
 
+    public int queue(AudioTrack track) {
+        Main.log.debug("Queued:" + track.getInfo().title);
+        if (!player.startTrack(track, true)) {
+            return queue.offer(track) ? 1 : 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public int queue(Collection<AudioTrack> playlist) {
+        int songCount = 0;
+        for (AudioTrack track: playlist) {
+            if (this.queue.offer(track)) {
+                songCount++;
+            } else {
+                return songCount;
+            }
+        }
+        if (this.queue.size() > 0) {
+            player.startTrack(queue.poll(), true);
+        }
+        return songCount;
+    }
+
+    public void playNextTrack() {
+        tryNext();
+    }
+
+    private void tryNext() {
+        if (queue.size() > 0) {
+            this.player.startTrack(queue.poll(), false);
+            setPlaying(true);
+        } else {
+            setPlaying(false);
+        }
+    }
 
     /**
      * makes the bot display if its playing or not in the voice menu
@@ -194,6 +199,7 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
      * @param playing if the player is currently playing
      */
     private void setPlaying(boolean playing) {
+        Main.log.debug("Setting playing mode " + playing + " for guild: " + this.guild.getName());
         if (playing) {
             AM().setSpeakingMode(SpeakingMode.VOICE);
             AM().setSelfMuted(false);
@@ -203,55 +209,48 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
         this.playing = playing;
     }
 
-    public enum AudioSourceType {
-        YOUTUBE(new YoutubeAudioSourceManager(true)),
-        BANDCAMP(new BandcampAudioSourceManager()),
-        BEAM(new BeamAudioSourceManager()),
-        YARN(new GetyarnAudioSourceManager()),
-        SOUNDCLOUD(SoundCloudAudioSourceManager.createDefault()),
-        TWITCH(new TwitchStreamAudioSourceManager()),
-        VIMEO(new VimeoAudioSourceManager()),
-        HTTP(new HttpAudioSourceManager()),
-        ;
-
-        @Getter
-        private final AudioSourceManager manager;
-
-        AudioSourceType(AudioSourceManager obj) {
-            this.manager = obj;
-        }
-    }
 
     public static class ATL extends AudioEventAdapter {
+
         private final LavaGuildMusicManager gmm;
+        @Setter
+        @Getter
+        private boolean skipped;
 
         public ATL(LavaGuildMusicManager lavaGuildMusicManager) {
             this.gmm = lavaGuildMusicManager;
         }
 
         @Override
-        public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-            Main.log.fine("TrackEnd:" + this.gmm.guild.getName());
-            gmm.playNextTrack();
-        }
-
-        @Override
         public void onPlayerPause(AudioPlayer player) {
-            Main.log.fine("TrackPause:" + this.gmm.guild.getName());
+            Main.log.trace("TrackPause:" + this.gmm.guild.getName());
             gmm.setPlaying(false);
         }
 
         @Override
         public void onPlayerResume(AudioPlayer player) {
-            Main.log.fine("TrackResume:" + this.gmm.guild.getName());
+            Main.log.trace("TrackResume:" + this.gmm.guild.getName());
             gmm.setPlaying(true);
         }
 
         @Override
         public void onTrackStart(AudioPlayer player, AudioTrack track) {
-            Main.log.fine("TrackStart:" + this.gmm.guild.getName());
+            Main.log.trace("TrackStart:" + this.gmm.guild.getName());
             gmm.setPlaying(true);
         }
+
+        @Override
+        public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+            Main.log.trace("TrackEnd:" + this.gmm.guild.getName());
+            if (!this.skipped) {
+                Main.log.trace("Calling playNextTrack()");
+                gmm.playNextTrack();
+            } else {
+                Main.log.trace("Skipping playNextTrack() call");
+                this.skipped = false;
+            }
+        }
+
     }
 
 }

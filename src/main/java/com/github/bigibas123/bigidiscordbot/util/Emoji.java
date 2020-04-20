@@ -10,6 +10,7 @@ public enum Emoji {
     WAVE("\uD83D\uDC4B"),       //👋
     PAUSE("\u23F8"),            //⏸
     PLAY("\u25B6"),             //▶
+    FAST_FORWARD("\u23E9"),     //⏩
     ONE("\u0031\u20E3"),        //1️⃣
     TWO("\u0032\u20E3"),        //2️⃣
     THREE("\u0033\u20E3"),      //3️⃣
