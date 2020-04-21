@@ -41,7 +41,7 @@ public class Prune extends ICommand {
                         .forEach(hm -> hm.delete().complete());
             } else {
                 while (amount > 0) {
-                    List<Message> hist = message.getChannel().getHistoryBefore(message,Math.max(amount,100)).complete().getRetrievedHistory();
+                    List<Message> hist = message.getChannel().getHistoryBefore(message, Math.min(amount, 100)).complete().getRetrievedHistory();
                     hist.parallelStream()
                             .filter(msg -> Utils.isSameThing(msg.getAuthor(), message.getJDA().getSelfUser()))
                             .forEach(hm -> hm.delete().complete());
