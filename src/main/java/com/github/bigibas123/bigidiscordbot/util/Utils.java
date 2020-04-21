@@ -4,11 +4,20 @@ import com.github.bigibas123.bigidiscordbot.Main;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
 import java.time.Duration;
 
 public class Utils {
+
+    public static String getReactionEmoteLogString(MessageReaction.ReactionEmote emote) {
+        if (emote.isEmote()) {
+            return ":" + emote.getName() + ":";
+        } else {
+            return emote.getAsCodepoints();
+        }
+    }
 
     public static String formatDuration(long dur) {
         Duration duration = Duration.ofMillis(dur);
