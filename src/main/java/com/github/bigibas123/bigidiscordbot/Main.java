@@ -2,8 +2,8 @@ package com.github.bigibas123.bigidiscordbot;
 
 
 import com.github.bigibas123.bigidiscordbot.sound.SoundManager;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.audio.factory.DefaultSendSystem;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -41,7 +41,7 @@ public class Main {
                 .enableCache(MEMBER_OVERRIDES, VOICE_STATE)
                 .disableCache(ACTIVITY, EMOTE, CLIENT_STATUS)
                 .setActivity(null)
-                .setAudioSendFactory(DefaultSendSystem::new)
+                .setAudioSendFactory(new NativeAudioSendFactory())
                 .setAutoReconnect(true)
                 .setBulkDeleteSplittingEnabled(true)
                 .setChunkingFilter(ChunkingFilter.NONE)

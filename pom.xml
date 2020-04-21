@@ -43,6 +43,11 @@
             <version>${lombok_version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>jda-nas</artifactId>
+            <version>1.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
