@@ -126,11 +126,11 @@ public abstract class SearchResultHandler<T> extends ListenerAdapter {
                     }
                 } else {
                     message.addReaction(Emoji.WARNING.s()).queue();
-                    Main.log.warn("Message in: " + event.getGuild().getName() + "->" + event.getChannel().getName() + "->" + event.getMessageId() + " got wrong emote " + Utils.getReactionEmoteLogString(event.getReactionEmote()));
+                    Main.log.debug("Message in: " + event.getGuild().getName() + "->" + event.getChannel().getName() + "->" + event.getMessageId() + " got wrong emote " + Utils.getReactionEmoteLogString(event.getReactionEmote()));
                 }
             } else {
                 message.addReaction(Emoji.WARNING.s()).queue();
-                Main.log.warn("Message in: " + event.getGuild().getName() + "->" + event.getChannel().getName() + "->" + event.getMessageId() + " got wrong emote " + Utils.getReactionEmoteLogString(event.getReactionEmote()));
+                Main.log.debug("Message in: " + event.getGuild().getName() + "->" + event.getChannel().getName() + "->" + event.getMessageId() + " got wrong emote " + Utils.getReactionEmoteLogString(event.getReactionEmote()));
             }
             if (event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
                 //if i do this it works even when not caching the user
