@@ -40,7 +40,7 @@ public class Listener extends ListenerAdapter {
             if (event.getMessage().isMentioned(event.getJDA().getSelfUser(), Message.MentionType.USER)) {
                 handling.handleCommand(event.getMessage());
             } else {
-                MessageAction messageAction = event.getChannel().sendMessage("Ping!");
+                MessageAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i","o"));
                 messageAction.queue();
             }
         }
