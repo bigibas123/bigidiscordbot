@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class PlayCommand extends MusicCommand {
     public PlayCommand() {
-        super("play", "plays some music in your channel", "[url]", "p");
+        super("play", "plays some music in your voicechannel", "<url|ytsearch:|scsearch:> [search_terms]", "p");
     }
 
     @Override
@@ -28,12 +28,12 @@ public class PlayCommand extends MusicCommand {
                 message.getChannel().sendMessage(message.getAuthor().getAsMention() + " you need to join a voice channel for this command to work").queue();
                 return false;
             }
-            VoiceChannel vc = ovc.get();
-            IGuildMusicManager gmm = this.getGuildManager(message);
             if (args.length <= 2) {
                 HelpCommand.sendCommandDescription(message, "empty", "empty", "play");
                 return false;
             }
+            VoiceChannel vc = ovc.get();
+            IGuildMusicManager<?> gmm = this.getGuildManager(message);
             String search = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if (gmm.connect(vc)) {
                 gmm.queue(search, message.getTextChannel(), message.getAuthor());

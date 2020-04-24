@@ -13,7 +13,7 @@ public class SkipCommand extends MusicCommand {
         if (!this.guildManagerExists(message)) {
             return false;
         }
-        IGuildMusicManager gmm = this.getGuildManager(message);
+        IGuildMusicManager<?> gmm = this.getGuildManager(message);
         gmm.skip();
         return true;
     }

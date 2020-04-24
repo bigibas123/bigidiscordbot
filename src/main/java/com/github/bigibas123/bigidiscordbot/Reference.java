@@ -11,10 +11,10 @@ public class Reference {
         if(tN || oN){
             varsSet = false;
             if(tN){
-                Main.log.severe("Discord Bot Token not set, please set DISCORD_TOKEN in environment");
+                Main.log.error("Discord Bot Token not set, please set DISCORD_TOKEN in environment");
             }
             if(oN){
-                Main.log.severe("Owner ID not set, please set OWNER_ID in environment");
+                Main.log.error("Owner ID not set, please set OWNER_ID in environment");
             }
         }else{
             varsSet = true;

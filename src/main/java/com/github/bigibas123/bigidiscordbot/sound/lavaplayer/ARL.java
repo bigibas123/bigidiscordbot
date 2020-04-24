@@ -1,5 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.sound.lavaplayer;
 
+import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.sound.SearchResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -16,12 +17,14 @@ public class ARL implements AudioLoadResultHandler {
     private final TextChannel channel;
     private final User author;
     private JDA jda;
+    private final String search;
 
-    public ARL(LavaGuildMusicManager gmm, TextChannel channel, User author, JDA jda) {
+    public ARL(LavaGuildMusicManager gmm, TextChannel channel, User author, JDA jda, String search) {
         this.gmm = gmm;
         this.channel = channel;
         this.author = author;
         this.jda = jda;
+        this.search = search;
     }
 
     @Override
@@ -51,13 +54,19 @@ public class ARL implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        channel.sendMessage(this.author.getAsMention() + " found nothing").queue();
+        if (!this.search.startsWith("ytsearch:")) {
+            channel.sendMessage(this.author.getAsMention() + "Searching youtube for: " + this.search).queue();
+            gmm.queue("ytsearch:" + this.search, this.channel, this.author);
+        } else {
+            channel.sendMessage(this.author.getAsMention() + " found nothing").queue();
+        }
     }
 
     @Override
     public void loadFailed(FriendlyException exception) {
         channel.sendMessage(this.author.getAsMention() + " search failed:" + exception.getLocalizedMessage() + "\r\n" +
                 String.join("\r\n", (String[]) Arrays.stream(exception.getStackTrace()).map(StackTraceElement::getClassName).toArray())).queue();
+        Main.log.warn("exeption at: loadFailed(FriendlyException)", exception);
     }
 
 }

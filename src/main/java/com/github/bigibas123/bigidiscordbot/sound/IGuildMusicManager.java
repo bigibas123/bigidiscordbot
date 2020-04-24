@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import java.util.ArrayList;
 
-public interface IGuildMusicManager {
+public interface IGuildMusicManager<T> {
     /**
      * joins the specified voice channel
      * returns false if it couldn't
@@ -28,9 +28,12 @@ public interface IGuildMusicManager {
 
     boolean isPlaying();
 
-    TrackInfo<?> getCurrentTrack();
+    TrackInfo<T> getCurrentTrack();
 
-    ArrayList<TrackInfo<?>> getQueued();
+    ArrayList<TrackInfo<T>> getQueued();
 
     void setVolume(int volume);
+
+    boolean seek(long location);
+
 }

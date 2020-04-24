@@ -2,12 +2,12 @@
 <Configuration status="info">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%-5p [%t]: %m%n"/>
+            <PatternLayout pattern="%-5p %c{10} [%t]: %m%n" />
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
+        <Root level="INFO">
+            <AppenderRef ref="Console" />
         </Root>
     </Loggers>
 </Configuration>
