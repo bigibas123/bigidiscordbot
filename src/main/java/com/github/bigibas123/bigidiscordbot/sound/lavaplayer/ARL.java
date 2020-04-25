@@ -16,7 +16,7 @@ public class ARL implements AudioLoadResultHandler {
     private final LavaGuildMusicManager gmm;
     private final TextChannel channel;
     private final User author;
-    private JDA jda;
+    private final JDA jda;
     private final String search;
 
     public ARL(LavaGuildMusicManager gmm, TextChannel channel, User author, JDA jda, String search) {
@@ -40,7 +40,7 @@ public class ARL implements AudioLoadResultHandler {
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
         if(playlist.isSearchResult()){
-            SearchResultHandler<?> searchResultHandler = new LavaSearchResultHandler(this, this.channel, this.author, playlist, gmm, this.jda);
+            SearchResultHandler<?> searchResultHandler = new LavaSearchResultHandler(this.channel, this.author, playlist, gmm, this.jda);
             searchResultHandler.go();
         } else {
             int amount = gmm.queue(playlist.getTracks());
@@ -56,9 +56,9 @@ public class ARL implements AudioLoadResultHandler {
     public void noMatches() {
         if (!this.search.startsWith("ytsearch:")) {
             channel.sendMessage(this.author.getAsMention() + "Searching youtube for: " + this.search).queue();
-            gmm.queue("ytsearch:" + this.search, this.channel, this.author);
+            gmm.queue("ytsearch: " + this.search, this.channel, this.author);
         } else {
-            channel.sendMessage(this.author.getAsMention() + " found nothing").queue();
+            channel.sendMessage(this.author.getAsMention() + " found nothing with search: "+this.search).queue();
         }
     }
 
