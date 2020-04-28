@@ -186,11 +186,12 @@ public class LavaGuildMusicManager implements IGuildMusicManager<AudioTrack> {
 
     private void tryNext() {
         if (queue.size() > 0) {
-            this.player.startTrack(queue.poll(), false);
-            setPlaying(true);
-        } else {
-            setPlaying(false);
+            if (this.player.startTrack(queue.poll(), false)) {
+                setPlaying(true);
+                return;
+            }
         }
+        setPlaying(false);
     }
 
     /**

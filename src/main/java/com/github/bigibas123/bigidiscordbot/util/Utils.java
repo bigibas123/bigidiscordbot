@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class Utils {
 
@@ -17,6 +19,12 @@ public class Utils {
         } else {
             return emote.getAsCodepoints();
         }
+    }
+
+    public static LocalDateTime idToTime(long id) {
+        return LocalDateTime.ofEpochSecond(
+                (id >> 22) + 1420070400000L, //Stolen from discord api docs,
+                0, ZoneOffset.UTC);
     }
 
     public static String formatDuration(long dur) {

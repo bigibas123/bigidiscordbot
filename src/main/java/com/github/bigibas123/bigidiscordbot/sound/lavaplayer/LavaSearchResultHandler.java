@@ -14,7 +14,7 @@ public class LavaSearchResultHandler extends SearchResultHandler<AudioTrack> {
 
     private final LavaGuildMusicManager gmm;
 
-    public LavaSearchResultHandler(ARL arl, TextChannel channel, User author, AudioPlaylist playlist, LavaGuildMusicManager gmm, JDA jda) {
+    public LavaSearchResultHandler(TextChannel channel, User author, AudioPlaylist playlist, LavaGuildMusicManager gmm, JDA jda) {
         super(channel, author, convertToTrackInfo(playlist), jda);
         this.gmm = gmm;
     }

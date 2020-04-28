@@ -11,6 +11,7 @@ public enum Emoji {
     PAUSE("\u23F8"),            //⏸
     PLAY("\u25B6"),             //▶
     FAST_FORWARD("\u23E9"),     //⏩
+    STOP("\u23F9"),             //⏹
     ONE("\u0031\u20E3"),        //1️⃣
     TWO("\u0032\u20E3"),        //2️⃣
     THREE("\u0033\u20E3"),      //3️⃣

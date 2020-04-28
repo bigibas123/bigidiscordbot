@@ -1,27 +1,52 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
 import lombok.Getter;
+import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.Objects;
 
+
+/**
+ * Class representing a command with it's info
+ */
 public abstract class ICommand {
-    @Getter
-    private final String name;
-    @Getter
-    private final String[] aliases;
-    @Getter
-    private final String description;
-    @Getter
-    private final String syntax;
 
-    public ICommand(String name, String description, String syntax, String... aliases) {
+    /**
+     * The main name to call the command by
+     */
+    @Getter
+    @NonNull
+    private final String name;
+    /**
+     * Description of what the command does
+     */
+    @Getter
+    @NonNull
+    private final String description;
+    /**
+     * Syntax of the command
+     * <br>
+     * &lt;arg&gt; denotes a required argument<br>
+     * [arg] denotes an option argument
+     */
+    @Getter
+    @NonNull
+    private final String syntax;
+    /**
+     * List of Aliases for the command
+     */
+    @Getter
+    @NonNull
+    private final String[] aliases;
+
+    public ICommand(@NonNull String name, @NonNull String description, @NonNull String syntax, String... aliases) {
         this.name = name;
-        if (syntax == null || syntax.equals("")) syntax = " ";
-        this.syntax = syntax;
-        this.aliases = aliases;
         this.description = description;
+        this.syntax = syntax;
+        this.aliases = Objects.requireNonNullElseGet(aliases, () -> new String[0]);
     }
 
     public abstract boolean execute(Message message, String... args);
