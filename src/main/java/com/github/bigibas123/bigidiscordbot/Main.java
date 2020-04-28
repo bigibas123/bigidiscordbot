@@ -29,10 +29,10 @@ public class Main {
     //@Getter private static JDA jda;
 
     public static void main(String[] args) throws LoginException {
+        log = LoggerFactory.getLogger("BigiDiscordBot");
         if(!Reference.varsSet){
             System.exit(1);
         }
-        log = LoggerFactory.getLogger("BigiDiscordBot");
         soundManager = new SoundManager();
         ShardManager b = DefaultShardManagerBuilder.create(Reference.token, new ArrayList<>())
                 .enableIntents(GUILD_VOICE_STATES, GUILD_MESSAGES, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS)
