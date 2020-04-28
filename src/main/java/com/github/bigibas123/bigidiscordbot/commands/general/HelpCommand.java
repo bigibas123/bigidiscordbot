@@ -12,7 +12,7 @@ import java.awt.*;
 public class HelpCommand extends ICommand {
 
     public HelpCommand() {
-        super("Help", "Displays this menu", "", "h");
+        super("Help", "Displays this menu", "[command]", "h");
     }
 
     @Override
@@ -30,6 +30,7 @@ public class HelpCommand extends ICommand {
         EmbedBuilder ebb = new EmbedBuilder();
         ebb.setFooter("Requested by @" + message.getAuthor().getName(), message.getAuthor().getEffectiveAvatarUrl());
         ebb.setTitle("Help");
+        ebb.appendDescription(message.getJDA().getSelfUser().getAsMention()+" help [command] - for more info");
         ebb.setColor(Color.GREEN);
         StringBuilder names = new StringBuilder();
         StringBuilder descriptions = new StringBuilder();
