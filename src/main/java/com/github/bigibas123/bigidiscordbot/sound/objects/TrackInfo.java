@@ -1,5 +1,6 @@
-package com.github.bigibas123.bigidiscordbot.sound;
+package com.github.bigibas123.bigidiscordbot.sound.objects;
 
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,4 +19,9 @@ public class TrackInfo<T> {
         this.duration = duration;
         this.track = track;
     }
+
+    public String toString() {
+        return "TrackInfo(title=" + this.getTitle() + ", duration=" + Utils.formatDuration(this.getDuration()) + ", number=" + this.getNumber() + ")";
+    }
+
 }

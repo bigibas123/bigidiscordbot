@@ -1,4 +1,8 @@
 package com.github.bigibas123.bigidiscordbot.util;
+
+import java.util.HashMap;
+import java.util.Map;
+
 //https://itpro.cz/juniconv/
 public enum Emoji {
     STOP_SIGN("\uD83D\uDED1"),  //🛑
@@ -38,5 +42,18 @@ public enum Emoji {
     @Override
     public String toString() {
         return this.toString;
+    }
+    public static final Map<Integer,Emoji> oneToTen = new HashMap<>();
+    static {
+        oneToTen.put(1,ONE);
+        oneToTen.put(2,TWO);
+        oneToTen.put(3,THREE);
+        oneToTen.put(4,FOUR);
+        oneToTen.put(5,FIVE);
+        oneToTen.put(6,SIX);
+        oneToTen.put(7,SEVEN);
+        oneToTen.put(8,EIGHT);
+        oneToTen.put(9,NINE);
+        oneToTen.put(10,TEN);
     }
 }

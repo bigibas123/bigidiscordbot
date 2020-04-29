@@ -1,7 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
-import com.github.bigibas123.bigidiscordbot.sound.TrackInfo;
+import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
