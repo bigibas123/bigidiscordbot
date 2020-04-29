@@ -1,5 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.sound;
 
+import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -16,7 +17,7 @@ public interface IGuildMusicManager<T> {
      */
     boolean connect(VoiceChannel channel);
 
-    void queue(String trackName, TextChannel channel, User user);
+    void queue(String search, TextChannel channel, User user);
 
     void skip();
 
