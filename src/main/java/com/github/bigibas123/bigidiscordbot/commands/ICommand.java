@@ -12,18 +12,17 @@ import java.util.Objects;
 /**
  * Class representing a command with it's info
  */
+@Getter
 public abstract class ICommand {
 
     /**
      * The main name to call the command by
      */
-    @Getter
     @NonNull
     private final String name;
     /**
      * Description of what the command does
      */
-    @Getter
     @NonNull
     private final String description;
     /**
@@ -32,13 +31,11 @@ public abstract class ICommand {
      * &lt;arg&gt; denotes a required argument<br>
      * [arg] denotes an option argument
      */
-    @Getter
     @NonNull
     private final String syntax;
     /**
      * List of Aliases for the command
      */
-    @Getter
     @NonNull
     private final String[] aliases;
 
