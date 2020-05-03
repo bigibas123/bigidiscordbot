@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,7 +49,6 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 			.filter(a -> a.getGuild().getIdLong() == this.guild.getIdLong())
 			.findFirst().orElse(this.guild.getAudioManager());
 		this.audioManager.setSpeakingMode(SpeakingMode.VOICE);
-		this.setVolume(20);
 	}
 
 	@Override
@@ -60,6 +60,7 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 				this.getAudioManager().openAudioConnection(channel);
 				this.state = PlayState.STOPPED;
 				this.getAudioManager().setSendingHandler(this.getSendHandler());
+				this.setVolume(20);
 				return true;
 			} catch (InsufficientPermissionException | UnsupportedOperationException | IllegalArgumentException e) {
 				Main.log.error("Could not connect to channel: " + channel.getName() + ", " + channel.getGuild(), e);
@@ -113,6 +114,30 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	@Override
 	public ArrayList<TrackInfo<T>> getQueued() {
 		return new ArrayList<>(this.queue);
+	}
+
+	@Override
+	public void swapQueued(int first, int second) {
+		ArrayList<TrackInfo<T>> oldqueue = new ArrayList<>(this.queue);
+		Collections.swap(oldqueue, first, second);
+		this.queue.clear();
+		this.queue.addAll(oldqueue);
+	}
+
+	@Override
+	public int getQueueSize() {
+		return this.queue.size();
+	}
+
+	@Override
+	public TrackInfo<T> getQueuedTrack(int position) {
+		if (position < this.getQueue().size()) {
+			@SuppressWarnings( "unchecked" )
+			TrackInfo<T>[] trackInfos = this.getQueue().toArray(new TrackInfo[0]);
+			return trackInfos[position];
+		} else {
+			return null;
+		}
 	}
 
 	private void queue(String search, ReplyContext replyContext) {
@@ -185,13 +210,12 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 			case PAUSED:
 				this.getAudioManager().setSelfMuted(true);
 				this.pausePlaying();
-				this.state = PlayState.PAUSED;
 				break;
 			case STOPPED:
 				this.getAudioManager().setSelfMuted(true);
+				this.getAudioManager().closeAudioConnection();
 				this.stopPlaying();
 				this.queue.clear();
-				this.state = PlayState.STOPPED;
 				break;
 		}
 	}

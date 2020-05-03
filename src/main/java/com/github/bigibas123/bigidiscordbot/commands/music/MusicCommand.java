@@ -12,7 +12,7 @@ public abstract class MusicCommand extends ICommand {
         super(name, description, syntax, aliases);
     }
 
-    protected IGuildMusicManager getGuildManager(Message message) {
+    protected IGuildMusicManager<?> getGuildManager(Message message) {
         return Main.soundManager.getGuildMusicManager(message.getGuild());
     }
 

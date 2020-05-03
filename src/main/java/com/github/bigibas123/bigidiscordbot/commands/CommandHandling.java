@@ -11,6 +11,7 @@ import com.github.bigibas123.bigidiscordbot.commands.music.QueueCommand;
 import com.github.bigibas123.bigidiscordbot.commands.music.SeekCommand;
 import com.github.bigibas123.bigidiscordbot.commands.music.SkipCommand;
 import com.github.bigibas123.bigidiscordbot.commands.music.StopCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.SwapCommand;
 import com.github.bigibas123.bigidiscordbot.commands.music.VolumeCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
@@ -44,6 +45,7 @@ public class CommandHandling {
         registerCommand(new SkipCommand());
         registerCommand(new QueueCommand());
         registerCommand(new SeekCommand());
+        registerCommand(new SwapCommand());
         registerCommand(new NowPlayingCommand());
         registerCommand(new VolumeCommand());
         registerCommand(new PauseCommand());
