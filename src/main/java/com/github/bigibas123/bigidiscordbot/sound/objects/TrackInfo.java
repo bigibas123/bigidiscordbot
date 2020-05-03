@@ -13,13 +13,6 @@ public class TrackInfo<T> {
     private final long duration;
     private int number;
 
-    public TrackInfo(String title, long duration, T track) {
-        this.number = 0;
-        this.title = title;
-        this.duration = duration;
-        this.track = track;
-    }
-
     public String toString() {
         return "TrackInfo(title=" + this.getTitle() + ", duration=" + Utils.formatDuration(this.getDuration()) + ", number=" + this.getNumber() + ")";
     }

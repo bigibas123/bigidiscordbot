@@ -3,6 +3,7 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.entities.*;
 
@@ -12,16 +13,16 @@ public abstract class MusicCommand extends ICommand {
         super(name, description, syntax, aliases);
     }
 
-    protected IGuildMusicManager<?> getGuildManager(Message message) {
-        return Main.soundManager.getGuildMusicManager(message.getGuild());
+    protected IGuildMusicManager<?> getGuildManager(ReplyContext replyContext) {
+        return Main.soundManager.getGuildMusicManager(replyContext.getGuild());
     }
 
-    protected boolean guildManagerExists(Message message) {
-        return Main.soundManager.guildMusicManagerExists(message.getGuild());
+    protected boolean guildManagerExists(ReplyContext replyContext) {
+        return Main.soundManager.guildMusicManagerExists(replyContext.getGuild());
     }
 
-    protected void stopGuildManager(Message message) {
-        Main.soundManager.removeGuildMusicManager(message.getGuild());
+    protected void stopGuildManager(ReplyContext replyContext){
+        Main.soundManager.removeGuildMusicManager(replyContext.getGuild());
     }
 
     @Override

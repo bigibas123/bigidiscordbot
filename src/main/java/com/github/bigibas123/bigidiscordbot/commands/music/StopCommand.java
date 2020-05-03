@@ -1,6 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
-import net.dv8tion.jda.api.entities.Message;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class StopCommand extends MusicCommand {
     public StopCommand() {
@@ -8,9 +8,9 @@ public class StopCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (this.guildManagerExists(message)) {
-            this.stopGuildManager(message);
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (this.guildManagerExists(replyContext)) {
+            this.stopGuildManager(replyContext);
             return true;
         }
         return false;

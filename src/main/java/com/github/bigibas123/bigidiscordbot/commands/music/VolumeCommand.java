@@ -2,7 +2,7 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
-import net.dv8tion.jda.api.entities.Message;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class VolumeCommand extends MusicCommand {
     public VolumeCommand() {
@@ -10,22 +10,22 @@ public class VolumeCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (this.guildManagerExists(message)) {
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (this.guildManagerExists(replyContext)) {
             if (args.length > 2) {
-                IGuildMusicManager gmm = this.getGuildManager(message);
+                IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
                 int volume;
                 try {
                     volume = Integer.parseInt(args[2]);
                 } catch (NumberFormatException e) {
-                    message.getChannel().sendMessage(message.getAuthor().getAsMention() + " " + args[2] + " is not a number").queue();
+                    replyContext.reply(args[2],"is not a number");
                     return false;
                 }
                 gmm.setVolume(volume);
                 return true;
             }
-            message.getChannel().sendMessage(message.getAuthor().getAsMention() + " please specify a volume").queue();
-            HelpCommand.sendCommandDescription(message, null, null, "volume");
+            replyContext.reply("please specify a volume");
+            HelpCommand.sendCommandDescription(replyContext, null, null, "volume");
         }
         return false;
     }

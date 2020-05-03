@@ -1,8 +1,8 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import lombok.Getter;
 import lombok.NonNull;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -46,7 +46,7 @@ public abstract class ICommand {
         this.aliases = Objects.requireNonNullElseGet(aliases, () -> new String[0]);
     }
 
-    public abstract boolean execute(Message message, String... args);
+    public abstract boolean execute(ReplyContext replyContext, String... args);
 
     public abstract boolean hasPermission(User user, MessageChannel channel);
 }

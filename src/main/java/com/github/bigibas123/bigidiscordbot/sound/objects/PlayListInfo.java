@@ -1,6 +1,5 @@
 package com.github.bigibas123.bigidiscordbot.sound.objects;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

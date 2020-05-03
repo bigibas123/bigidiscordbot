@@ -1,7 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.testing;
 
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
-import net.dv8tion.jda.api.entities.Message;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -11,7 +11,7 @@ public class NoPermCommand extends ICommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
+    public boolean execute(ReplyContext replyContext, String... args) {
         return false;
     }
 

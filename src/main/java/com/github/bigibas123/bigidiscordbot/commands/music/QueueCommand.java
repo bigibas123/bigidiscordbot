@@ -2,10 +2,10 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -17,13 +17,13 @@ public class QueueCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (this.guildManagerExists(message)) {
-            IGuildMusicManager<?> gmm = this.getGuildManager(message);
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (this.guildManagerExists(replyContext)) {
+            IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
             List<? extends TrackInfo<?>> tracks = gmm.getQueued();
             EmbedBuilder ebb = new EmbedBuilder();
-            ebb.setTitle(String.format("Queue for %s", message.getGuild().getName()));
-            ebb.setFooter(String.format("Requested by @%s", message.getAuthor().getName()), message.getAuthor().getEffectiveAvatarUrl());
+            ebb.setTitle(String.format("Queue for %s", replyContext.getGuild().getName()));
+            ebb.setFooter(String.format("Requested by @%s", replyContext.getUser().getName()), replyContext.getUser().getEffectiveAvatarUrl());
             int i = 1;
             int more = 0;
 
@@ -45,7 +45,7 @@ public class QueueCommand extends MusicCommand {
             if (!(more == 0)) {
                 ebb.appendDescription(String.format("And %d more", more));
             }
-            message.getChannel().sendMessage(ebb.build()).queue();
+            replyContext.reply(ebb.build());
             return true;
         }
         return false;

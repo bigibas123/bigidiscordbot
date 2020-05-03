@@ -3,6 +3,7 @@ package com.github.bigibas123.bigidiscordbot.sound.generic;
 import com.github.bigibas123.bigidiscordbot.sound.objects.PlayListInfo;
 import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -14,26 +15,24 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 import static com.github.bigibas123.bigidiscordbot.util.Emoji.oneToTen;
 
 public class GenericSearchResultHandler<T> extends ListenerAdapter {
 
-	private final GenericGuildMusicManager.ReplyContext replyContext;
+	private final ReplyContext replyContext;
 	private final PlayListInfo<T> search;
 	private final JDA jda;
 	private final MessageEmbed embed;
 	private final Consumer<TrackInfo<T>> selectionHandler;
 	private Message message;
 
-	public GenericSearchResultHandler(GenericGuildMusicManager.ReplyContext replyContext, PlayListInfo<T> search, Consumer<TrackInfo<T>> selectionHandler, JDA jda) {
+	public GenericSearchResultHandler(ReplyContext replyContext, PlayListInfo<T> search, Consumer<TrackInfo<T>> selectionHandler, JDA jda) {
 		this.replyContext = replyContext;
 		this.selectionHandler = selectionHandler;
 		this.jda = jda;

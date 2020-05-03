@@ -1,7 +1,7 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
-import net.dv8tion.jda.api.entities.Message;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class SkipCommand extends MusicCommand {
     public SkipCommand() {
@@ -9,11 +9,11 @@ public class SkipCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (!this.guildManagerExists(message)) {
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (!this.guildManagerExists(replyContext)) {
             return false;
         }
-        IGuildMusicManager<?> gmm = this.getGuildManager(message);
+        IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
         gmm.skip();
         return true;
     }

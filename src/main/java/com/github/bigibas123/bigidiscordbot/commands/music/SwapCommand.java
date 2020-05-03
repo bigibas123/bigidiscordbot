@@ -5,7 +5,7 @@ import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
-import net.dv8tion.jda.api.entities.Message;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class SwapCommand extends MusicCommand {
 
@@ -14,10 +14,10 @@ public class SwapCommand extends MusicCommand {
 	}
 
 	@Override
-	public boolean execute(Message message, String... args) {
+	public boolean execute(ReplyContext replyContext, String... args) {
 
-		if (this.guildManagerExists(message)) {
-			IGuildMusicManager<?> gmm = this.getGuildManager(message);
+		if (this.guildManagerExists(replyContext)) {
+			IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 			int queueSize = gmm.getQueueSize();
 			if (queueSize != 0) {
 				if (args.length == 4) {
@@ -28,33 +28,33 @@ public class SwapCommand extends MusicCommand {
 						one = Integer.parseInt(args[2]);
 						two = Integer.parseInt(args[3]);
 					} catch (NumberFormatException e) {
-						message.addReaction(Emoji.WARNING.s()).queue();
-						message.getChannel().sendMessage(message.getAuthor().getAsMention() + "error parsing " + e.getMessage() + " this is not a number").queue();
+						replyContext.reply(Emoji.WARNING);
+						replyContext.reply("error parsing ", e.getMessage(), " this is not a number");
 						Main.log.debug("Wrong seeking number input: ", e);
 						return false;
 					}
-					if (one-1 < queueSize && two-1 < queueSize) {
-						gmm.swapQueued(one-1, two-1);
-						TrackInfo<?> sOne = gmm.getQueuedTrack(one-1);
-						TrackInfo<?> sTwo = gmm.getQueuedTrack(two-1);
-						message.getChannel().sendMessage(message.getAuthor().getAsMention() + " swaped " + sOne.getTitle() + " with " + sTwo.getTitle()).queue();
+					if (one - 1 < queueSize && two - 1 < queueSize) {
+						gmm.swapQueued(one - 1, two - 1);
+						TrackInfo<?> sOne = gmm.getQueuedTrack(one - 1);
+						TrackInfo<?> sTwo = gmm.getQueuedTrack(two - 1);
+						replyContext.reply("swaped", sOne.getTitle(), "with", sTwo.getTitle());
 						return true;
-					} else if (one-1 < queueSize) {
-						message.getChannel().sendMessage(message.getAuthor().getAsMention() + " " + two + " is not in the queue, size is: " + queueSize).queue();
+					} else if (one - 1 < queueSize) {
+						replyContext.reply(two, "is not in the queue, size is:", queueSize);
 						return false;
-					} else if (two-1 < queueSize) {
-						message.getChannel().sendMessage(message.getAuthor().getAsMention() + " " + one + " is not in the queue, size is: " + queueSize).queue();
+					} else if (two - 1 < queueSize) {
+						replyContext.reply(one, "is not in the queue, size is:", queueSize);
 						return false;
 					} else {
-						message.getChannel().sendMessage(message.getAuthor().getAsMention() + " both " + one + " and " + two + " are not in the queue, size is: " + queueSize).queue();
+						replyContext.reply("both", one, "and", two, "are not in the queue, size is:", queueSize);
 						return false;
 					}
 				}
-				HelpCommand.sendCommandDescription(message, "empty", "empty", "swap");
+				HelpCommand.sendCommandDescription(replyContext, "empty", "empty", "swap");
 				return false;
 			}
 		}
-		message.getChannel().sendMessage(message.getAuthor().getAsMention() + " the queue is currently empty").queue();
+		replyContext.reply("the queue is currently empty");
 		return false;
 
 	}

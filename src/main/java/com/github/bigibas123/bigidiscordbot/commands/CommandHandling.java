@@ -16,6 +16,7 @@ import com.github.bigibas123.bigidiscordbot.commands.music.VolumeCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.requests.CallbackContext;
 
@@ -75,32 +76,33 @@ public class CommandHandling {
         new Thread(() -> {
             CallbackContext.getInstance().close();
             String[] msg = message.getContentRaw().split(" ");
+            ReplyContext rc = new ReplyContext(message);
             if (message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER)) {
                 if (msg.length > 1) {
                     ICommand cmd = commands.get(msg[1].toLowerCase());
                     if (cmd != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {
-                        message.addReaction(STOP_WATCH.s()).queue();
+                        rc.reply(STOP_WATCH);
                         try {
-                            boolean cmdSuccess = cmd.execute(message, msg);
+                            boolean cmdSuccess = cmd.execute(rc, msg);
                             if (cmdSuccess) {
-                                message.addReaction(CHECK_MARK.s()).queue();
+                                rc.reply(CHECK_MARK);
                                 Main.log.trace(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
                             } else {
-                                message.addReaction(CROSS.s()).queue();
+                                rc.reply(CROSS);
                                 Main.log.trace(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
                             }
                             ReactionScheduler.scheduleRemoval(message.getIdLong(), STOP_WATCH.s());
                         } catch (Throwable e) {
-                            message.addReaction(WARNING.s()).queue();
+                            rc.reply(WARNING);
                             Main.log.error("Command failed:", e);
                         }
                     } else {
                         if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
-                            message.addReaction(STOP_SIGN.s()).queue();
+                            rc.reply(STOP_SIGN);
                             Main.log.debug(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
                         } else {
                             Main.log.trace(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
-                            message.addReaction(SHRUG.s()).queue();
+                            rc.reply(SHRUG);
                         }
 
                     }

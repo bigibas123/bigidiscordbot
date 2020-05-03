@@ -4,18 +4,13 @@ import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.sound.objects.PlayListInfo;
 import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -67,13 +62,6 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 				return false;
 			}
 		}
-	}
-
-	@Override
-	public void queue(String search, TextChannel channel, User user) {
-		ReplyContext replyContext = new ReplyContext(channel, user);
-		this.currentReplyContext = replyContext;
-		this.queue(search, replyContext);
 	}
 
 	@Override
@@ -140,7 +128,9 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 		}
 	}
 
-	private void queue(String search, ReplyContext replyContext) {
+	@Override
+	public void queue(String search, ReplyContext replyContext) {
+		this.currentReplyContext = replyContext;
 		this.search(search,
 			() -> {
 				if (!search.startsWith("ytsearch:")) {
@@ -248,29 +238,5 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 
 	protected abstract void bootStrap();
 
-	@Data
-	@RequiredArgsConstructor
-	public static class ReplyContext {
-
-		private final TextChannel channel;
-		private final User user;
-
-		public void reply(String msg) {
-			this.channel.sendMessage(user.getAsMention() + " " + msg).queue();
-		}
-
-		public boolean isIn(MessageChannel channel) {
-			if (channel != null && this.channel != null) {
-				return this.channel.getIdLong() == channel.getIdLong();
-			} else {
-				return channel == null && this.channel == null;
-			}
-		}
-
-		public JDA getJDA() {
-			return channel.getJDA();
-		}
-
-	}
 
 }
