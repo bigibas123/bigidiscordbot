@@ -17,6 +17,7 @@ import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.requests.CallbackContext;
 
@@ -77,7 +78,7 @@ public class CommandHandling {
             CallbackContext.getInstance().close();
             String[] msg = message.getContentRaw().split(" ");
             ReplyContext rc = new ReplyContext(message);
-            if (message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER)) {
+            if (Utils.mentionsMe(message)) {
                 if (msg.length > 1) {
                     ICommand cmd = commands.get(msg[1].toLowerCase());
                     if (cmd != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {

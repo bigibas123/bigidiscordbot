@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
@@ -137,6 +138,18 @@ public class Utils {
         } else result = u1.getId().equals(u2.getId());
         Main.log.trace(u1 + " is " + (result ? "" : " not ") + "the same as " + u2);
         return result;
+    }
+
+    /**
+     * checks if the message mentions the bot specifically
+     *
+     * @param message the message to check for
+     *
+     * @return tru if the message mentions the bot specifically, false if not mentioned or not specifically mentioned
+     */
+    public boolean mentionsMe(Message message){
+        return message.isMentioned(message.getJDA().getSelfUser()) && (message.getMentionedRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName())) || message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
+
     }
 
 }
