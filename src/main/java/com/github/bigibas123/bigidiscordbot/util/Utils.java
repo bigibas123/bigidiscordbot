@@ -45,11 +45,11 @@ public class Utils {
     }
 
     /**
-     * Converts a duration into [hh:]mm:ss notation
+     * Converts a duration into [[dd:]hh:]mm:ss notation
      *
      * @param dur the duration in milliseconds
      *
-     * @return the duration in [hh:]mm:ss notation
+     * @return the duration in [[dd:]hh:]mm:ss notation
      */
     public String formatDuration(long dur) {
         Duration duration = Duration.ofMillis(dur);
