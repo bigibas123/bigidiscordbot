@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -72,6 +74,22 @@ public final class ReplyContext {
 
 	public @NonNull Guild getGuild() {
 		return original.getGuild();
+	}
+
+	public MessageAction rReply(String message) {
+		return this.channel.sendMessage(user.getAsMention() + " " + message);
+	}
+
+	public MessageAction rReply(String... messages) {
+		return this.rReply(String.join(" ", messages));
+	}
+
+	public MessageAction rReply(Object... messages) {
+		return this.rReply(unsafeJoin(" ", messages));
+	}
+
+	public RestAction<Void> rReply(@NonNull Emoji e) {
+		return this.original.addReaction(e.s());
 	}
 
 }

@@ -14,7 +14,7 @@ public class ExitCommand extends ICommand {
 
     @Override
     public boolean execute(ReplyContext replyContext, String... args) {
-        replyContext.getOriginal().addReaction(Emoji.WAVE.s()).complete();
+        replyContext.rReply(Emoji.WAVE.s()).complete();
         replyContext.getJDA().shutdown();
         System.exit(0);
         return true;
