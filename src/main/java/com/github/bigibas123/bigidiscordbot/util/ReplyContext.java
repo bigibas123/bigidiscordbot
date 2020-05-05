@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -76,18 +78,26 @@ public final class ReplyContext {
 		return original.getGuild();
 	}
 
+	@Nonnull
+	@CheckReturnValue
 	public MessageAction rReply(String message) {
 		return this.channel.sendMessage(user.getAsMention() + " " + message);
 	}
 
+	@Nonnull
+	@CheckReturnValue
 	public MessageAction rReply(String... messages) {
 		return this.rReply(String.join(" ", messages));
 	}
 
+	@Nonnull
+	@CheckReturnValue
 	public MessageAction rReply(Object... messages) {
 		return this.rReply(unsafeJoin(" ", messages));
 	}
 
+	@Nonnull
+	@CheckReturnValue
 	public RestAction<Void> rReply(@NonNull Emoji e) {
 		return this.original.addReaction(e.s());
 	}
