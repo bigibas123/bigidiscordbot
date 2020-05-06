@@ -1,5 +1,6 @@
 package com.github.bigibas123.bigidiscordbot.commands.music;
 
+import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class StopCommand extends MusicCommand {
@@ -11,6 +12,7 @@ public class StopCommand extends MusicCommand {
     public boolean execute(ReplyContext replyContext, String... args) {
         if (this.guildManagerExists(replyContext)) {
             this.stopGuildManager(replyContext);
+            replyContext.reply(Emoji.STOP);
             return true;
         }
         return false;
