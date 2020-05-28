@@ -2,9 +2,9 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.internal.entities.TextChannelImpl;
@@ -18,29 +18,29 @@ public class PlayCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (message.getChannel().getType() == ChannelType.TEXT) {
-            TextChannel chan = ((TextChannelImpl) message.getChannel());
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (replyContext.getChannel().getType() == ChannelType.TEXT) {
+            TextChannel chan = ((TextChannelImpl) replyContext.getChannel());
             Optional<VoiceChannel> ovc = chan.getGuild().getVoiceChannels().stream()
                     .filter(c -> c.getMembers().stream()
-                            .anyMatch(m -> Utils.isSameThing(m.getUser(),message.getAuthor()))).findAny();
+                            .anyMatch(m -> Utils.isSameThing(m.getUser(),replyContext.getUser()))).findAny();
             if (ovc.isEmpty()) {
-                message.getChannel().sendMessage(message.getAuthor().getAsMention() + " you need to join a voice channel for this command to work").queue();
+                replyContext.reply("you need to join a voice channel for this command to work");
                 return false;
             }
             if (args.length <= 2) {
-                HelpCommand.sendCommandDescription(message, "empty", "empty", "play");
+                HelpCommand.sendCommandDescription(replyContext, "empty", "empty", "play");
                 return false;
             }
             VoiceChannel vc = ovc.get();
-            IGuildMusicManager<?> gmm = this.getGuildManager(message);
+            IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
             String search = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if (gmm.connect(vc)) {
-                gmm.queue(search, message.getTextChannel(), message.getAuthor());
+                gmm.queue(search, replyContext);
                 return true;
             }
         } else {
-            message.getChannel().sendMessage("Wrong channel type").queue();
+            replyContext.reply("Wrong channel type");
         }
         return false;
     }

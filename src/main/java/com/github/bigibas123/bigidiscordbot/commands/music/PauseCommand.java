@@ -2,7 +2,7 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
-import net.dv8tion.jda.api.entities.Message;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class PauseCommand extends MusicCommand {
     public PauseCommand() {
@@ -10,20 +10,20 @@ public class PauseCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (!this.guildManagerExists(message)) {
-            message.getChannel().sendMessage(message.getAuthor().getAsMention() + " no song is currently playing").queue();
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (!this.guildManagerExists(replyContext)) {
+            replyContext.reply("no song is currently playing");
             return false;
         } else {
-            IGuildMusicManager gmm = this.getGuildManager(message);
+            IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 
             boolean playing = gmm.isPlaying();
             if (playing) {
                 gmm.pause();
-                message.addReaction(Emoji.PAUSE.s()).queue();
+                replyContext.reply(Emoji.PAUSE);
             } else {
                 gmm.unpause();
-                message.addReaction(Emoji.PLAY.s()).queue();
+                replyContext.reply(Emoji.PLAY);
             }
             return true;
         }

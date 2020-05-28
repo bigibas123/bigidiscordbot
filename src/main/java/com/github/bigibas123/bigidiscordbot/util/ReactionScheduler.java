@@ -3,10 +3,8 @@ package com.github.bigibas123.bigidiscordbot.util;
 import net.dv8tion.jda.api.entities.MessageReaction;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class ReactionScheduler {
 

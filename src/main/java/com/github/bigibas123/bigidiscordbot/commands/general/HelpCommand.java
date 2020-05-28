@@ -2,8 +2,8 @@ package com.github.bigibas123.bigidiscordbot.commands.general;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -16,19 +16,19 @@ public class HelpCommand extends ICommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
+    public boolean execute(ReplyContext replyContext, String... args) {
 
         if (args.length == 2) {
-            return sendCommandList(message);
+            return sendCommandList(replyContext);
         } else if (args.length > 2) {
-            return sendCommandDescription(message, args);
+            return sendCommandDescription(replyContext, args);
         }
         return false;
     }
 
-    public static boolean sendCommandList(Message message) {
+    public static boolean sendCommandList(ReplyContext message) {
         EmbedBuilder ebb = new EmbedBuilder();
-        ebb.setFooter("Requested by @" + message.getAuthor().getName(), message.getAuthor().getEffectiveAvatarUrl());
+        ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
         ebb.setTitle("Help");
         ebb.appendDescription(message.getJDA().getSelfUser().getAsMention()+" help [command] - for more info");
         ebb.setColor(Color.GREEN);
@@ -36,7 +36,7 @@ public class HelpCommand extends ICommand {
         StringBuilder descriptions = new StringBuilder();
         boolean first = true;
         for (ICommand command : CommandHandling.getHelpList()) {
-            if (!command.hasPermission(message.getAuthor(), message.getChannel())) continue;
+            if (!command.hasPermission(message.getUser(), message.getChannel())) continue;
             if (first) {
                 first = false;
                 names.append(command.getName());
@@ -52,9 +52,9 @@ public class HelpCommand extends ICommand {
         return true;
     }
 
-    public static boolean sendCommandDescription(Message message, String... args) {
+    public static boolean sendCommandDescription(ReplyContext message, String... args) {
         EmbedBuilder ebb = new EmbedBuilder();
-        ebb.setFooter("Requested by @" + message.getAuthor().getName(), message.getAuthor().getEffectiveAvatarUrl());
+        ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
         ICommand cmd = CommandHandling.getCommandList().get(args[2].toLowerCase());
         if (cmd != null) {
             ebb.setTitle(cmd.getName());
@@ -62,10 +62,10 @@ public class HelpCommand extends ICommand {
             ebb.appendDescription(cmd.getDescription()).appendDescription("\r\n");
             ebb.addField("Usage", String.format("%s %s %s", message.getJDA().getSelfUser().getAsMention(), cmd.getName(), cmd.getSyntax()), false);
             ebb.addField("Aliases", String.join(", ", cmd.getAliases()), false);
-            message.getChannel().sendMessage(ebb.build()).queue();
+            message.reply(ebb.build());
             return true;
         } else {
-            message.getChannel().sendMessage(String.format("%s Command %s not found", message.getAuthor().getAsMention(), args[2])).queue();
+            message.getChannel().sendMessage(String.format("%s Command %s not found", message.getUser().getAsMention(), args[2])).queue();
             return false;
         }
     }

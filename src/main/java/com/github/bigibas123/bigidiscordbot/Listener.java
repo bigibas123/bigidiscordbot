@@ -2,6 +2,7 @@ package com.github.bigibas123.bigidiscordbot;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
@@ -37,7 +38,7 @@ public class Listener extends ListenerAdapter {
     public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
         super.onPrivateMessageReceived(event);
         if (!event.getAuthor().isBot()) {
-            if (event.getMessage().isMentioned(event.getJDA().getSelfUser(), Message.MentionType.USER)) {
+            if (Utils.mentionsMe(event.getMessage())) {
                 handling.handleCommand(event.getMessage());
             } else {
                 MessageAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i","o"));
@@ -50,7 +51,7 @@ public class Listener extends ListenerAdapter {
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         super.onGuildMessageReceived(event);
         if (!event.getAuthor().isBot()) {
-            if (event.getMessage().isMentioned(event.getJDA().getSelfUser(), Message.MentionType.USER)) {
+            if (Utils.mentionsMe(event.getMessage())) {
                 handling.handleCommand(event.getMessage());
             }
         }

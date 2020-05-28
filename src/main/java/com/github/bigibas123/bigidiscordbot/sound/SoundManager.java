@@ -7,9 +7,9 @@ import java.util.HashMap;
 
 public class SoundManager {
 
-    private final HashMap<Long, IGuildMusicManager> guildMusicManagers;
+    private final HashMap<Long, IGuildMusicManager<?>> guildMusicManagers;
 
-    private IGuildMusicManager getNewMM(Guild guild) {
+    private IGuildMusicManager<?> getNewMM(Guild guild) {
         return new LavaGuildMusicManager(guild);
     }
 
@@ -21,7 +21,7 @@ public class SoundManager {
         return this.guildMusicManagers.containsKey(guild.getIdLong());
     }
 
-    public IGuildMusicManager getGuildMusicManager(Guild guild) {
+    public IGuildMusicManager<?> getGuildMusicManager(Guild guild) {
         long id = guild.getIdLong();
         if (!this.guildMusicManagers.containsKey(id)) {
             this.guildMusicManagers.put(id, this.getNewMM(guild));

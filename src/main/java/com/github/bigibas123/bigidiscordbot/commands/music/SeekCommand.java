@@ -4,8 +4,8 @@ import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
+import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
-import net.dv8tion.jda.api.entities.Message;
 
 public class SeekCommand extends MusicCommand {
 
@@ -14,35 +14,35 @@ public class SeekCommand extends MusicCommand {
     }
 
     @Override
-    public boolean execute(Message message, String... args) {
-        if (!this.guildManagerExists(message)) {
-            message.getChannel().sendMessage(message.getAuthor().getAsMention() + " no song is currently playing").queue();
+    public boolean execute(ReplyContext replyContext, String... args) {
+        if (!this.guildManagerExists(replyContext)) {
+            replyContext.reply("no song is currently playing");
             return false;
         } else {
-            IGuildMusicManager<?> gmm = this.getGuildManager(message);
+            IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 
             boolean playing = gmm.isPlaying();
             if (playing) {
                 if (args.length <= 2) {
-                    HelpCommand.sendCommandDescription(message, "empty", "empty", this.getName());
+                    HelpCommand.sendCommandDescription(replyContext, "empty", "empty", this.getName());
                     return false;
                 }
                 try {
                     long loc = Utils.StringToDuration(args[2]);
-                    Main.log.trace(" Trying seeking to: " + loc + " in " + message.getGuild().getName());
+                    Main.log.trace(" Trying seeking to: " + loc + " in " + replyContext.getGuild().getName());
                     if (gmm.seek(loc)) {
-                        message.addReaction(Emoji.FAST_FORWARD.s()).queue();
-                        Main.log.trace("Seeking to: " + loc + " in " + message.getGuild().getName() + " successfull");
+                        replyContext.reply(Emoji.FAST_FORWARD);
+                        Main.log.trace("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " successfull");
                         return true;
                     } else {
-                        message.getChannel().sendMessage(message.getAuthor().getAsMention() + " can not seek on track: " + gmm.getCurrentTrack().getTitle()).queue();
-                        Main.log.debug("Seeking to: " + loc + " in " + message.getGuild().getName() + " failed");
+                        replyContext.reply("Can not seek on track:",gmm.getCurrentTrack().getTitle());
+                        Main.log.debug("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " failed");
                     }
                 } catch (NumberFormatException e) {
-                    message.getChannel().sendMessage(message.getAuthor().getAsMention() + " invalid time: " + args[2]).queue();
+                    replyContext.reply("invalid time:",args[2]);
                 }
             } else {
-                message.getChannel().sendMessage(message.getAuthor().getAsMention() + " no song is currently playing").queue();
+                replyContext.reply("no song is currently playing");
             }
             return false;
         }
