@@ -1,1 +1,1 @@
-worker: java -jar target/bigidiscordbot-2.2-SNAPSHOT.jar
+worker: java -jar target/bigidiscordbot-2.3-SNAPSHOT.jar
