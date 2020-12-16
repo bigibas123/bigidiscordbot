@@ -70,15 +70,11 @@ public class Prune extends ICommand {
     public boolean hasPermission(User user, MessageChannel channel) {
         if (channel instanceof PrivateChannel) {
             return true;
-        } else if (channel instanceof TextChannel) {
-            Member member;
-            Optional<Member> opt = ((TextChannel) channel).getMembers().stream()
-                    .filter(m -> Utils.isSameThing(m.getUser(), user))
-                    .findFirst();
-            if (opt.isEmpty()) {
+        } else if (channel instanceof TextChannel tc) {
+            Member member = tc.getMembers().stream().filter( m -> m.getIdLong()==user.getIdLong()).findFirst().orElse(null);;
+            if (member == null) {
                 throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
             } else {
-                member = opt.get();
                 return PermissionUtil.checkPermission(member, Permission.MESSAGE_MANAGE);
             }
         }
