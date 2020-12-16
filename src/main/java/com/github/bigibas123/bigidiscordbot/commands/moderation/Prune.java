@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Prune extends ICommand {
 
@@ -29,17 +31,18 @@ public class Prune extends ICommand {
             }
         }
         if (replyContext.getChannel() instanceof PrivateChannel) {
+            AtomicInteger sleepCounter = new AtomicInteger();
             if (amount <= 100) {
                 List<Message> hist = replyContext.getChannel().getHistoryBefore(replyContext.getOriginal(),amount).complete().getRetrievedHistory();
                 hist.parallelStream()
                         .filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser()))
-                        .forEach(hm -> hm.delete().complete());
+                        .forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
             } else {
                 while (amount > 0) {
                     List<Message> hist = replyContext.getChannel().getHistoryBefore(replyContext.getOriginal(), Math.min(amount, 100)).complete().getRetrievedHistory();
                     hist.parallelStream()
                             .filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser()))
-                            .forEach(hm -> hm.delete().complete());
+                            .forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
                     amount -= 100;
                 }
             }
