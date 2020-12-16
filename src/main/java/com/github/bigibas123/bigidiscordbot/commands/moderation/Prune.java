@@ -4,16 +4,10 @@ import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Prune extends ICommand {
 
@@ -71,11 +65,11 @@ public class Prune extends ICommand {
         if (channel instanceof PrivateChannel) {
             return true;
         } else if (channel instanceof TextChannel tc) {
-            Member member = tc.getMembers().stream().filter( m -> m.getIdLong()==user.getIdLong()).findFirst().orElse(null);;
+            Member member = tc.getGuild().retrieveMember(user).complete();
             if (member == null) {
                 throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
             } else {
-                return PermissionUtil.checkPermission(member, Permission.MESSAGE_MANAGE);
+                return PermissionUtil.checkPermission(tc,member, Permission.MESSAGE_MANAGE);
             }
         }
         return false;

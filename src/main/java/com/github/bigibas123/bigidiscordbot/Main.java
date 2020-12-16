@@ -38,7 +38,7 @@ public class Main {
                 .enableIntents(GUILD_VOICE_STATES, GUILD_MESSAGES, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS)
                 .disableIntents(GUILD_MEMBERS, GUILD_BANS, GUILD_EMOJIS, GUILD_INVITES, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING)
                 .addEventListeners(new Listener())
-                .enableCache(MEMBER_OVERRIDES, VOICE_STATE)
+                .enableCache(MEMBER_OVERRIDES)
                 .disableCache(ACTIVITY, EMOTE, CLIENT_STATUS)
                 .setActivity(null)
                 .setAudioSendFactory(new NativeAudioSendFactory())
