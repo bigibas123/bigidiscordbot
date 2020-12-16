@@ -5,16 +5,13 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -24,10 +21,11 @@ public final class ReplyContext {
 
 	@NonNull private final MessageChannel channel;
 	@NonNull private final User user;
-	private final Message original;
+	@Nullable private final Member member;
+	@NonNull private final Message original;
 
 	public ReplyContext(Message original) {
-		this(original.getChannel(),original.getAuthor(),original);
+		this(original.getChannel(),original.getAuthor(),original.getMember(),original);
 	}
 
 	private static String unsafeJoin(Object... elements) {
