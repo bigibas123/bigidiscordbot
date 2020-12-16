@@ -159,13 +159,11 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 				}
 				onTrackAdded();
 			},
-			searchResult -> {
-				new GenericSearchResultHandler<>(replyContext, searchResult, e -> {
-					this.queue.offer(e);
-					replyContext.reply("queued: " + e.getTitle());
-					onTrackAdded();
-				}, replyContext.getJDA()).go();
-			},
+			searchResult -> new GenericSearchResultHandler<>(replyContext, searchResult, e -> {
+				this.queue.offer(e);
+				replyContext.reply("queued: " + e.getTitle());
+				onTrackAdded();
+			}, replyContext.getJDA()).go(),
 			ex -> {
 				getLogger().warn("Execption while searching for song:", ex);
 				replyContext.reply("Failure searching tracks:" + ex.getMessage());
@@ -183,30 +181,30 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	private void updateState() {
 		getLogger().debug("GGMM state is:" + state);
 		switch (state) {
-			case PLAYING:
+			case PLAYING -> {
 				this.getAudioManager().setSelfMuted(false);
 				if (!this.getPlaying()) {
 					this.resumePlaying();
-					if(!this.getPlaying()){
+					if (!this.getPlaying()) {
 						this.bootStrap();
 					}
 				}
-				break;
-			case SKIPPING:
+			}
+			case SKIPPING -> {
 				this.getAudioManager().setSelfMuted(false);
 				this.seekToEnd();
 				this.state = PlayState.PLAYING;
-				break;
-			case PAUSED:
+			}
+			case PAUSED -> {
 				this.getAudioManager().setSelfMuted(true);
 				this.pausePlaying();
-				break;
-			case STOPPED:
+			}
+			case STOPPED -> {
 				this.getAudioManager().setSelfMuted(true);
 				this.getAudioManager().closeAudioConnection();
 				this.stopPlaying();
 				this.queue.clear();
-				break;
+			}
 		}
 	}
 
