@@ -61,11 +61,10 @@ public class Prune extends ICommand {
     }
 
     @Override
-    public boolean hasPermission(User user, MessageChannel channel) {
+    public boolean hasPermission(User user, Member member, MessageChannel channel) {
         if (channel instanceof PrivateChannel) {
             return true;
         } else if (channel instanceof TextChannel tc) {
-            Member member = tc.getGuild().retrieveMember(user).complete();
             if (member == null) {
                 throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
             } else {

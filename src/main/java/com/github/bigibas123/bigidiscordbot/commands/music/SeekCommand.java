@@ -15,10 +15,7 @@ public class SeekCommand extends MusicCommand {
 
     @Override
     public boolean execute(ReplyContext replyContext, String... args) {
-        if (!this.guildManagerExists(replyContext)) {
-            replyContext.reply("no song is currently playing");
-            return false;
-        } else {
+        if (this.guildManagerExists(replyContext)) {
             IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 
             boolean playing = gmm.isPlaying();
@@ -44,9 +41,10 @@ public class SeekCommand extends MusicCommand {
             } else {
                 replyContext.reply("no song is currently playing");
             }
-            return false;
+        } else {
+            replyContext.reply("no song is currently playing");
         }
-
+        return false;
     }
 
 }

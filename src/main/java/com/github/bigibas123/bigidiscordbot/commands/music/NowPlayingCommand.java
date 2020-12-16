@@ -4,6 +4,7 @@ import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -29,7 +30,7 @@ public class NowPlayingCommand extends MusicCommand {
     }
 
     @Override
-    public boolean hasPermission(User user, MessageChannel channel) {
+    public boolean hasPermission(User user, Member member, MessageChannel channel) {
         return channel.getType().isGuild() || channel.getType() == ChannelType.GROUP;
     }
 

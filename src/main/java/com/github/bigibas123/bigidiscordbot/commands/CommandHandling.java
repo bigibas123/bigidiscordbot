@@ -81,7 +81,7 @@ public class CommandHandling {
             if (Utils.mentionsMe(message)) {
                 if (msg.length > 1) {
                     ICommand cmd = commands.get(msg[1].toLowerCase());
-                    if (cmd != null && cmd.hasPermission(message.getAuthor(), message.getChannel())) {
+                    if (cmd != null && cmd.hasPermission(message.getAuthor(), rc.getMember(), message.getChannel())) {
                         rc.reply(STOP_WATCH);
                         try {
                             boolean cmdSuccess = cmd.execute(rc, msg);
@@ -98,7 +98,7 @@ public class CommandHandling {
                             Main.log.error("Command failed:", e);
                         }
                     } else {
-                        if (cmd != null && !cmd.hasPermission(message.getAuthor(), message.getChannel())) {
+                        if (cmd != null && !cmd.hasPermission(message.getAuthor(), rc.getMember(), message.getChannel())) {
                             rc.reply(STOP_SIGN);
                             Main.log.debug(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
                         } else {

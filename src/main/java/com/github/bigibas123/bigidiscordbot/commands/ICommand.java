@@ -3,6 +3,7 @@ package com.github.bigibas123.bigidiscordbot.commands;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import lombok.Getter;
 import lombok.NonNull;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -48,5 +49,5 @@ public abstract class ICommand {
 
     public abstract boolean execute(ReplyContext replyContext, String... args);
 
-    public abstract boolean hasPermission(User user, MessageChannel channel);
+    public abstract boolean hasPermission(User user, Member member, MessageChannel channel);
 }
