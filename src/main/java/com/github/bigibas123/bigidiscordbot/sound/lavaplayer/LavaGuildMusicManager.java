@@ -58,9 +58,7 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 	@Override
 	protected void search(String search, Runnable onNothingFound, Consumer<TrackInfo<AudioTrack>> onTrackFound, Consumer<PlayListInfo<AudioTrack>> onPlayListFound, Consumer<PlayListInfo<AudioTrack>> onSearchResults, Consumer<Throwable> onException) {
 		manager.loadItem(search, new FunctionalResultHandler(
-			track -> {
-				onTrackFound.accept(convert(track));
-			},
+			track -> onTrackFound.accept(convert(track)),
 			playlist -> {
 				PlayListInfo<AudioTrack> pl = convert(playlist);
 				if (playlist.isSearchResult()) {

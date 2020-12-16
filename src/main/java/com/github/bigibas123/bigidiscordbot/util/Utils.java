@@ -135,7 +135,9 @@ public class Utils {
             result = true;
         } else if (u1.getIdLong() == u2.getIdLong()) {
             result = true;
-        } else result = u1.getId().equals(u2.getId());
+        } else {
+            result = u1.getId().equals(u2.getId());
+        }
         Main.log.trace(u1 + " is " + (result ? "" : " not ") + "the same as " + u2);
         return result;
     }
