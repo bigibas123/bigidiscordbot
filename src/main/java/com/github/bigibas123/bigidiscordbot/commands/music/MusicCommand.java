@@ -26,7 +26,7 @@ public abstract class MusicCommand extends ICommand {
     }
 
     @Override
-    public boolean hasPermission(User user, MessageChannel channel) {
+    public boolean hasPermission(User user, Member member, MessageChannel channel) {
         if (channel.getType().isGuild()) {
             if (channel instanceof TextChannel) {
                 return Utils.isDJ(user,((TextChannel) channel).getGuild());

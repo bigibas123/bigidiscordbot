@@ -4,6 +4,7 @@ import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -26,17 +27,17 @@ public class HelpCommand extends ICommand {
         return false;
     }
 
-    public static boolean sendCommandList(ReplyContext message) {
+    public static boolean sendCommandList(ReplyContext rc) {
         EmbedBuilder ebb = new EmbedBuilder();
-        ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
+        ebb.setFooter("Requested by @" + rc.getUser().getName(), rc.getUser().getEffectiveAvatarUrl());
         ebb.setTitle("Help");
-        ebb.appendDescription(message.getJDA().getSelfUser().getAsMention()+" help [command] - for more info");
+        ebb.appendDescription(rc.getJDA().getSelfUser().getAsMention()+" help [command] - for more info");
         ebb.setColor(Color.GREEN);
         StringBuilder names = new StringBuilder();
         StringBuilder descriptions = new StringBuilder();
         boolean first = true;
         for (ICommand command : CommandHandling.getHelpList()) {
-            if (!command.hasPermission(message.getUser(), message.getChannel())) continue;
+            if (!command.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) continue;
             if (first) {
                 first = false;
                 names.append(command.getName());
@@ -48,7 +49,7 @@ public class HelpCommand extends ICommand {
         }
         ebb.addField("Command", names.toString(), true);
         ebb.addField("Description", descriptions.toString(), true);
-        message.getChannel().sendMessage(ebb.build()).queue();
+        rc.getChannel().sendMessage(ebb.build()).queue();
         return true;
     }
 
@@ -71,7 +72,7 @@ public class HelpCommand extends ICommand {
     }
 
     @Override
-    public boolean hasPermission(User user, MessageChannel channel) {
+    public boolean hasPermission(User user, Member member, MessageChannel channel) {
         return true;
     }
 }
