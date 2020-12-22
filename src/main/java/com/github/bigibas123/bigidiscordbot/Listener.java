@@ -5,7 +5,7 @@ import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -13,11 +13,17 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
 public class Listener extends ListenerAdapter {
 
+    private final int shardID;
     private CommandHandling handling;
+
+    public Listener(int i) {
+        this.shardID = i;
+    }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
@@ -25,9 +31,11 @@ public class Listener extends ListenerAdapter {
         event.getJDA().openPrivateChannelById(Reference.ownerID).queue(c ->
                 c.sendMessage("Started at " + LocalDateTime.now().toString()).queue()
         );
+        String activityString = MessageFormat.format("@mention help\t| [{0}/{1}_{2}]", event.getJDA().getShardInfo().getShardId() + 1, event.getJDA().getShardInfo().getShardTotal(),this.shardID);
+        Activity act = Activity.of(Activity.ActivityType.DEFAULT, activityString);
         event.getJDA().getPresence().setPresence(
                 OnlineStatus.ONLINE,
-                Activity.of(Activity.ActivityType.DEFAULT, "@mention help\t| [" + (event.getJDA().getShardInfo().getShardId() + 1) + "/" + event.getJDA().getShardInfo().getShardTotal() + "]"),
+                act,
                 false
         );
         this.handling = new CommandHandling();
