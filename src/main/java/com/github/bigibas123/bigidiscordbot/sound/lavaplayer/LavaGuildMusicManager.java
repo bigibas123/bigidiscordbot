@@ -120,6 +120,11 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 	}
 
 	@Override
+	public int getVolume(){
+		return this.player.getVolume();
+	}
+
+	@Override
 	public boolean seek(long location) {
 		if (this.player.getPlayingTrack() != null && this.player.getPlayingTrack().isSeekable()) {
 			this.player.getPlayingTrack().setPosition(location);
