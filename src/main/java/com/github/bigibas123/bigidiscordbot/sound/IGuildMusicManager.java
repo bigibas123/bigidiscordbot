@@ -40,6 +40,8 @@ public interface IGuildMusicManager<T> {
 
     void setVolume(int volume);
 
+    int getVolume();
+
     boolean seek(long location);
 
 }

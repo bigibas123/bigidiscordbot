@@ -7,6 +7,7 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static com.github.bigibas123.bigidiscordbot.util.Emoji.oneToTen;
@@ -29,10 +31,10 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	private final PlayListInfo<T> search;
 	private final JDA jda;
 	private final MessageEmbed embed;
-	private final Consumer<TrackInfo<T>> selectionHandler;
+	private final BiConsumer<TrackInfo<T>, Member> selectionHandler;
 	private Message message;
 
-	public GenericSearchResultHandler(ReplyContext replyContext, PlayListInfo<T> search, Consumer<TrackInfo<T>> selectionHandler, JDA jda) {
+	public GenericSearchResultHandler(ReplyContext replyContext, PlayListInfo<T> search, BiConsumer<TrackInfo<T>,Member> selectionHandler, JDA jda) {
 		this.replyContext = replyContext;
 		this.selectionHandler = selectionHandler;
 		this.jda = jda;
@@ -89,7 +91,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 				if (event.getMessageIdLong() == this.message.getIdLong()) {
 					int selection = emojiToInt(event.getReactionEmote());
 					if (selection != -1) {
-						this.selectionHandler.accept(this.search.get(selection-1));
+						this.selectionHandler.accept(this.search.get(selection-1),event.getMember());
 					} else {
 						this.message.addReaction(Emoji.WARNING.s()).queue();
 					}
