@@ -4,32 +4,29 @@ import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.commands.general.ExitCommand;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.commands.moderation.Prune;
-import com.github.bigibas123.bigidiscordbot.commands.music.NowPlayingCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.PauseCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.PlayCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.QueueCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.SeekCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.SkipCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.StopCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.SwapCommand;
-import com.github.bigibas123.bigidiscordbot.commands.music.VolumeCommand;
+import com.github.bigibas123.bigidiscordbot.commands.music.*;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
+import lombok.SneakyThrows;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.internal.requests.CallbackContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.CHECK_MARK;
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.CROSS;
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.SHRUG;
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.STOP_SIGN;
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.STOP_WATCH;
-import static com.github.bigibas123.bigidiscordbot.util.Emoji.WARNING;
+import static com.github.bigibas123.bigidiscordbot.util.Emoji.*;
 
 public class CommandHandling {
 
@@ -73,6 +70,70 @@ public class CommandHandling {
 
     }
 
+    public static void handleSlashRegistration(ReadyEvent event) {
+
+//        event.getJDA().retrieveCommands().queue(s -> {
+//            s.forEach(cmd -> {
+//                event.getJDA().deleteCommandById(cmd.getIdLong()).queue();
+//            });
+//        });
+        event.getJDA().updateCommands().addCommands(
+            getHelpList().stream()
+                .map(ICommand::getCommandData)
+                .collect(Collectors.toList())
+        ).queue();
+//        Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
+//        assert debugGuild != null;
+//        debugGuild.retrieveCommands()
+//           .queue(s ->
+//               s.forEach(cmd -> debugGuild
+//                   .deleteCommandById(cmd.getIdLong())
+//                   .queue()
+//               )
+//           );
+
+        //send commands to testguild for rapid testing
+//         event.getJDA().getGuildById(232516313099141121L).updateCommands().addCommands(
+//             getHelpList().stream()
+//                 .map(ICommand::getCommandData)
+//                 .collect(Collectors.toList())
+//         ).queue();
+    }
+
+    public void handleSlashCommand(@NotNull SlashCommandEvent event) {
+        new Thread(() -> {
+            CallbackContext.getInstance().close();
+            ReplyContext rc = new ReplyContext(event);
+            ICommand cmd = commands.get(rc.getSCmdEvent().getName());
+            if (cmd != null && cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
+                rc.reply(STOP_WATCH);
+                try {
+                    //TODO fix all commands to take a map or something
+                    boolean cmdSuccess = cmd.execute(rc);
+                    if (cmdSuccess) {
+                        rc.reply(CHECK_MARK);
+                        Main.log.trace(String.format("User: %s executed %s successfully", rc.getUser(), cmd.getName()));
+                    } else {
+                        rc.reply(CROSS);
+                        Main.log.trace(String.format("User: %s executed %s unsuccessfully", rc.getUser(), cmd.getName()));
+                    }
+                } catch (Throwable e) {
+                    rc.reply(WARNING);
+                    Main.log.error("Command failed:", e);
+                }
+            } else {
+                if (cmd != null && !cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
+                    rc.reply(STOP_SIGN);
+                    Main.log.debug(String.format("User: %s got permission denied for %s", rc.getUser(), cmd.getName()));
+                } else {
+                    Main.log.trace(String.format("User: %s tried to execute: %s but not found", rc.getUser(), rc.getSCmdEvent().getName()));
+                    rc.reply(SHRUG);
+                }
+
+            }
+        }).start();
+    }
+
     public void handleCommand(Message message) {
         new Thread(() -> {
             CallbackContext.getInstance().close();
@@ -87,10 +148,10 @@ public class CommandHandling {
                             boolean cmdSuccess = cmd.execute(rc, msg);
                             if (cmdSuccess) {
                                 rc.reply(CHECK_MARK);
-                                Main.log.trace(String.format("User: %s executed %s successfully", message.getAuthor().toString(), cmd.getName()));
+                                Main.log.trace(String.format("User: %s executed %s successfully", message.getAuthor(), cmd.getName()));
                             } else {
                                 rc.reply(CROSS);
-                                Main.log.trace(String.format("User: %s executed %s unsuccessfully", message.getAuthor().toString(), cmd.getName()));
+                                Main.log.trace(String.format("User: %s executed %s unsuccessfully", message.getAuthor(), cmd.getName()));
                             }
                             ReactionScheduler.scheduleRemoval(message.getIdLong(), STOP_WATCH.s());
                         } catch (Throwable e) {
@@ -100,9 +161,9 @@ public class CommandHandling {
                     } else {
                         if (cmd != null && !cmd.hasPermission(message.getAuthor(), rc.getMember(), message.getChannel())) {
                             rc.reply(STOP_SIGN);
-                            Main.log.debug(String.format("User: %s got permission denied for %s", message.getAuthor().toString(), cmd.getName()));
+                            Main.log.debug(String.format("User: %s got permission denied for %s", message.getAuthor(), cmd.getName()));
                         } else {
-                            Main.log.trace(String.format("User: %s tried to execute: %s but not found", message.getAuthor().toString(), msg[1]));
+                            Main.log.trace(String.format("User: %s tried to execute: %s but not found", message.getAuthor(), msg[1]));
                             rc.reply(SHRUG);
                         }
 
@@ -110,6 +171,25 @@ public class CommandHandling {
                 }
             }
         }).start();
+    }
+
+    @SneakyThrows(InterruptedException.class)
+    public void registerSlashCommandPerms(Guild guild) {
+        Map<String, Collection<? extends CommandPrivilege>> map = new HashMap<>();
+        var cdl = new CountDownLatch(2);
+        guild.getJDA().retrieveCommands().queue(s -> {
+            s.forEach(cmd -> map.put(cmd.getId(), getCommandList().get(cmd.getName()).getPrivileges(guild)));
+            cdl.countDown();
+        });
+        guild.retrieveCommands().queue(s -> {
+            s.forEach(cmd -> map.put(cmd.getId(), getCommandList().get(cmd.getName()).getPrivileges(guild)));
+            cdl.countDown();
+        });
+        cdl.await();
+        guild.updateCommandPrivileges(map).queue(
+            suc -> Main.log.info("Updated commandPriveleges for: "+guild.getIdLong()),
+            err -> Main.log.error("Error updating command privilegees for: "+guild.getIdLong(),err)
+        );
     }
 
 }

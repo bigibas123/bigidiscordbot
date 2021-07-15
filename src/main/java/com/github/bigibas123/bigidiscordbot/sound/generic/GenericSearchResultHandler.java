@@ -47,7 +47,8 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	}
 
 	private void sendMessage() {
-		this.replyContext.getChannel().sendMessage(this.embed).queue(s -> {
+		this.replyContext.reply(this.embed);
+		this.replyContext.getChannel().sendMessageEmbeds(this.embed).queue(s -> {
 			this.message = s;
 			this.jda.addEventListener(this);
 			int bound = Math.min(10, this.search.size());

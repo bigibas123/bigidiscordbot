@@ -161,7 +161,7 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 			},
 			searchResult -> new GenericSearchResultHandler<>(replyContext, searchResult, (e,u) -> {
 				this.queue.offer(e);
-				replyContext.getChannel().sendMessage(u.getAsMention()+" queued: "+e.getTitle()).queue();
+				replyContext.reply("queued: "+e.getTitle());
 				onTrackAdded();
 			}, replyContext.getJDA()).go(),
 			ex -> {

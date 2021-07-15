@@ -38,7 +38,7 @@ public class Main {
 		final Collection<GatewayIntent> disabledIntents = List.of(GUILD_MEMBERS, GUILD_BANS, GUILD_EMOJIS, GUILD_WEBHOOKS, GUILD_INVITES, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
 
 		final Collection<CacheFlag> enabledCaches = List.of(MEMBER_OVERRIDES, ROLE_TAGS, VOICE_STATE, MEMBER_OVERRIDES, ROLE_TAGS);
-		final Collection<CacheFlag> disabledCaches = List.of(ACTIVITY, EMOTE, CLIENT_STATUS);
+		final Collection<CacheFlag> disabledCaches = List.of(ACTIVITY, EMOTE, CLIENT_STATUS, ONLINE_STATUS);
 
 		final SessionController sessionController = new ConcurrentSessionController();
 		sessionController.setConcurrency(Runtime.getRuntime().availableProcessors());
