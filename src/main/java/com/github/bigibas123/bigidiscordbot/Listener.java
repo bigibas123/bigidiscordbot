@@ -6,6 +6,8 @@ import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -30,7 +32,7 @@ public class Listener extends ListenerAdapter {
 		super.onReady(event);
 		int siID = event.getJDA().getShardInfo().getShardId();
 		event.getJDA().openPrivateChannelById(Reference.ownerID).queue(c ->
-				c.sendMessage("Started shard:" + shardID + "_" + siID + " at " + LocalDateTime.now().toString()).queue()
+				c.sendMessage("Started shard:" + shardID + "_" + siID + " at " + LocalDateTime.now()).queue()
 		);
 		String activityString = MessageFormat.format("@mention help\t| [{0}/{1}]",
 				siID != shardID ? (siID + 1) + "_" + (shardID + 1) : (siID + 1),
@@ -42,7 +44,18 @@ public class Listener extends ListenerAdapter {
 				act,
 				false
 		);
-		this.handling = new CommandHandling();
+		if(this.shardID==0){
+			CommandHandling.handleSlashRegistration(event);
+		}
+		this.handling = this.handling != null ? this.handling : new CommandHandling();
+
+	}
+
+	@Override
+	public void onGuildReady(@NotNull GuildReadyEvent event) {
+		super.onGuildReady(event);
+		this.handling = this.handling != null ? this.handling : new CommandHandling();
+		this.handling.registerSlashCommandPerms(event.getGuild());
 	}
 
 	@Override
@@ -50,7 +63,7 @@ public class Listener extends ListenerAdapter {
 		super.onPrivateMessageReceived(event);
 		if (!event.getAuthor().isBot()) {
 			if (Utils.mentionsMe(event.getMessage())) {
-				handling.handleCommand(event.getMessage());
+				handling.handleChatCommand(event.getMessage());
 			} else {
 				MessageAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
 				messageAction.queue();
@@ -63,9 +76,15 @@ public class Listener extends ListenerAdapter {
 		super.onGuildMessageReceived(event);
 		if (!event.getAuthor().isBot()) {
 			if (Utils.mentionsMe(event.getMessage())) {
-				handling.handleCommand(event.getMessage());
+				handling.handleChatCommand(event.getMessage());
 			}
 		}
+	}
+
+	@Override
+	public void onSlashCommand(@NotNull SlashCommandEvent event) {
+		super.onSlashCommand(event);
+		handling.handleSlashCommand(event);
 	}
 
 	@Override

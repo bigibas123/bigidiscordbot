@@ -4,11 +4,16 @@ import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.Collection;
+import java.util.List;
 
 public class HelpCommand extends ICommand {
 
@@ -19,12 +24,11 @@ public class HelpCommand extends ICommand {
     @Override
     public boolean execute(ReplyContext replyContext, String... args) {
 
-        if (args.length == 2) {
-            return sendCommandList(replyContext);
-        } else if (args.length > 2) {
+        if (args.length > 0) {
             return sendCommandDescription(replyContext, args);
+        } else{
+            return sendCommandList(replyContext);
         }
-        return false;
     }
 
     public static boolean sendCommandList(ReplyContext rc) {
@@ -49,14 +53,14 @@ public class HelpCommand extends ICommand {
         }
         ebb.addField("Command", names.toString(), true);
         ebb.addField("Description", descriptions.toString(), true);
-        rc.getChannel().sendMessage(ebb.build()).queue();
+        rc.reply(ebb.build());
         return true;
     }
 
     public static boolean sendCommandDescription(ReplyContext message, String... args) {
         EmbedBuilder ebb = new EmbedBuilder();
         ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
-        ICommand cmd = CommandHandling.getCommandList().get(args[2].toLowerCase());
+        ICommand cmd = CommandHandling.getCommandList().get(args[0].toLowerCase());
         if (cmd != null) {
             ebb.setTitle(cmd.getName());
             ebb.setColor(Color.GREEN);
@@ -66,7 +70,7 @@ public class HelpCommand extends ICommand {
             message.reply(ebb.build());
             return true;
         } else {
-            message.getChannel().sendMessage(String.format("%s Command %s not found", message.getUser().getAsMention(), args[2])).queue();
+            message.reply(String.format("Command %s not found", args[0]));
             return false;
         }
     }
@@ -75,4 +79,24 @@ public class HelpCommand extends ICommand {
     public boolean hasPermission(User user, Member member, MessageChannel channel) {
         return true;
     }
+
+    @Override
+    protected CommandData _getCommandData(CommandData c) {
+        return c
+            .addOptions(
+                new OptionData(
+                    OptionType.STRING, "command",
+                    "Command you want to print help for", false
+                )
+                    .addChoices(
+                        CommandHandling.getHelpList().stream().map(ICommand::getName).map(k -> new Command.Choice(k, k)).toList()
+                    )
+            );
+    }
+
+    @Override
+    protected Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
+        return null;
+    }
+
 }

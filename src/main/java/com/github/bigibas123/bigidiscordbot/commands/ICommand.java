@@ -1,13 +1,14 @@
 package com.github.bigibas123.bigidiscordbot.commands;
 
+import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import lombok.Getter;
 import lombok.NonNull;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
-import java.util.Objects;
+import java.util.*;
 
 
 /**
@@ -50,4 +51,24 @@ public abstract class ICommand {
     public abstract boolean execute(ReplyContext replyContext, String... args);
 
     public abstract boolean hasPermission(User user, Member member, MessageChannel channel);
+
+    public final CommandData getCommandData() {
+        return this._getCommandData(new CommandData(getName().toLowerCase(Locale.ROOT), getDescription()));
+    }
+
+    protected abstract CommandData _getCommandData(CommandData c);
+
+    public final Collection<? extends CommandPrivilege> getPrivileges(Guild g) {
+        Main.log.trace("Getting Privileges for: " + g.getIdLong() + " in command " + this.getName());
+        var list = new LinkedList<CommandPrivilege>();
+        var roles = g.getRoles();
+        var returnedList = this._getPrivilegesForGuild(g, roles, list);
+        Main.log.trace("Priveleges for: " + g.getIdLong() + " in command: " + this.getName() + ": " +
+            (returnedList != null ? returnedList : list).stream()
+                .map(p -> String.format("{t:%s,id:%s}", p.getType(), p.getIdLong())).toList().toString());
+        return returnedList != null ? returnedList : list;
+    }
+
+    protected abstract Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list);
+
 }
