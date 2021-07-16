@@ -6,6 +6,8 @@ import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class SwapCommand extends MusicCommand {
 
@@ -57,6 +59,13 @@ public class SwapCommand extends MusicCommand {
 		replyContext.reply("the queue is currently empty");
 		return false;
 
+	}
+
+	@Override
+	protected CommandData _getCommandData(CommandData c) {
+		return super._getCommandData(c)
+			.addOption(OptionType.INTEGER, "1", "First song in the swap", true)
+			.addOption(OptionType.INTEGER, "2", "Second song in the swap", true);
 	}
 
 }

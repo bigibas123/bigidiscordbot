@@ -6,6 +6,10 @@ import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class SeekCommand extends MusicCommand {
 
@@ -20,12 +24,12 @@ public class SeekCommand extends MusicCommand {
 
             boolean playing = gmm.isPlaying();
             if (playing) {
-                if (args.length <= 2) {
-                    HelpCommand.sendCommandDescription(replyContext, "empty", "empty", this.getName());
+                if (args.length < 1) {
+                    HelpCommand.sendCommandDescription(replyContext, this.getName());
                     return false;
                 }
                 try {
-                    long loc = Utils.StringToDuration(args[2]);
+                    long loc = Utils.StringToDuration(args[0]);
                     Main.log.trace(" Trying seeking to: " + loc + " in " + replyContext.getGuild().getName());
                     if (gmm.seek(loc)) {
                         replyContext.reply(Emoji.FAST_FORWARD);
@@ -36,7 +40,7 @@ public class SeekCommand extends MusicCommand {
                         Main.log.debug("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " failed");
                     }
                 } catch (NumberFormatException e) {
-                    replyContext.reply("invalid time:",args[2]);
+                    replyContext.reply("invalid time:",args[0]);
                 }
             } else {
                 replyContext.reply("no song is currently playing");
@@ -45,6 +49,12 @@ public class SeekCommand extends MusicCommand {
             replyContext.reply("no song is currently playing");
         }
         return false;
+    }
+
+    @Override
+    protected CommandData _getCommandData(CommandData c) {
+        return super._getCommandData(c)
+            .addOption(OptionType.STRING,"time","time to seek to, [[[day:]hour:]minute:]<second>",true);
     }
 
 }

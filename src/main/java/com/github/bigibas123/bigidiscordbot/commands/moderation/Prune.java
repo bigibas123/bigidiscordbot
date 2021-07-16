@@ -26,13 +26,13 @@ public class Prune extends ICommand {
     public boolean execute(ReplyContext replyContext, String... args) {
 		if (replyContext.isRegularMessage()) {
 			int amount;
-			if (args.length == 2) {
+			if (args.length < 1) {
 				amount = 5;
 			} else {
 				try {
-					amount = Integer.parseInt(args[2]);
+					amount = Integer.parseInt(args[0]);
 				} catch (NumberFormatException e) {
-					replyContext.reply(args[2], "is not a number");
+					replyContext.reply(args[0], "is not a number");
 					return false;
 				}
 			}
@@ -89,7 +89,9 @@ public class Prune extends ICommand {
 
 	@Override
 	protected CommandData _getCommandData(CommandData c) {
-		return c.setDefaultEnabled(false).addOption(OptionType.INTEGER,"amount","Amount of messages to remove (default 5)");
+		return c
+			.setDefaultEnabled(false)
+			.addOption(OptionType.INTEGER,"amount","Amount of messages to remove (default 5)");
 	}
 
 	@Override

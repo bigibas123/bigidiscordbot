@@ -63,7 +63,7 @@ public class Listener extends ListenerAdapter {
 		super.onPrivateMessageReceived(event);
 		if (!event.getAuthor().isBot()) {
 			if (Utils.mentionsMe(event.getMessage())) {
-				handling.handleCommand(event.getMessage());
+				handling.handleChatCommand(event.getMessage());
 			} else {
 				MessageAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
 				messageAction.queue();
@@ -76,7 +76,7 @@ public class Listener extends ListenerAdapter {
 		super.onGuildMessageReceived(event);
 		if (!event.getAuthor().isBot()) {
 			if (Utils.mentionsMe(event.getMessage())) {
-				handling.handleCommand(event.getMessage());
+				handling.handleChatCommand(event.getMessage());
 			}
 		}
 	}

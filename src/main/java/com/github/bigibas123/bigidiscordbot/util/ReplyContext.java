@@ -10,14 +10,18 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.internal.requests.CallbackContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor( access = AccessLevel.PRIVATE )
@@ -50,16 +54,6 @@ public final class ReplyContext {
 		return this.channel.getJDA();
 	}
 
-	private static String unsafeJoin(Object... elements) {
-		Objects.requireNonNull(elements);
-		// Number of elements not likely worth Arrays.stream overhead.
-		StringJoiner joiner = new StringJoiner(" ");
-		for (Object cs: elements) {
-			joiner.add(cs.toString());
-		}
-		return joiner.toString();
-	}
-
 	public void reply(MessageEmbed embed) {
 		slashSplit(reg -> reg.getChannel().sendMessage(new MessageBuilder(user.getAsMention()).setEmbeds(embed).build()).queue(),
 			(mb, e) -> {
@@ -86,7 +80,7 @@ public final class ReplyContext {
 			if (hasRepliedToSlash()) {
 				var mb = new MessageBuilder(currentReply);
 				sl.accept(mb, this.sCmdEvent);
-				this.slashCommandReplyHandler(this.interactionHook.editOriginal(mb.build()).complete());
+				this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
 			} else {
 				var mb = new MessageBuilder();
 				sl.accept(mb, this.sCmdEvent);
@@ -109,10 +103,6 @@ public final class ReplyContext {
 		return interactionHook != null;
 	}
 
-	private void slashCommandReplyHandler(Message msg) {
-		this.currentReply = msg;
-	}
-
 	private void slashCommandSuccessHandler(InteractionHook h) {
 		this.interactionHook = h;
 		new Thread(() -> {
@@ -123,6 +113,25 @@ public final class ReplyContext {
 
 	private void printUnrecognizedSource() {
 		Main.log.error("Replycontext is neither a message or a slashcommand! {}", this);
+	}
+
+	public void reply(Emoji @NonNull ... emojis) {
+		slashSplit(msg -> {
+				for (Emoji e: emojis) {
+					msg.addReaction(e.s()).queue();
+				}
+			},
+			(mb, b) -> {
+				for (Emoji e: emojis) {
+					if (this.currentReply != null) {
+						this.currentReply.addReaction(e.s()).queue();
+					} else {
+						mb.append(e);
+					}
+				}
+			}
+		);
+
 	}
 
 	public @Nonnull
@@ -142,10 +151,6 @@ public final class ReplyContext {
 		this.reply(String.join(" ", messages));
 	}
 
-	public boolean isIn(@NonNull MessageChannel channel) {
-		return this.getChannel().getIdLong() == channel.getIdLong();
-	}
-
 	public void reply(String message) {
 		slashSplit(
 			orig -> orig.getChannel().sendMessage(user.getAsMention() + " " + message).queue(),
@@ -153,30 +158,49 @@ public final class ReplyContext {
 		);
 	}
 
-	public void reply(Emoji @NonNull ... emojis) {
-		slashSplit(msg -> {
-				for (Emoji e: emojis) {
-					msg.addReaction(e.s()).queue();
-				}
-			},
-			(mb, b) -> {
-				for (Emoji e: emojis) {
-					mb.append(e);
-				}
-			}
-		);
-
-	}
-
 	public void reply(Object... messages) {
 		this.reply(unsafeJoin(" ", messages));
+	}
+
+	private static String unsafeJoin(Object... elements) {
+		Objects.requireNonNull(elements);
+		// Number of elements not likely worth Arrays.stream overhead.
+		StringJoiner joiner = new StringJoiner(" ");
+		for (Object cs: elements) {
+			joiner.add(cs.toString());
+		}
+		return joiner.toString();
+	}
+
+	public boolean isIn(@NonNull MessageChannel channel) {
+		return this.getChannel().getIdLong() == channel.getIdLong();
 	}
 
 	public void reply(@NonNull Emoji e) {
 		slashSplit(
 			msg -> msg.addReaction(e.s()).queue(),
-			(mb, sce) -> mb.append(e)
+			(mb, sce) -> {
+				if (this.currentReply != null) {
+					this.currentReply.addReaction(e.s()).queue();
+				} else {
+					mb.append(e);
+				}
+			}
 		);
+	}
+
+	public String getOriginalText() {
+		CompletableFuture<String> fut = new CompletableFuture<>();
+		slashSplit(
+			msg -> fut.complete(this.original.getContentRaw()),
+			(mb, sce) -> fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")))
+		);
+		try {
+			return fut.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
 
 }

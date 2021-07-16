@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.Arrays;
 
@@ -24,15 +26,15 @@ public class PlayCommand extends MusicCommand {
                 if (vs != null) {
                     VoiceChannel vc = vs.getChannel();
                     if (vc != null) {
-                        if (args.length > 2) {
+                        if (args.length > 0) {
                             IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
-                            String search = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+                            String search = String.join(" ", args);
                             if (gmm.connect(vc)) {
                                 gmm.queue(search, replyContext);
                                 return true;
                             }
                         } else {
-                            HelpCommand.sendCommandDescription(replyContext, "empty", "empty", "play");
+                            HelpCommand.sendCommandDescription(replyContext, "play");
                         }
                     } else {
                         replyContext.reply("you need to join a voice channel for this command to work");
@@ -48,4 +50,12 @@ public class PlayCommand extends MusicCommand {
 		}
 		return false;
 	}
+
+	@Override
+	protected CommandData _getCommandData(CommandData c) {
+		return super._getCommandData(c).addOption(OptionType.STRING, "search-term",
+			"searchterm, \"ytsearch: term\" for youtube \"scsearch: term\" for soundcloud"
+		);
+	}
+
 }

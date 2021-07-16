@@ -2,6 +2,8 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class VolumeCommand extends MusicCommand {
     public VolumeCommand() {
@@ -27,6 +29,12 @@ public class VolumeCommand extends MusicCommand {
             }
         }
         return false;
+    }
+
+    @Override
+    protected CommandData _getCommandData(CommandData c) {
+        return super._getCommandData(c)
+            .addOption(OptionType.INTEGER,"volume","the volume to set the bot to, <0-1000>");
     }
 
 }

@@ -47,7 +47,6 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	}
 
 	private void sendMessage() {
-		this.replyContext.reply(this.embed);
 		this.replyContext.getChannel().sendMessageEmbeds(this.embed).queue(s -> {
 			this.message = s;
 			this.jda.addEventListener(this);

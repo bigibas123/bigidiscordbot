@@ -5,10 +5,13 @@ import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +24,7 @@ public class HelpCommand extends ICommand {
     @Override
     public boolean execute(ReplyContext replyContext, String... args) {
 
-        if (args.length > 2) {
+        if (args.length > 0) {
             return sendCommandDescription(replyContext, args);
         } else{
             return sendCommandList(replyContext);
@@ -57,7 +60,7 @@ public class HelpCommand extends ICommand {
     public static boolean sendCommandDescription(ReplyContext message, String... args) {
         EmbedBuilder ebb = new EmbedBuilder();
         ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
-        ICommand cmd = CommandHandling.getCommandList().get(args[2].toLowerCase());
+        ICommand cmd = CommandHandling.getCommandList().get(args[0].toLowerCase());
         if (cmd != null) {
             ebb.setTitle(cmd.getName());
             ebb.setColor(Color.GREEN);
@@ -67,7 +70,7 @@ public class HelpCommand extends ICommand {
             message.reply(ebb.build());
             return true;
         } else {
-            message.reply(String.format("Command %s not found", args[2]));
+            message.reply(String.format("Command %s not found", args[0]));
             return false;
         }
     }
@@ -79,7 +82,16 @@ public class HelpCommand extends ICommand {
 
     @Override
     protected CommandData _getCommandData(CommandData c) {
-        return c;
+        return c
+            .addOptions(
+                new OptionData(
+                    OptionType.STRING, "command",
+                    "Command you want to print help for", false
+                )
+                    .addChoices(
+                        CommandHandling.getHelpList().stream().map(ICommand::getName).map(k -> new Command.Choice(k, k)).toList()
+                    )
+            );
     }
 
     @Override

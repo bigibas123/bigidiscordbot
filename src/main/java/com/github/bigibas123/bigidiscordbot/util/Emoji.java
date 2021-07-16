@@ -10,6 +10,7 @@ public enum Emoji {
     CHECK_MARK("\u2705"),       //✅
     CROSS("\u274C"),            //❌
     STOP_WATCH("\u23F1"),       //⏱
+    QUESTION("\u2753"),         //❓
     SHRUG("\uD83E\uDD37"),      //🤷
     WAVE("\uD83D\uDC4B"),       //👋
     PAUSE("\u23F8"),            //⏸
