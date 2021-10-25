@@ -37,7 +37,7 @@ public class LongRunningCommand extends ICommand {
 
     @Override
     protected CommandData _getCommandData(CommandData c) {
-        return c.setDefaultEnabled(false);
+        return null;
     }
 
     @Override

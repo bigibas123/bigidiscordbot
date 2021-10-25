@@ -17,89 +17,93 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Prune extends ICommand {
 
-    public Prune() {
-        super("Prune", "Removes messages", "[amount def=5]", "Purge", "Delete");
-    }
+	public Prune() {
+		super("Prune", "Removes messages", "[amount def=5]", "Purge", "Delete");
+	}
 
-    @SuppressWarnings( "ConstantConditions" )
+	@SuppressWarnings("ConstantConditions")
 	@Override
-    public boolean execute(ReplyContext replyContext, String... args) {
-		if (replyContext.isRegularMessage()) {
-			int amount;
-			if (args.length < 1) {
-				amount = 5;
-			} else {
-				try {
-					amount = Integer.parseInt(args[0]);
-				} catch (NumberFormatException e) {
-					replyContext.reply(args[0], "is not a number");
-					return false;
-				}
+	public boolean execute(ReplyContext replyContext, String... args) {
+		int amount;
+		if (args.length < 1) {
+			amount = 5;
+		} else {
+			try {
+				amount = Integer.parseInt(args[0]);
+			} catch (NumberFormatException e) {
+				replyContext.reply(args[0], "is not a number");
+				return false;
 			}
-			if (replyContext.getChannel() instanceof PrivateChannel) {
-				AtomicInteger sleepCounter = new AtomicInteger();
-				if (amount <= 100) {
-					List<Message> hist = replyContext.getChannel().getHistoryBefore(replyContext.getOriginal(), amount).complete().getRetrievedHistory();
-					hist.parallelStream()
+		}
+		var orig = replyContext.isRegularMessage() ? replyContext.getOriginal().getIdLong() : -1;
+		if (orig == -1) {
+			if (replyContext.getChannel().hasLatestMessage()) {
+				orig = replyContext.getChannel().getLatestMessageIdLong();
+			}else{
+				replyContext.reply("No messages in channel yet can't purge anything");
+				return false;
+			}
+		}
+		if (replyContext.getChannel() instanceof PrivateChannel) {
+			AtomicInteger sleepCounter = new AtomicInteger();
+			if (amount <= 100) {
+				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
+				hist.parallelStream()
 						.filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser()))
 						.forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
-				} else {
-					while (amount > 0) {
-						List<Message> hist = replyContext.getChannel().getHistoryBefore(replyContext.getOriginal(), Math.min(amount, 100)).complete().getRetrievedHistory();
-						hist.parallelStream()
+			} else {
+				while (amount > 0) {
+					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
+					hist.parallelStream()
 							.filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser()))
 							.forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
-						amount -= 100;
-					}
-				}
-			} else {
-				if (amount <= 100) {
-					List<Message> hist = replyContext.getChannel().getHistoryBefore(replyContext.getOriginal(), amount).complete().getRetrievedHistory();
-					hist.parallelStream()
-						.forEach(hm -> hm.delete().complete());
-				} else {
-					while (amount > 0) {
-						List<Message> hist = replyContext.getChannel().getHistoryBefore(replyContext.getOriginal(), Math.min(amount, 100)).complete().getRetrievedHistory();
-						hist.parallelStream()
-							.forEach(hm -> hm.delete().complete());
-						amount -= 100;
-					}
+					amount -= 100;
 				}
 			}
-			return true;
 		} else {
-			replyContext.reply("Please use this command from a regular message instead of a / command");
-			return false;
+			if (amount <= 100) {
+				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
+				hist.parallelStream()
+						.forEach(hm -> hm.delete().complete());
+			} else {
+				while (amount > 0) {
+					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
+					hist.parallelStream()
+							.forEach(hm -> hm.delete().complete());
+					amount -= 100;
+				}
+			}
 		}
-    }
+		return true;
+	}
 
-    @Override
-    public boolean hasPermission(User user, Member member, MessageChannel channel) {
-        if (channel instanceof PrivateChannel) {
-            return true;
-        } else if (channel instanceof TextChannel tc) {
-            if (member == null) {
-                throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
-            } else {
-                return PermissionUtil.checkPermission(tc,member, Permission.MESSAGE_MANAGE);
-            }
-        }
-        return false;
-    }
+	@Override
+	public boolean hasPermission(User user, Member member, MessageChannel channel) {
+		if (channel instanceof PrivateChannel) {
+			return true;
+		} else if (channel instanceof TextChannel tc) {
+			if (member == null) {
+				throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
+			} else {
+				return PermissionUtil.checkPermission(tc, member, Permission.MESSAGE_MANAGE);
+			}
+		}
+		return false;
+	}
 
 	@Override
 	protected CommandData _getCommandData(CommandData c) {
 		return c
-			.setDefaultEnabled(false)
-			.addOption(OptionType.INTEGER,"amount","Amount of messages to remove (default 5)");
+				.setDefaultEnabled(true)
+				.addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
 	}
 
 	@Override
 	protected Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
 		roles.stream()
-			.filter(role -> role.hasPermission(Permission.MESSAGE_MANAGE))
-			.map(CommandPrivilege::enable)
-			.forEach(list::add);
+				.filter(role -> role.hasPermission(Permission.MESSAGE_MANAGE))
+				.map(CommandPrivilege::enable)
+				.forEach(list::add);
 		return list;
 	}
 

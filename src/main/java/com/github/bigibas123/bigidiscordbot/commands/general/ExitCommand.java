@@ -32,7 +32,7 @@ public class ExitCommand extends ICommand {
 
     @Override
     protected CommandData _getCommandData(CommandData c) {
-        return c.setDefaultEnabled(false);
+        return null;
     }
     @Override
     protected Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {

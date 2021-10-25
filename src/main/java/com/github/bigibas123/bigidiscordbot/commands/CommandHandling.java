@@ -53,7 +53,7 @@ public class CommandHandling {
 	public static void registerCommand(ICommand cmd) {
 		helpList.add(cmd);
 		commands.put(cmd.getName().toLowerCase(), cmd);
-		for (String alias: cmd.getAliases()) {
+		for (String alias : cmd.getAliases()) {
 			commands.put(alias.toLowerCase(), cmd);
 		}
 	}
@@ -65,11 +65,12 @@ public class CommandHandling {
 //				event.getJDA().deleteCommandById(cmd.getIdLong()).queue();
 //			});
 //		});
-        event.getJDA().updateCommands().addCommands(
-            getHelpList().stream()
-                .map(ICommand::getCommandData)
-                .collect(Collectors.toList())
-        ).queue();
+		event.getJDA().updateCommands().addCommands(
+				getHelpList().stream()
+						.map(ICommand::getCommandData)
+						.filter(Objects::nonNull)
+						.collect(Collectors.toList())
+		).queue();
 //		Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
 //		assert debugGuild != null;
 //		debugGuild.retrieveCommands()
@@ -90,6 +91,10 @@ public class CommandHandling {
 		return helpList;
 	}
 
+	public static HashMap<String, ICommand> getCommandList() {
+		return commands;
+	}
+
 	public void handleSlashCommand(@NotNull SlashCommandEvent event) {
 		var opts = event.getOptions().stream().map(OptionMapping::getAsString).toArray(String[]::new);
 		var rc = new ReplyContext(event);
@@ -98,9 +103,9 @@ public class CommandHandling {
 	}
 
 	public void handleCommand(ICommand cmd, ReplyContext rc, String[] args) {
-		Main.log.trace("Starting command thread for: "+(cmd != null ? cmd:"unrecognized command"));
-		Main.log.trace("\tcmd args: "+ Arrays.toString(args));
-		Main.log.trace("\tReplycontext: "+rc.toString());
+		Main.log.trace("Starting command thread for: " + (cmd != null ? cmd : "unrecognized command"));
+		Main.log.trace("\tcmd args: " + Arrays.toString(args));
+		Main.log.trace("\tReplycontext: " + rc.toString());
 		new Thread(() -> {
 			CallbackContext.getInstance().close();
 			if (cmd != null && cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
@@ -123,7 +128,7 @@ public class CommandHandling {
 					rc.reply(STOP_SIGN);
 					Main.log.debug(String.format("User: %s got permission denied for %s", rc.getUser(), cmd.getName()));
 				} else {
-					Main.log.debug(String.format("User: %s tried to execute: %s but not found", rc.getUser(),rc.getOriginalText()));
+					Main.log.debug(String.format("User: %s tried to execute: %s but not found", rc.getUser(), rc.getOriginalText()));
 					rc.reply(SHRUG);
 				}
 
@@ -134,14 +139,14 @@ public class CommandHandling {
 	public void handleChatCommand(Message message) {
 		var args = message.getContentRaw().split(" ");
 		String scmd;
-		if(args.length <= 1){
+		if (args.length <= 1) {
 			message.addReaction(QUESTION.s()).queue();
 			return;
-		}else{
+		} else {
 			if (args[0].matches("<@(!|&|)\\d{18}>")) {
 				scmd = args[1];
 				args = Arrays.copyOfRange(args, 2, args.length);
-			}else{
+			} else {
 				scmd = args[0];
 				args = Arrays.copyOfRange(args, 1, args.length);
 			}
@@ -151,7 +156,7 @@ public class CommandHandling {
 		this.handleCommand(cmd, new ReplyContext(message), args);
 	}
 
-	@SneakyThrows( InterruptedException.class )
+	@SneakyThrows(InterruptedException.class)
 	public void registerSlashCommandPerms(Guild guild) {
 		Map<String, Collection<? extends CommandPrivilege>> map = new HashMap<>();
 		var cdl = new CountDownLatch(2);
@@ -165,13 +170,9 @@ public class CommandHandling {
 		});
 		cdl.await();
 		guild.updateCommandPrivileges(map).queue(
-			suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()),
-			err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err)
+				suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()),
+				err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err)
 		);
-	}
-
-	public static HashMap<String, ICommand> getCommandList() {
-		return commands;
 	}
 
 }
