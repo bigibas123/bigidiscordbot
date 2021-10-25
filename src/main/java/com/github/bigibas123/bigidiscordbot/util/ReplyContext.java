@@ -159,7 +159,7 @@ public final class ReplyContext {
 	}
 
 	public void reply(Object... messages) {
-		this.reply(unsafeJoin(" ", messages));
+		this.reply(unsafeJoin(messages));
 	}
 
 	private static String unsafeJoin(Object... elements) {
