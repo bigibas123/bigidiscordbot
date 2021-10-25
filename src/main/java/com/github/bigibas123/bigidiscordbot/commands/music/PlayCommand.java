@@ -53,9 +53,10 @@ public class PlayCommand extends MusicCommand {
 
 	@Override
 	protected CommandData _getCommandData(CommandData c) {
-		return super._getCommandData(c).addOption(OptionType.STRING, "search-term",
-			"searchterm, \"ytsearch: term\" for youtube \"scsearch: term\" for soundcloud"
-		);
+		return super._getCommandData(c).addOption(OptionType.STRING,
+				"search-term",
+				"searchterm, \"ytsearch: term\" for youtube \"scsearch: term\" for soundcloud",
+				true);
 	}
 
 }
