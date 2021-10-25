@@ -6,7 +6,6 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 import java.util.Collection;
@@ -55,11 +54,6 @@ public class QueueCommand extends MusicCommand {
     @Override
     public boolean hasPermission(User user, Member member, MessageChannel channel) {
         return channel.getType().isGuild() || channel.getType() == ChannelType.GROUP;
-    }
-
-    @Override
-    protected CommandData _getCommandData(CommandData c) {
-        return c;
     }
 
     @Override

@@ -37,11 +37,6 @@ public class NowPlayingCommand extends MusicCommand {
     }
 
     @Override
-    protected CommandData _getCommandData(CommandData c) {
-        return c;
-    }
-
-    @Override
     protected Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
         list.add(CommandPrivilege.enable(g.getPublicRole()));
         return list;

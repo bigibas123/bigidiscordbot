@@ -26,7 +26,7 @@ public class NoPermCommand extends ICommand {
 
     @Override
     protected CommandData _getCommandData(CommandData c) {
-        return c.setDefaultEnabled(false);
+        return null;
     }
 
     @Override
