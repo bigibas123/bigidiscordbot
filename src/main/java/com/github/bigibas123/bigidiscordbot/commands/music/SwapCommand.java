@@ -22,13 +22,13 @@ public class SwapCommand extends MusicCommand {
 			IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 			int queueSize = gmm.getQueueSize();
 			if (queueSize != 0) {
-				if (args.length == 4) {
-					//args={@bot, swap, 1, 2}
+				if (args.length == 2) {
+					//args={1, 2}
 					int one;
 					int two;
 					try {
-						one = Integer.parseInt(args[2]);
-						two = Integer.parseInt(args[3]);
+						one = Integer.parseInt(args[0]);
+						two = Integer.parseInt(args[1]);
 					} catch (NumberFormatException e) {
 						replyContext.reply(Emoji.WARNING);
 						replyContext.reply("error parsing ", e.getMessage(), " this is not a number");
@@ -52,7 +52,7 @@ public class SwapCommand extends MusicCommand {
 						return false;
 					}
 				}
-				HelpCommand.sendCommandDescription(replyContext, "empty", "empty", "swap");
+				HelpCommand.sendCommandDescription(replyContext,"swap");
 				return false;
 			}
 		}
