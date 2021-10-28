@@ -14,17 +14,17 @@ public class VolumeCommand extends MusicCommand {
     public boolean execute(ReplyContext replyContext, String... args) {
         if (this.guildManagerExists(replyContext)) {
             IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
-            if (args.length > 2) {
+            if (args.length > 0) {
                 int volume;
                 try {
-                    volume = Integer.parseInt(args[2]);
+                    volume = Integer.parseInt(args[0]);
                     gmm.setVolume(volume);
                     return true;
                 } catch (NumberFormatException e) {
-                    replyContext.reply(args[2], "is not a number");
+                    replyContext.reply(args[0], "is not a number");
                 }
-            } else if(args.length > 1){
-                replyContext.reply(gmm.getVolume()+"‰");
+            } else{
+                replyContext.reply(gmm.getVolume()+"%");
                 return true;
             }
         }
