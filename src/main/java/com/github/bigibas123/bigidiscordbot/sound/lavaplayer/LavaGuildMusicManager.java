@@ -99,7 +99,7 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 	}
 
 	private TrackInfo<AudioTrack> convert(AudioTrack track) {
-		return new TrackInfo<>(track, track.getInfo().title.equals("Unknown title") ? track.getIdentifier() : track.getInfo().title, track.getDuration(), 0);
+		return new TrackInfo<>(track.makeClone(), track.getInfo().title.equals("Unknown title") ? track.getIdentifier() : track.getInfo().title, track.getDuration(), 0);
 	}
 
 	private PlayListInfo<AudioTrack> convert(AudioPlaylist playlist) {

@@ -11,20 +11,18 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.internal.requests.CallbackContext;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Data
-@RequiredArgsConstructor( access = AccessLevel.PRIVATE )
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReplyContext {
 
 	@NonNull
@@ -55,36 +53,35 @@ public final class ReplyContext {
 	}
 
 	public void reply(MessageEmbed embed) {
-		slashSplit(reg -> reg.getChannel().sendMessage(new MessageBuilder(user.getAsMention()).setEmbeds(embed).build()).queue(),
-			(mb, e) -> {
-				List<MessageEmbed> l;
-				try {
-					var f = mb.getClass().getDeclaredField("embeds");
-					f.setAccessible(true);
-					//noinspection unchecked
-					l = (List<MessageEmbed>) f.get(mb);
-				} catch (NoSuchFieldException | IllegalAccessException er) {
-					Main.log.error("Can't access embeds field in message builder via reflection!", er);
-					Main.log.error(Arrays.stream(mb.getClass().getDeclaredFields()).map(Field::getName).toList().toString());
-					l = new ArrayList<>(1);
-				}
-				l.add(embed);
-				mb.setEmbeds(l.toArray(MessageEmbed[]::new));
-			});
+		slashSplit((mb, msg) -> {
+			List<MessageEmbed> l = new LinkedList<>(msg.getEmbeds());
+			l.add(embed);
+			mb.setEmbeds(l.toArray(MessageEmbed[]::new));
+		});
 	}
 
-	private void slashSplit(Consumer<Message> reg, BiConsumer<MessageBuilder, SlashCommandEvent> sl) {
+	private void slashSplit(BiConsumer<MessageBuilder, Message> sl) {
 		if (isRegularMessage()) {
-			reg.accept(this.original);
-		} else if (isSlashCommand()) {
-			if (hasRepliedToSlash()) {
+			MessageBuilder mb;
+			if (currentReply == null) {
+				mb = new MessageBuilder();
+				sl.accept(mb, null);
+				this.currentReply = this.original.reply(mb.build()).complete();
+			} else {
+				mb = new MessageBuilder(currentReply);
+				sl.accept(mb, this.currentReply);
+				this.currentReply = this.currentReply.editMessage(mb.build()).complete();
+			}
+		} else if (sCmdEvent != null) {
+			if (interactionHook != null) {
 				var mb = new MessageBuilder(currentReply);
-				sl.accept(mb, this.sCmdEvent);
+				sl.accept(mb, this.currentReply);
 				this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
 			} else {
 				var mb = new MessageBuilder();
-				sl.accept(mb, this.sCmdEvent);
-				this.slashCommandSuccessHandler(this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete());
+				sl.accept(mb, this.currentReply);
+				this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
+				this.currentReply = this.interactionHook.retrieveOriginal().complete();
 			}
 		} else {
 			printUnrecognizedSource();
@@ -95,42 +92,20 @@ public final class ReplyContext {
 		return original != null;
 	}
 
-	public boolean isSlashCommand() {
-		return sCmdEvent != null;
-	}
-
-	private boolean hasRepliedToSlash() {
-		return interactionHook != null;
-	}
-
-	private void slashCommandSuccessHandler(InteractionHook h) {
-		this.interactionHook = h;
-		new Thread(() -> {
-			CallbackContext.getInstance().close();
-			this.currentReply = h.retrieveOriginal().complete();
-		}).start();
-	}
-
 	private void printUnrecognizedSource() {
 		Main.log.error("Replycontext is neither a message or a slashcommand! {}", this);
 	}
 
 	public void reply(Emoji @NonNull ... emojis) {
-		slashSplit(msg -> {
-				for (Emoji e: emojis) {
-					msg.addReaction(e.s()).queue();
-				}
-			},
-			(mb, b) -> {
-				for (Emoji e: emojis) {
-					if (this.currentReply != null) {
-						this.currentReply.addReaction(e.s()).queue();
-					} else {
-						mb.append(e);
-					}
+		slashSplit((mb, b) -> {
+			for (Emoji e : emojis) {
+				if (this.currentReply != null) {
+					this.currentReply.addReaction(e.s()).queue();
+				} else {
+					mb.append(e);
 				}
 			}
-		);
+		});
 
 	}
 
@@ -138,7 +113,7 @@ public final class ReplyContext {
 	Guild getGuild() {
 		if (isRegularMessage()) {
 			return this.original.getGuild();
-		} else if (isSlashCommand()) {
+		} else if (sCmdEvent != null) {
 			return Objects.requireNonNull(this.sCmdEvent.getGuild());
 		} else {
 			printUnrecognizedSource();
@@ -152,10 +127,15 @@ public final class ReplyContext {
 	}
 
 	public void reply(String message) {
-		slashSplit(
-			orig -> orig.getChannel().sendMessage(user.getAsMention() + " " + message).queue(),
-			(mb, e) -> mb.append(mb.length() > 0 ? "\n" : "").append(message)
-		);
+		slashSplit((mb, msg) -> mb.append(mb.length() > 0 ? "\n" : "").append(message));
+	}
+
+	public void reply(ActionRow... rows) {
+		slashSplit((mb, msg) -> {
+			List<ActionRow> l = new LinkedList<>(msg.getActionRows());
+			l.addAll(Arrays.asList(rows));
+			mb.setActionRows(l);
+		});
 	}
 
 	public void reply(Object... messages) {
@@ -166,7 +146,7 @@ public final class ReplyContext {
 		Objects.requireNonNull(elements);
 		// Number of elements not likely worth Arrays.stream overhead.
 		StringJoiner joiner = new StringJoiner(" ");
-		for (Object cs: elements) {
+		for (Object cs : elements) {
 			joiner.add(cs.toString());
 		}
 		return joiner.toString();
@@ -177,23 +157,19 @@ public final class ReplyContext {
 	}
 
 	public void reply(@NonNull Emoji e) {
-		slashSplit(
-			msg -> msg.addReaction(e.s()).queue(),
-			(mb, sce) -> {
-				if (this.currentReply != null) {
-					this.currentReply.addReaction(e.s()).queue();
-				} else {
-					mb.append(e);
-				}
+		slashSplit((mb, msg) -> {
+			if (this.currentReply != null) {
+				this.currentReply.addReaction(e.s()).queue();
+			} else {
+				mb.append(e);
 			}
-		);
+		});
 	}
 
 	public String getOriginalText() {
 		CompletableFuture<String> fut = new CompletableFuture<>();
 		slashSplit(
-			msg -> fut.complete(this.original.getContentRaw()),
-			(mb, sce) -> fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")))
+				(mb, sce) -> fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")))
 		);
 		try {
 			return fut.get();
