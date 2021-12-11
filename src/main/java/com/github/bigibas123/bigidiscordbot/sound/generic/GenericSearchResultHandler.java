@@ -7,54 +7,57 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.events.message.MessageEmbedEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.internal.entities.UserImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static com.github.bigibas123.bigidiscordbot.util.Emoji.oneToTen;
 
 public class GenericSearchResultHandler<T> extends ListenerAdapter {
+
+	private static final int MAX_SONG_COUNT = 5;
 
 	private final ReplyContext replyContext;
 	private final PlayListInfo<T> search;
 	private final JDA jda;
 	private final MessageEmbed embed;
 	private final BiConsumer<TrackInfo<T>, Member> selectionHandler;
-	private Message message;
 
-	public GenericSearchResultHandler(ReplyContext replyContext, PlayListInfo<T> search, BiConsumer<TrackInfo<T>,Member> selectionHandler, JDA jda) {
+	public GenericSearchResultHandler(ReplyContext replyContext, PlayListInfo<T> search, BiConsumer<TrackInfo<T>, Member> selectionHandler, JDA jda) {
 		this.replyContext = replyContext;
 		this.selectionHandler = selectionHandler;
 		this.jda = jda;
-		this.search = search.limit(10);
+		this.search = search.limit(MAX_SONG_COUNT);
 		int i = 1;
-		for(TrackInfo<T> t: search.getTracks()){
+		for (TrackInfo<T> t : search.getTracks()) {
 			t.setNumber(i++);
 		}
 		this.embed = buildEmbed();
 	}
 
 	private void sendMessage() {
-		this.replyContext.getChannel().sendMessageEmbeds(this.embed).queue(s -> {
-			this.message = s;
-			this.jda.addEventListener(this);
-			int bound = Math.min(10, this.search.size());
-			for (int i = 1; i <= bound; i++) {
-				this.message.addReaction(oneToTen.get(i).s()).queue();
-			}
-		});
+		MessageBuilder msg = new MessageBuilder(this.embed);
+		msg.setEmbeds(this.embed);
+		int bound = Math.min(MAX_SONG_COUNT, this.search.size());
+		Button[] buttons = new Button[bound];
+		for (int i = 1; i <= bound; i++) {
+			buttons[i - 1] = Button.primary(String.valueOf(i), net.dv8tion.jda.api.entities.Emoji.fromUnicode(oneToTen.get(i).s()));
+		}
+		this.replyContext.reply(embed);
+		this.replyContext.reply(ActionRow.of(buttons));
+		this.jda.addEventListener(this);
 	}
 
 	private int emojiToInt(MessageReaction.ReactionEmote reactionEmote) {
@@ -68,40 +71,38 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	}
 
 	@Override
-	public void onMessageEmbed(@Nonnull MessageEmbedEvent event) {
-		if (event.getChannel().getIdLong() == this.replyContext.getChannel().getIdLong()) {
-			if (event.getMessageIdLong() != this.message.getIdLong()) {
-				this.message.clearReactions().queue(s -> {
-				}, f -> {
-					if (f instanceof InsufficientPermissionException) {
-						this.message.getReactions().forEach(messageReaction -> messageReaction.removeReaction().queue());
-					}
-				});
-				this.jda.removeEventListener(this);
-			}
-		}
-	}
-
-	@Override
 	public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
 		if (event.getUserIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
 
 		if (replyContext.isIn(event.getChannel())) {
-			if (Utils.isDJ(event.getUser(), event.getGuild())) {
-				if (event.getMessageIdLong() == this.message.getIdLong()) {
+			if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+				if (Utils.isDJ(event.getUser(), event.getGuild())) {
 					int selection = emojiToInt(event.getReactionEmote());
 					if (selection != -1) {
-						this.selectionHandler.accept(this.search.get(selection-1),event.getMember());
+						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
 					} else {
-						this.message.addReaction(Emoji.WARNING.s()).queue();
+						this.replyContext.reply(Emoji.WARNING);
 					}
 				}
+				//if i do this it works even when not caching the user
+				event.getReaction().removeReaction(new UserImpl(event.getUserIdLong(), null)).queue();
 			}
-			//if i do this it works even when not caching the user
-			if (event.getReactionEmote().isEmote()) {
-				message.removeReaction(event.getReactionEmote().getEmote(), new UserImpl(event.getUserIdLong(), null)).queue();
-			} else {
-				message.removeReaction(event.getReactionEmote().getEmoji(), new UserImpl(event.getUserIdLong(), null)).queue();
+
+		}
+	}
+
+	@Override
+	public void onButtonClick(@NotNull ButtonClickEvent event) {
+		if (replyContext.isIn(event.getChannel())) {
+			if (Utils.isDJ(event.getUser(), event.getGuild())) {
+				if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+					int selection = Integer.parseInt(event.getButton().getId());
+					if (selection != -1) {
+						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
+					} else {
+						this.replyContext.reply(Emoji.WARNING.s());
+					}
+				}
 			}
 		}
 	}
@@ -110,7 +111,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		EmbedBuilder ebb = new EmbedBuilder();
 		ebb.setFooter("Requested by @" + replyContext.getUser().getName(), replyContext.getUser().getEffectiveAvatarUrl());
 		ebb.setTitle("Search results");
-		ebb.setColor(Color.MAGENTA);
+		ebb.setColor(0xFF00FF);
 		StringBuilder number = new StringBuilder();
 		StringBuilder title = new StringBuilder();
 		StringBuilder time = new StringBuilder();
