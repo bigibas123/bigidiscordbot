@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,6 +31,7 @@ public final class ReplyContext {
 	@Nullable private final Member member;
 	@Nullable private final Message original;
 	@Nullable private final SlashCommandInteractionEvent sCmdEvent;
+	@NonNull private final Semaphore hookLock = new Semaphore(1);
 	@Nullable private InteractionHook interactionHook;
 	@Nullable private Message currentReply;
 
@@ -39,6 +41,14 @@ public final class ReplyContext {
 
 	public ReplyContext(SlashCommandInteractionEvent sCmdEvent) {
 		this(sCmdEvent.getChannel(), sCmdEvent.getUser(), sCmdEvent.getMember(), null, sCmdEvent);
+		this.hookLock.lock();
+		this.sCmdEvent.deferReply().queue(ih -> {
+			interactionHook = ih;
+			hookLock.unlock();
+		}, throwable -> {
+			hookLock.unlock();
+			Main.log.warn("Exception on first setting interaction hook", throwable);
+		});
 	}
 
 	private static String unsafeJoin(Object... elements) {
@@ -49,6 +59,22 @@ public final class ReplyContext {
 			joiner.add(cs.toString());
 		}
 		return joiner.toString();
+	}
+
+	public <T extends RestAction<InteractionHook>> void setInteractionHook(@Nullable T rcA) {
+		hookLock.lock();
+		if (rcA != null) {
+			rcA.queue(interactionHook1 -> {
+				this.interactionHook = interactionHook1;
+				hookLock.unlock();
+			}, throwable -> {
+				hookLock.unlock();
+				Main.log.warn("Exception in setting interaction hook", throwable);
+			});
+		} else {
+			this.interactionHook = null;
+			hookLock.unlock();
+		}
 	}
 
 	public @Nonnull
@@ -65,19 +91,19 @@ public final class ReplyContext {
 	}
 
 	private void slashSplit(BiConsumer<MessageBuilder, Message> sl) {
-		if (isRegularMessage()) {
-			MessageBuilder mb;
-			if (currentReply == null) {
-				mb = new MessageBuilder();
-				sl.accept(mb, null);
-				this.currentReply = this.original.reply(mb.build()).complete();
-			} else {
-				mb = new MessageBuilder(currentReply);
-				sl.accept(mb, this.currentReply);
-				this.currentReply = this.currentReply.editMessage(mb.build()).complete();
-			}
-		} else if (sCmdEvent != null) {
-			synchronized (sCmdEvent) {
+		try(var ignored = hookLock.lock()){
+			if (isRegularMessage()) {
+				MessageBuilder mb;
+				if (currentReply == null) {
+					mb = new MessageBuilder();
+					sl.accept(mb, null);
+					this.currentReply = this.original.reply(mb.build()).complete();
+				} else {
+					mb = new MessageBuilder(currentReply);
+					sl.accept(mb, this.currentReply);
+					this.currentReply = this.currentReply.editMessage(mb.build()).complete();
+				}
+			} else if (sCmdEvent != null) {
 				if (interactionHook != null) {
 					var mb = new MessageBuilder(currentReply);
 					sl.accept(mb, this.currentReply);
@@ -88,9 +114,9 @@ public final class ReplyContext {
 					this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
 					this.currentReply = this.interactionHook.retrieveOriginal().complete();
 				}
+			} else {
+				printUnrecognizedSource();
 			}
-		} else {
-			printUnrecognizedSource();
 		}
 	}
 

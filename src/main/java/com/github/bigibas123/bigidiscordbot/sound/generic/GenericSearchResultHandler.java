@@ -96,7 +96,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		if (replyContext.isIn(event.getChannel())) {
 			if (Utils.isDJ(event.getUser(), event.getGuild())) {
 				if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
-					replyContext.setInteractionHook(event.deferReply().complete());
+					replyContext.setInteractionHook(event.deferEdit());
 					int selection = Integer.parseInt(event.getButton().getId());
 					if (selection != -1) {
 						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
