@@ -7,7 +7,7 @@ import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class SwapCommand extends MusicCommand {
 
@@ -52,7 +52,7 @@ public class SwapCommand extends MusicCommand {
 						return false;
 					}
 				}
-				HelpCommand.sendCommandDescription(replyContext,"swap");
+				HelpCommand.sendCommandDescription(replyContext, "swap");
 				return false;
 			}
 		}
@@ -62,10 +62,8 @@ public class SwapCommand extends MusicCommand {
 	}
 
 	@Override
-	protected CommandData _getCommandData(CommandData c) {
-		return super._getCommandData(c)
-			.addOption(OptionType.INTEGER, "1", "First song in the swap", true)
-			.addOption(OptionType.INTEGER, "2", "Second song in the swap", true);
+	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
+		return super._getSlashCommandData(c).addOption(OptionType.INTEGER, "1", "First song in the swap", true).addOption(OptionType.INTEGER, "2", "Second song in the swap", true);
 	}
 
 }

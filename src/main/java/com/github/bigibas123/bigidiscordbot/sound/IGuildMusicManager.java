@@ -2,46 +2,47 @@ package com.github.bigibas123.bigidiscordbot.sound;
 
 import com.github.bigibas123.bigidiscordbot.sound.objects.TrackInfo;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 
 import java.util.ArrayList;
 
 public interface IGuildMusicManager<T> {
-    /**
-     * joins the specified voice channel
-     * returns false if it couldn't
-     *
-     * @param channel the {@link VoiceChannel} to connect to
-     * @return true if it could connect to the specified channel or is already connected to it
-     */
-    boolean connect(VoiceChannel channel);
+	/**
+	 * joins the specified voice channel
+	 * returns false if it couldn't
+	 *
+	 * @param channel the {@link AudioChannel} to connect to
+	 *
+	 * @return true if it could connect to the specified channel or is already connected to it
+	 */
+	boolean connect(AudioChannel channel);
 
-    void queue(String search, ReplyContext context);
+	void queue(String search, ReplyContext context);
 
-    void skip();
+	void skip();
 
-    void stop();
+	void stop();
 
-    void pause();
+	void pause();
 
-    void unpause();
+	void unpause();
 
-    boolean isPlaying();
+	boolean isPlaying();
 
-    TrackInfo<T> getCurrentTrack();
+	TrackInfo<T> getCurrentTrack();
 
-    ArrayList<TrackInfo<T>> getQueued();
+	ArrayList<TrackInfo<T>> getQueued();
 
-    void swapQueued(int first, int second);
+	void swapQueued(int first, int second);
 
-    int getQueueSize();
+	int getQueueSize();
 
-    TrackInfo<T> getQueuedTrack(int position);
+	TrackInfo<T> getQueuedTrack(int position);
 
-    void setVolume(int volume);
+	int getVolume();
 
-    int getVolume();
+	void setVolume(int volume);
 
-    boolean seek(long location);
+	boolean seek(long location);
 
 }

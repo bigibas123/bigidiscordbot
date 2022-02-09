@@ -4,17 +4,17 @@ import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 
 public class StopCommand extends MusicCommand {
-    public StopCommand() {
-        super("stop", "stops the music currently playing", "");
-    }
+	public StopCommand() {
+		super("stop", "stops the music currently playing", "");
+	}
 
-    @Override
-    public boolean execute(ReplyContext replyContext, String... args) {
-        if (this.guildManagerExists(replyContext)) {
-            this.stopGuildManager(replyContext);
-            replyContext.reply(Emoji.STOP);
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean execute(ReplyContext replyContext, String... args) {
+		if (this.guildManagerExists(replyContext)) {
+			this.stopGuildManager(replyContext);
+			replyContext.reply(Emoji.STOP);
+			return true;
+		}
+		return false;
+	}
 }

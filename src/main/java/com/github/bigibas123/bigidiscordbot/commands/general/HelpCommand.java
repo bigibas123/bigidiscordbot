@@ -7,96 +7,87 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
 public class HelpCommand extends ICommand {
 
-    public HelpCommand() {
-        super("Help", "Displays this menu", "[command]", "h");
-    }
+	public HelpCommand() {
+		super("Help", "Displays this menu", "[command]", "h");
+	}
 
-    @Override
-    public boolean execute(ReplyContext replyContext, String... args) {
+	public static boolean sendCommandList(ReplyContext rc) {
+		EmbedBuilder ebb = new EmbedBuilder();
+		ebb.setFooter("Requested by @" + rc.getUser().getName(), rc.getUser().getEffectiveAvatarUrl());
+		ebb.setTitle("Help");
+		ebb.appendDescription(rc.getJDA().getSelfUser().getAsMention() + " help [command] - for more info");
+		ebb.setColor(Color.GREEN);
+		StringBuilder names = new StringBuilder();
+		StringBuilder descriptions = new StringBuilder();
+		boolean first = true;
+		for (ICommand command : CommandHandling.getHelpList()) {
+			if (!command.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) continue;
+			if (first) {
+				first = false;
+				names.append(command.getName());
+				descriptions.append(command.getDescription());
+			} else {
+				names.append("\r\n").append(command.getName());
+				descriptions.append("\r\n").append(command.getDescription());
+			}
+		}
+		ebb.addField("Command", names.toString(), true);
+		ebb.addField("Description", descriptions.toString(), true);
+		rc.reply(ebb.build());
+		return true;
+	}
 
-        if (args.length > 0) {
-            return sendCommandDescription(replyContext, args);
-        } else{
-            return sendCommandList(replyContext);
-        }
-    }
+	public static boolean sendCommandDescription(ReplyContext message, String... args) {
+		EmbedBuilder ebb = new EmbedBuilder();
+		ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
+		ICommand cmd = CommandHandling.getCommandList().get(args[0].toLowerCase());
+		if (cmd != null) {
+			ebb.setTitle(cmd.getName());
+			ebb.setColor(Color.GREEN);
+			ebb.appendDescription(cmd.getDescription()).appendDescription("\r\n");
+			ebb.addField("Usage", String.format("%s %s %s", message.getJDA().getSelfUser().getAsMention(), cmd.getName(), cmd.getSyntax()), false);
+			ebb.addField("Aliases", String.join(", ", cmd.getAliases()), false);
+			message.reply(ebb.build());
+			return true;
+		} else {
+			message.reply(String.format("Command %s not found", args[0]));
+			return false;
+		}
+	}
 
-    public static boolean sendCommandList(ReplyContext rc) {
-        EmbedBuilder ebb = new EmbedBuilder();
-        ebb.setFooter("Requested by @" + rc.getUser().getName(), rc.getUser().getEffectiveAvatarUrl());
-        ebb.setTitle("Help");
-        ebb.appendDescription(rc.getJDA().getSelfUser().getAsMention()+" help [command] - for more info");
-        ebb.setColor(Color.GREEN);
-        StringBuilder names = new StringBuilder();
-        StringBuilder descriptions = new StringBuilder();
-        boolean first = true;
-        for (ICommand command : CommandHandling.getHelpList()) {
-            if (!command.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) continue;
-            if (first) {
-                first = false;
-                names.append(command.getName());
-                descriptions.append(command.getDescription());
-            } else {
-                names.append("\r\n").append(command.getName());
-                descriptions.append("\r\n").append(command.getDescription());
-            }
-        }
-        ebb.addField("Command", names.toString(), true);
-        ebb.addField("Description", descriptions.toString(), true);
-        rc.reply(ebb.build());
-        return true;
-    }
+	@Override
+	public boolean execute(ReplyContext replyContext, String... args) {
 
-    public static boolean sendCommandDescription(ReplyContext message, String... args) {
-        EmbedBuilder ebb = new EmbedBuilder();
-        ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
-        ICommand cmd = CommandHandling.getCommandList().get(args[0].toLowerCase());
-        if (cmd != null) {
-            ebb.setTitle(cmd.getName());
-            ebb.setColor(Color.GREEN);
-            ebb.appendDescription(cmd.getDescription()).appendDescription("\r\n");
-            ebb.addField("Usage", String.format("%s %s %s", message.getJDA().getSelfUser().getAsMention(), cmd.getName(), cmd.getSyntax()), false);
-            ebb.addField("Aliases", String.join(", ", cmd.getAliases()), false);
-            message.reply(ebb.build());
-            return true;
-        } else {
-            message.reply(String.format("Command %s not found", args[0]));
-            return false;
-        }
-    }
+		if (args.length > 0) {
+			return sendCommandDescription(replyContext, args);
+		} else {
+			return sendCommandList(replyContext);
+		}
+	}
 
-    @Override
-    public boolean hasPermission(User user, Member member, MessageChannel channel) {
-        return true;
-    }
+	@Override
+	public boolean hasPermission(User user, Member member, MessageChannel channel) {
+		return true;
+	}
 
-    @Override
-    protected CommandData _getCommandData(CommandData c) {
-        return c
-            .addOptions(
-                new OptionData(
-                    OptionType.STRING, "command",
-                    "Command you want to print help for", false
-                )
-                    .addChoices(
-                        CommandHandling.getHelpList().stream().map(ICommand::getName).map(k -> new Command.Choice(k, k)).toList()
-                    )
-            );
-    }
+	@Override
+	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
+		return c.addOptions(new OptionData(OptionType.STRING, "command", "Command you want to print help for", false).addChoices(CommandHandling.getHelpList().stream().map(ICommand::getName).map(k -> new Command.Choice(k, k)).toList()));
+	}
 
-    @Override
-    protected Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
-        return null;
-    }
+	@Override
+	protected Collection<CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
+		return null;
+	}
 
 }

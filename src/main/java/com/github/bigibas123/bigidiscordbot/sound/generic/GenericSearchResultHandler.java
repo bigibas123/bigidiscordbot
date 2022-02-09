@@ -11,11 +11,11 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,7 +62,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 
 	private int emojiToInt(MessageReaction.ReactionEmote reactionEmote) {
 		if (reactionEmote.isEmote()) return -1;
-		for (Map.Entry<Integer, Emoji> entry: oneToTen.entrySet()) {
+		for (Map.Entry<Integer, Emoji> entry : oneToTen.entrySet()) {
 			if (reactionEmote.getName().equals(entry.getValue().s())) {
 				return entry.getKey();
 			}
@@ -92,10 +92,11 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	}
 
 	@Override
-	public void onButtonClick(@NotNull ButtonClickEvent event) {
+	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
 		if (replyContext.isIn(event.getChannel())) {
 			if (Utils.isDJ(event.getUser(), event.getGuild())) {
 				if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+					replyContext.setInteractionHook(event.deferReply().complete());
 					int selection = Integer.parseInt(event.getButton().getId());
 					if (selection != -1) {
 						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
@@ -116,7 +117,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		StringBuilder title = new StringBuilder();
 		StringBuilder time = new StringBuilder();
 		boolean first = true;
-		for (TrackInfo<T> track: search.getTracks()) {
+		for (TrackInfo<T> track : search.getTracks()) {
 			if (first) {
 				first = false;
 			} else {

@@ -2,9 +2,9 @@ package com.github.bigibas123.bigidiscordbot;
 
 
 import com.github.bigibas123.bigidiscordbot.sound.SoundManager;
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -43,14 +43,15 @@ public class Main {
 		final SessionController sessionController = new ConcurrentSessionController();
 		sessionController.setConcurrency(Runtime.getRuntime().availableProcessors());
 
-		ShardManager b = DefaultShardManagerBuilder.create(Reference.token, enabledIntents)
+		ShardManager b = DefaultShardManagerBuilder
+				.create(Reference.token, enabledIntents)
 				.enableIntents(enabledIntents)
 				.disableIntents(disabledIntents)
 				.addEventListenerProvider(Listener::new)
 				.enableCache(enabledCaches)
 				.disableCache(disabledCaches)
 				.setActivity(null)
-				.setAudioSendFactory(new NativeAudioSendFactory())
+				.setAudioSendFactory(new DefaultSendFactory())
 				.setAutoReconnect(true)
 				.setBulkDeleteSplittingEnabled(false)
 				.setChunkingFilter(ChunkingFilter.NONE)
