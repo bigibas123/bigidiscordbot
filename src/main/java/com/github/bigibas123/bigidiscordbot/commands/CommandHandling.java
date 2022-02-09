@@ -12,7 +12,7 @@ import lombok.SneakyThrows;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.internal.requests.CallbackContext;
@@ -60,31 +60,26 @@ public class CommandHandling {
 
 	public static void handleSlashRegistration(ReadyEvent event) {
 
-//		event.getJDA().retrieveCommands().queue(s -> {
-//			s.forEach(cmd -> {
-//				event.getJDA().deleteCommandById(cmd.getIdLong()).queue();
-//			});
-//		});
-		event.getJDA().updateCommands().addCommands(
-				getHelpList().stream()
-						.map(ICommand::getCommandData)
-						.filter(Objects::nonNull)
-						.collect(Collectors.toList())
-		).queue();
-//		Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
-//		assert debugGuild != null;
-//		debugGuild.retrieveCommands()
-//			.queue(s ->
-//				s.parallelStream().forEach(cmd -> debugGuild
-//					.deleteCommandById(cmd.getIdLong())
-//					.queue()
-//				)
-//			);
-//		event.getJDA().getGuildById(232516313099141121L).updateCommands().addCommands(
-//			getHelpList().stream()
-//				.map(ICommand::getCommandData)
-//				.collect(Collectors.toList())
-//		).queue();
+		//		event.getJDA().retrieveCommands().queue(s -> {
+		//			s.forEach(cmd -> {
+		//				event.getJDA().deleteCommandById(cmd.getIdLong()).queue();
+		//			});
+		//		});
+		event.getJDA().updateCommands().addCommands(getHelpList().stream().map(ICommand::getCommandData).filter(Objects::nonNull).collect(Collectors.toList())).queue();
+		//		Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
+		//		assert debugGuild != null;
+		//		debugGuild.retrieveCommands()
+		//			.queue(s ->
+		//				s.parallelStream().forEach(cmd -> debugGuild
+		//					.deleteCommandById(cmd.getIdLong())
+		//					.queue()
+		//				)
+		//			);
+		//		event.getJDA().getGuildById(232516313099141121L).updateCommands().addCommands(
+		//			getHelpList().stream()
+		//				.map(ICommand::getCommandData)
+		//				.collect(Collectors.toList())
+		//		).queue();
 	}
 
 	public static ArrayList<ICommand> getHelpList() {
@@ -95,7 +90,7 @@ public class CommandHandling {
 		return commands;
 	}
 
-	public void handleSlashCommand(@NotNull SlashCommandEvent event) {
+	public void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) {
 		var opts = event.getOptions().stream().map(OptionMapping::getAsString).toArray(String[]::new);
 		var rc = new ReplyContext(event);
 		ICommand cmd = commands.get(rc.getSCmdEvent().getName());
@@ -128,8 +123,8 @@ public class CommandHandling {
 					rc.reply(STOP_SIGN);
 					Main.log.debug(String.format("User: %s got permission denied for %s", rc.getUser(), cmd.getName()));
 				} else {
-					Main.log.debug(String.format("User: %s tried to execute: %s but not found", rc.getUser(), rc.getOriginalText()));
 					rc.reply(SHRUG);
+					Main.log.debug(String.format("User: %s tried to execute: %s but not found", rc.getUser(), rc.getOriginalText()));
 				}
 
 			}
@@ -158,7 +153,7 @@ public class CommandHandling {
 
 	@SneakyThrows(InterruptedException.class)
 	public void registerSlashCommandPerms(Guild guild) {
-		Map<String, Collection<? extends CommandPrivilege>> map = new HashMap<>();
+		Map<String, Collection<CommandPrivilege>> map = new HashMap<>();
 		var cdl = new CountDownLatch(2);
 		guild.getJDA().retrieveCommands().queue(s -> {
 			s.forEach(cmd -> map.put(cmd.getId(), getCommandList().get(cmd.getName()).getPrivileges(guild)));
@@ -169,10 +164,7 @@ public class CommandHandling {
 			cdl.countDown();
 		});
 		cdl.await();
-		guild.updateCommandPrivileges(map).queue(
-				suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()),
-				err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err)
-		);
+		guild.updateCommandPrivileges(map).queue(suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()), err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err));
 	}
 
 }

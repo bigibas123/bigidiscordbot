@@ -10,8 +10,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-@Getter( AccessLevel.PROTECTED )
+@Getter(AccessLevel.PROTECTED)
 public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<T> {
 
 	private final Guild guild;
@@ -32,22 +32,19 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	private final Queue<TrackInfo<T>> queue;
 	private PlayState state;
 
-	@Getter( AccessLevel.PUBLIC )
-	private TrackInfo<T> currentTrack;
+	@Getter(AccessLevel.PUBLIC) private TrackInfo<T> currentTrack;
 
 	private ReplyContext currentReplyContext;
 
 	public GenericGuildMusicManager(Guild guild) {
 		this.queue = new ConcurrentLinkedQueue<>();
 		this.guild = guild;
-		this.audioManager = guild.getJDA().getAudioManagerCache().stream()
-			.filter(a -> a.getGuild().getIdLong() == this.guild.getIdLong())
-			.findFirst().orElse(this.guild.getAudioManager());
+		this.audioManager = guild.getJDA().getAudioManagerCache().stream().filter(a -> a.getGuild().getIdLong() == this.guild.getIdLong()).findFirst().orElse(this.guild.getAudioManager());
 		this.audioManager.setSpeakingMode(SpeakingMode.VOICE);
 	}
 
 	@Override
-	public boolean connect(VoiceChannel channel) {
+	public boolean connect(AudioChannel channel) {
 		if (this.getAudioManager().isConnected()) {
 			return Utils.isSameThing(this.getAudioManager().getConnectedChannel(), channel);
 		} else {
@@ -120,8 +117,7 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	@Override
 	public TrackInfo<T> getQueuedTrack(int position) {
 		if (position < this.getQueue().size()) {
-			@SuppressWarnings( "unchecked" )
-			TrackInfo<T>[] trackInfos = this.getQueue().toArray(new TrackInfo[0]);
+			@SuppressWarnings("unchecked") TrackInfo<T>[] trackInfos = this.getQueue().toArray(new TrackInfo[0]);
 			return trackInfos[position];
 		} else {
 			return null;
@@ -131,48 +127,42 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	@Override
 	public void queue(String search, ReplyContext replyContext) {
 		this.currentReplyContext = replyContext;
-		this.search(search,
-			() -> {
-				if (!search.startsWith("ytsearch:")) {
-					replyContext.reply("Searching youtube for: " + search);
-					this.queue("ytsearch:" + search, replyContext);
-				} else {
-					replyContext.reply("Found nothing for: " + search);
-				}
-			},
-			singleTrack -> {
-				this.queue.offer(singleTrack);
-				replyContext.reply("track: " + singleTrack.getTitle() + " queued");
-				onTrackAdded();
-			},
-			playlist -> {
-				AtomicInteger count = new AtomicInteger();
-				playlist.getTracks().forEach(e -> {
-					if (this.queue.offer(e)) {
-						count.incrementAndGet();
-					}
-				});
-				if (count.get() == playlist.size()) {
-					replyContext.reply("queued " + playlist.size() + " tracks from " + playlist.getName());
-				} else {
-					replyContext.reply("queued (" + count.get() + "/" + playlist.size() + ") tracks from " + playlist.getName());
-				}
-				onTrackAdded();
-			},
-			searchResult -> new GenericSearchResultHandler<>(replyContext, searchResult, (e,u) -> {
-				this.queue.offer(e);
-				replyContext.reply("queued: "+e.getTitle());
-				onTrackAdded();
-			}, replyContext.getJDA()).go(),
-			ex -> {
-				getLogger().warn("Execption while searching for song:", ex);
-				replyContext.reply("Failure searching tracks:" + ex.getMessage());
+		this.search(search, () -> {
+			if (!search.startsWith("ytsearch:")) {
+				replyContext.reply("Searching youtube for: " + search);
+				this.queue("ytsearch:" + search, replyContext);
+			} else {
+				replyContext.reply("Found nothing for: " + search);
 			}
-		);
+		}, singleTrack -> {
+			this.queue.offer(singleTrack);
+			replyContext.reply("track: " + singleTrack.getTitle() + " queued");
+			onTrackAdded();
+		}, playlist -> {
+			AtomicInteger count = new AtomicInteger();
+			playlist.getTracks().forEach(e -> {
+				if (this.queue.offer(e)) {
+					count.incrementAndGet();
+				}
+			});
+			if (count.get() == playlist.size()) {
+				replyContext.reply("queued " + playlist.size() + " tracks from " + playlist.getName());
+			} else {
+				replyContext.reply("queued (" + count.get() + "/" + playlist.size() + ") tracks from " + playlist.getName());
+			}
+			onTrackAdded();
+		}, searchResult -> new GenericSearchResultHandler<>(replyContext, searchResult, (e, u) -> {
+			this.queue.offer(e);
+			replyContext.reply("queued: " + e.getTitle());
+			onTrackAdded();
+		}, replyContext.getJDA()).go(), ex -> {
+			getLogger().warn("Execption while searching for song:", ex);
+			replyContext.reply("Failure searching tracks:" + ex.getMessage());
+		});
 	}
 
 	private void onTrackAdded() {
-		if(this.state == PlayState.STOPPED) {
+		if (this.state == PlayState.STOPPED) {
 			this.state = PlayState.PLAYING;
 			updateState();
 		}

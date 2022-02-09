@@ -6,7 +6,7 @@ import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
@@ -39,7 +39,7 @@ public class Prune extends ICommand {
 		if (orig == -1) {
 			if (replyContext.getChannel().hasLatestMessage()) {
 				orig = replyContext.getChannel().getLatestMessageIdLong();
-			}else{
+			} else {
 				replyContext.reply("No messages in channel yet can't purge anything");
 				return false;
 			}
@@ -48,28 +48,22 @@ public class Prune extends ICommand {
 			AtomicInteger sleepCounter = new AtomicInteger();
 			if (amount <= 100) {
 				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
-				hist.parallelStream()
-						.filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser()))
-						.forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
+				hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
 			} else {
 				while (amount > 0) {
 					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
-					hist.parallelStream()
-							.filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser()))
-							.forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
+					hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
 					amount -= 100;
 				}
 			}
 		} else {
 			if (amount <= 100) {
 				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
-				hist.parallelStream()
-						.forEach(hm -> hm.delete().complete());
+				hist.parallelStream().forEach(hm -> hm.delete().complete());
 			} else {
 				while (amount > 0) {
 					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
-					hist.parallelStream()
-							.forEach(hm -> hm.delete().complete());
+					hist.parallelStream().forEach(hm -> hm.delete().complete());
 					amount -= 100;
 				}
 			}
@@ -92,18 +86,13 @@ public class Prune extends ICommand {
 	}
 
 	@Override
-	protected CommandData _getCommandData(CommandData c) {
-		return c
-				.setDefaultEnabled(true)
-				.addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
+	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
+		return c.setDefaultEnabled(true).addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
 	}
 
 	@Override
-	protected Collection<? extends CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
-		roles.stream()
-				.filter(role -> role.hasPermission(Permission.MESSAGE_MANAGE))
-				.map(CommandPrivilege::enable)
-				.forEach(list::add);
+	protected Collection<CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
+		roles.stream().filter(role -> role.hasPermission(Permission.MESSAGE_MANAGE)).map(CommandPrivilege::enable).forEach(list::add);
 		return list;
 	}
 

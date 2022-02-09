@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -25,30 +25,34 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReplyContext {
 
-	@NonNull
-	private final MessageChannel channel;
-	@NonNull
-	private final User user;
-	@Nullable
-	private final Member member;
-	@Nullable
-	private final Message original;
-	@Nullable
-	private final SlashCommandEvent sCmdEvent;
-	@Nullable
-	private InteractionHook interactionHook;
-	@Nullable
-	private Message currentReply;
+	@Nonnull private final MessageChannel channel;
+	@Nonnull private final User user;
+	@Nullable private final Member member;
+	@Nullable private final Message original;
+	@Nullable private final SlashCommandInteractionEvent sCmdEvent;
+	@Nullable private InteractionHook interactionHook;
+	@Nullable private Message currentReply;
 
 	public ReplyContext(Message original) {
 		this(original.getChannel(), original.getAuthor(), original.getMember(), original, null);
 	}
 
-	public ReplyContext(SlashCommandEvent sCmdEvent) {
+	public ReplyContext(SlashCommandInteractionEvent sCmdEvent) {
 		this(sCmdEvent.getChannel(), sCmdEvent.getUser(), sCmdEvent.getMember(), null, sCmdEvent);
 	}
 
-	public @NonNull JDA getJDA() {
+	private static String unsafeJoin(Object... elements) {
+		Objects.requireNonNull(elements);
+		// Number of elements not likely worth Arrays.stream overhead.
+		StringJoiner joiner = new StringJoiner(" ");
+		for (Object cs : elements) {
+			joiner.add(cs.toString());
+		}
+		return joiner.toString();
+	}
+
+	public @Nonnull
+	JDA getJDA() {
 		return this.channel.getJDA();
 	}
 
@@ -73,15 +77,17 @@ public final class ReplyContext {
 				this.currentReply = this.currentReply.editMessage(mb.build()).complete();
 			}
 		} else if (sCmdEvent != null) {
-			if (interactionHook != null) {
-				var mb = new MessageBuilder(currentReply);
-				sl.accept(mb, this.currentReply);
-				this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
-			} else {
-				var mb = new MessageBuilder();
-				sl.accept(mb, this.currentReply);
-				this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
-				this.currentReply = this.interactionHook.retrieveOriginal().complete();
+			synchronized (sCmdEvent) {
+				if (interactionHook != null) {
+					var mb = new MessageBuilder(currentReply);
+					sl.accept(mb, this.currentReply);
+					this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
+				} else {
+					var mb = new MessageBuilder();
+					sl.accept(mb, this.currentReply);
+					this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
+					this.currentReply = this.interactionHook.retrieveOriginal().complete();
+				}
 			}
 		} else {
 			printUnrecognizedSource();
@@ -142,16 +148,6 @@ public final class ReplyContext {
 		this.reply(unsafeJoin(messages));
 	}
 
-	private static String unsafeJoin(Object... elements) {
-		Objects.requireNonNull(elements);
-		// Number of elements not likely worth Arrays.stream overhead.
-		StringJoiner joiner = new StringJoiner(" ");
-		for (Object cs : elements) {
-			joiner.add(cs.toString());
-		}
-		return joiner.toString();
-	}
-
 	public boolean isIn(@NonNull MessageChannel channel) {
 		return this.getChannel().getIdLong() == channel.getIdLong();
 	}
@@ -168,9 +164,13 @@ public final class ReplyContext {
 
 	public String getOriginalText() {
 		CompletableFuture<String> fut = new CompletableFuture<>();
-		slashSplit(
-				(mb, sce) -> fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")))
-		);
+		slashSplit((mb, sce) -> {
+			if (isRegularMessage()) {
+				fut.complete(this.getOriginal().getContentRaw());
+			} else {
+				fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")));
+			}
+		});
 		try {
 			return fut.get();
 		} catch (InterruptedException | ExecutionException e) {

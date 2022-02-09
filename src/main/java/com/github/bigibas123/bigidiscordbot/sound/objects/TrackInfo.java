@@ -8,13 +8,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class TrackInfo<T> {
 
-    private final T track;
-    private final String title;
-    private final long duration;
-    private int number;
+	private final T track;
+	private final String title;
+	private final long duration;
+	private int number;
 
-    public String toString() {
-        return "TrackInfo(title=" + this.getTitle() + ", duration=" + Utils.formatDuration(this.getDuration()) + ", number=" + this.getNumber() + ")";
-    }
+	public String toString() {
+		return "TrackInfo(title=" + this.getTitle() + ", duration=" + Utils.formatDuration(this.getDuration()) + ", number=" + this.getNumber() + ")";
+	}
 
 }
