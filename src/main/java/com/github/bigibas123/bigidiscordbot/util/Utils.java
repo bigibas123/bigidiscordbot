@@ -144,7 +144,9 @@ public class Utils {
 	 * @return tru if the message mentions the bot specifically, false if not mentioned or not specifically mentioned
 	 */
 	public boolean mentionsMe(Message message) {
-		return message.isMentioned(message.getJDA().getSelfUser()) && (message.getMentionedRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName())) || message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
+		return message.isMentioned(message.getJDA().getSelfUser()) && (message.getMentionedRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName())) || message.isMentioned(message
+				.getJDA()
+				.getSelfUser(), Message.MentionType.USER));
 
 	}
 

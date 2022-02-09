@@ -43,6 +43,34 @@ public class Main {
 		final SessionController sessionController = new ConcurrentSessionController();
 		sessionController.setConcurrency(Runtime.getRuntime().availableProcessors());
 
-		ShardManager b = DefaultShardManagerBuilder.create(Reference.token, enabledIntents).enableIntents(enabledIntents).disableIntents(disabledIntents).addEventListenerProvider(Listener::new).enableCache(enabledCaches).disableCache(disabledCaches).setActivity(null).setAudioSendFactory(new DefaultSendFactory()).setAutoReconnect(true).setBulkDeleteSplittingEnabled(false).setChunkingFilter(ChunkingFilter.NONE).setCompression(Compression.ZLIB).setContextEnabled(true).setEnableShutdownHook(true).setLargeThreshold(50).setMaxBufferSize(4096).setMaxReconnectDelay(64).setMemberCachePolicy(MemberCachePolicy.DEFAULT).setRawEventsEnabled(false).setRelativeRateLimit(true).setRequestTimeoutRetry(true).setGatewayEncoding(GatewayEncoding.ETF).setSessionController(sessionController).setEventManagerProvider(shardID -> new InterfacedEventManager()).setShardsTotal(-1).setStatus(OnlineStatus.ONLINE).setToken(Reference.token).build();
+		ShardManager b = DefaultShardManagerBuilder
+				.create(Reference.token, enabledIntents)
+				.enableIntents(enabledIntents)
+				.disableIntents(disabledIntents)
+				.addEventListenerProvider(Listener::new)
+				.enableCache(enabledCaches)
+				.disableCache(disabledCaches)
+				.setActivity(null)
+				.setAudioSendFactory(new DefaultSendFactory())
+				.setAutoReconnect(true)
+				.setBulkDeleteSplittingEnabled(false)
+				.setChunkingFilter(ChunkingFilter.NONE)
+				.setCompression(Compression.ZLIB)
+				.setContextEnabled(true)
+				.setEnableShutdownHook(true)
+				.setLargeThreshold(50)
+				.setMaxBufferSize(4096)
+				.setMaxReconnectDelay(64)
+				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+				.setRawEventsEnabled(false)
+				.setRelativeRateLimit(true)
+				.setRequestTimeoutRetry(true)
+				.setGatewayEncoding(GatewayEncoding.ETF)
+				.setSessionController(sessionController)
+				.setEventManagerProvider(shardID -> new InterfacedEventManager())
+				.setShardsTotal(-1)
+				.setStatus(OnlineStatus.ONLINE)
+				.setToken(Reference.token)
+				.build();
 	}
 }

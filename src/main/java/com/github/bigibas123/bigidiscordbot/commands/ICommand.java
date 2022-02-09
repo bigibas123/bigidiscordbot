@@ -61,7 +61,11 @@ public abstract class ICommand {
 		var list = new LinkedList<CommandPrivilege>();
 		var roles = g.getRoles();
 		var returnedList = this._getPrivilegesForGuild(g, roles, list);
-		Main.log.trace("Priveleges for: " + g.getIdLong() + " in command: " + this.getName() + ": " + (returnedList != null ? returnedList : list).stream().map(p -> String.format("{t:%s,id:%s}", p.getType(), p.getIdLong())).toList().toString());
+		Main.log.trace("Priveleges for: " + g.getIdLong() + " in command: " + this.getName() + ": " + (returnedList != null ? returnedList : list)
+				.stream()
+				.map(p -> String.format("{t:%s,id:%s}", p.getType(), p.getIdLong()))
+				.toList()
+				.toString());
 		return returnedList != null ? returnedList : list;
 	}
 
