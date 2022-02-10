@@ -23,8 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-@Getter(AccessLevel.PROTECTED)
-public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<T> {
+@Getter(AccessLevel.PROTECTED) public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<T> {
 
 	private final Guild guild;
 	private final AudioManager audioManager;
@@ -47,7 +46,8 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	public boolean connect(AudioChannel channel) {
 		if (this.getAudioManager().isConnected()) {
 			return Utils.isSameThing(this.getAudioManager().getConnectedChannel(), channel);
-		} else {
+		}
+		else {
 			try {
 				this.getAudioManager().openAudioConnection(channel);
 				this.state = PlayState.STOPPED;
@@ -86,7 +86,8 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 		if (this.state == PlayState.PAUSED) {
 			this.state = PlayState.PLAYING;
 			this.updateState();
-		} else {
+		}
+		else {
 			throw new IllegalStateException("Player is in " + this.state + " but is should be in " + PlayState.PAUSED);
 		}
 	}
@@ -119,7 +120,8 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 		if (position < this.getQueue().size()) {
 			@SuppressWarnings("unchecked") TrackInfo<T>[] trackInfos = this.getQueue().toArray(new TrackInfo[0]);
 			return trackInfos[position];
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
@@ -131,7 +133,8 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 			if (!search.startsWith("ytsearch:")) {
 				replyContext.reply("Searching youtube for: " + search);
 				this.queue("ytsearch:" + search, replyContext);
-			} else {
+			}
+			else {
 				replyContext.reply("Found nothing for: " + search);
 			}
 		}, singleTrack -> {
@@ -147,7 +150,8 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 			});
 			if (count.get() == playlist.size()) {
 				replyContext.reply("queued " + playlist.size() + " tracks from " + playlist.getName());
-			} else {
+			}
+			else {
 				replyContext.reply("queued (" + count.get() + "/" + playlist.size() + ") tracks from " + playlist.getName());
 			}
 			onTrackAdded();
@@ -201,7 +205,8 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 	protected TrackInfo<T> pollNextTrack() {
 		if ((this.currentTrack = getQueue().poll()) != null) {
 			return this.currentTrack;
-		} else {
+		}
+		else {
 			this.state = PlayState.STOPPED;
 			updateState();
 			return null;
@@ -210,7 +215,14 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 
 	protected abstract void stopPlaying();
 
-	protected abstract void search(String search, Runnable onNothingFound, Consumer<TrackInfo<T>> onTrackFound, Consumer<PlayListInfo<T>> onPlayListFound, Consumer<PlayListInfo<T>> onSearchResults, Consumer<Throwable> onException);
+	protected abstract void search(
+			String search,
+			Runnable onNothingFound,
+			Consumer<TrackInfo<T>> onTrackFound,
+			Consumer<PlayListInfo<T>> onPlayListFound,
+			Consumer<PlayListInfo<T>> onSearchResults,
+			Consumer<Throwable> onException
+	);
 
 	protected abstract AudioSendHandler getSendHandler();
 

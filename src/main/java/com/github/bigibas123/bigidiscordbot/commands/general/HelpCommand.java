@@ -36,7 +36,8 @@ public class HelpCommand extends ICommand {
 				first = false;
 				names.append(command.getName());
 				descriptions.append(command.getDescription());
-			} else {
+			}
+			else {
 				names.append("\r\n").append(command.getName());
 				descriptions.append("\r\n").append(command.getDescription());
 			}
@@ -59,7 +60,8 @@ public class HelpCommand extends ICommand {
 			ebb.addField("Aliases", String.join(", ", cmd.getAliases()), false);
 			message.reply(ebb.build());
 			return true;
-		} else {
+		}
+		else {
 			message.reply(String.format("Command %s not found", args[0]));
 			return false;
 		}
@@ -70,7 +72,8 @@ public class HelpCommand extends ICommand {
 
 		if (args.length > 0) {
 			return sendCommandDescription(replyContext, args);
-		} else {
+		}
+		else {
 			return sendCommandList(replyContext);
 		}
 	}
@@ -82,7 +85,12 @@ public class HelpCommand extends ICommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		return c.addOptions(new OptionData(OptionType.STRING, "command", "Command you want to print help for", false).addChoices(CommandHandling.getHelpList().stream().map(ICommand::getName).map(k -> new Command.Choice(k, k)).toList()));
+		return c.addOptions(new OptionData(OptionType.STRING, "command", "Command you want to print help for", false).addChoices(CommandHandling
+																																		 .getHelpList()
+																																		 .stream()
+																																		 .map(ICommand::getName)
+																																		 .map(k -> new Command.Choice(k, k))
+																																		 .toList()));
 	}
 
 	@Override

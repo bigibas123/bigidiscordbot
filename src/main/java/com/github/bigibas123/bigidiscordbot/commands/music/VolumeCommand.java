@@ -23,7 +23,8 @@ public class VolumeCommand extends MusicCommand {
 				} catch (NumberFormatException e) {
 					replyContext.reply(args[0], "is not a number");
 				}
-			} else {
+			}
+			else {
 				replyContext.reply(gmm.getVolume() + "%");
 				return true;
 			}

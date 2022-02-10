@@ -41,13 +41,16 @@ public class SwapCommand extends MusicCommand {
 						TrackInfo<?> sTwo = gmm.getQueuedTrack(two - 1);
 						replyContext.reply("swaped", sOne.getTitle(), "with", sTwo.getTitle());
 						return true;
-					} else if (one - 1 < queueSize) {
+					}
+					else if (one - 1 < queueSize) {
 						replyContext.reply(two, "is not in the queue, size is:", queueSize);
 						return false;
-					} else if (two - 1 < queueSize) {
+					}
+					else if (two - 1 < queueSize) {
 						replyContext.reply(one, "is not in the queue, size is:", queueSize);
 						return false;
-					} else {
+					}
+					else {
 						replyContext.reply("both", one, "and", two, "are not in the queue, size is:", queueSize);
 						return false;
 					}

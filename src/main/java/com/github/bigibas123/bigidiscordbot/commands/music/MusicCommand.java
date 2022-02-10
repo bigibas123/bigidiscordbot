@@ -35,10 +35,12 @@ public abstract class MusicCommand extends ICommand {
 		if (channel.getType().isGuild()) {
 			if (channel instanceof TextChannel) {
 				return Utils.isDJ(user, ((TextChannel) channel).getGuild());
-			} else {
+			}
+			else {
 				return false;
 			}
-		} else {
+		}
+		else {
 			return channel.getType() == ChannelType.GROUP || channel.getType() == ChannelType.PRIVATE;
 		}
 	}
@@ -53,7 +55,8 @@ public abstract class MusicCommand extends ICommand {
 		var djRoles = g.getRolesByName("DJ", true);
 		if (djRoles.isEmpty()) {
 			list.add(CommandPrivilege.enable(g.getPublicRole()));
-		} else {
+		}
+		else {
 			djRoles.forEach(role -> list.add(CommandPrivilege.enable(role)));
 		}
 		return list;

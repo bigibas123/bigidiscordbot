@@ -29,7 +29,7 @@ public class Semaphore extends java.util.concurrent.Semaphore implements AutoClo
 		return this;
 	}
 
-	public void unlock(int permits){
+	public void unlock(int permits) {
 		this.release(permits);
 	}
 
@@ -37,22 +37,26 @@ public class Semaphore extends java.util.concurrent.Semaphore implements AutoClo
 	public void close() {
 		this.unlock();
 	}
-	public void close(int permits){
+
+	public void close(int permits) {
 		this.unlock(permits);
 	}
 
-	public boolean tryLock(){
+	public boolean tryLock() {
 		return this.tryAcquire();
 	}
-	public boolean tryLock(int permits){
+
+	public boolean tryLock(int permits) {
 		return this.tryAcquire(permits);
 	}
+
 	@SneakyThrows
-	public boolean tryLock(long timeout, TimeUnit unit){
-		return this.tryAcquire(timeout,unit);
+	public boolean tryLock(long timeout, TimeUnit unit) {
+		return this.tryAcquire(timeout, unit);
 	}
+
 	@SneakyThrows
-	public boolean tryLock(int permits, long timeout, TimeUnit unit){
-		return this.tryAcquire(permits,timeout,unit);
+	public boolean tryLock(int permits, long timeout, TimeUnit unit) {
+		return this.tryAcquire(permits, timeout, unit);
 	}
 }

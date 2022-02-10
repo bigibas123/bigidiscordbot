@@ -16,7 +16,8 @@ public class Reference {
 			if (oN) {
 				Main.log.error("Owner ID not set, please set OWNER_ID in environment");
 			}
-		} else {
+		}
+		else {
 			varsSet = true;
 		}
 	}

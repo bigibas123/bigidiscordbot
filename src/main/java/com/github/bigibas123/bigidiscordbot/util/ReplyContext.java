@@ -22,9 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-@Data
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplyContext {
+@Data @RequiredArgsConstructor(access = AccessLevel.PRIVATE) public final class ReplyContext {
 
 	@Nonnull private final MessageChannel channel;
 	@Nonnull private final User user;
@@ -71,7 +69,8 @@ public final class ReplyContext {
 				hookLock.unlock();
 				Main.log.warn("Exception in setting interaction hook", throwable);
 			});
-		} else {
+		}
+		else {
 			this.interactionHook = null;
 			hookLock.unlock();
 		}
@@ -91,30 +90,35 @@ public final class ReplyContext {
 	}
 
 	private void slashSplit(BiConsumer<MessageBuilder, Message> sl) {
-		try(var ignored = hookLock.lock()){
+		try (var ignored = hookLock.lock()) {
 			if (isRegularMessage()) {
 				MessageBuilder mb;
 				if (currentReply == null) {
 					mb = new MessageBuilder();
 					sl.accept(mb, null);
 					this.currentReply = this.original.reply(mb.build()).complete();
-				} else {
+				}
+				else {
 					mb = new MessageBuilder(currentReply);
 					sl.accept(mb, this.currentReply);
 					this.currentReply = this.currentReply.editMessage(mb.build()).complete();
 				}
-			} else if (sCmdEvent != null) {
+			}
+			else if (sCmdEvent != null) {
 				if (interactionHook != null) {
 					var mb = new MessageBuilder(currentReply);
 					sl.accept(mb, this.currentReply);
 					this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
-				} else {
+				}
+				else {
+					Main.log.warn("No interaction hook present!", new EmptyStackException());
 					var mb = new MessageBuilder();
 					sl.accept(mb, this.currentReply);
 					this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
 					this.currentReply = this.interactionHook.retrieveOriginal().complete();
 				}
-			} else {
+			}
+			else {
 				printUnrecognizedSource();
 			}
 		}
@@ -133,7 +137,8 @@ public final class ReplyContext {
 			for (Emoji e : emojis) {
 				if (this.currentReply != null) {
 					this.currentReply.addReaction(e.s()).queue();
-				} else {
+				}
+				else {
 					mb.append(e);
 				}
 			}
@@ -145,9 +150,11 @@ public final class ReplyContext {
 	Guild getGuild() {
 		if (isRegularMessage()) {
 			return this.original.getGuild();
-		} else if (sCmdEvent != null) {
+		}
+		else if (sCmdEvent != null) {
 			return Objects.requireNonNull(this.sCmdEvent.getGuild());
-		} else {
+		}
+		else {
 			printUnrecognizedSource();
 			//noinspection ConstantConditions
 			return null;
@@ -182,7 +189,8 @@ public final class ReplyContext {
 		slashSplit((mb, msg) -> {
 			if (this.currentReply != null) {
 				this.currentReply.addReaction(e.s()).queue();
-			} else {
+			}
+			else {
 				mb.append(e);
 			}
 		});
@@ -193,7 +201,8 @@ public final class ReplyContext {
 		slashSplit((mb, sce) -> {
 			if (isRegularMessage()) {
 				fut.complete(this.getOriginal().getContentRaw());
-			} else {
+			}
+			else {
 				fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")));
 			}
 		});

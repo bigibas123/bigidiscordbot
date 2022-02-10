@@ -54,7 +54,8 @@ public class Listener extends ListenerAdapter {
 		if (!event.getAuthor().isBot()) {
 			if (Utils.mentionsMe(event.getMessage())) {
 				handling.handleChatCommand(event.getMessage());
-			} else if (!event.isFromGuild()) {
+			}
+			else if (!event.isFromGuild()) {
 				MessageAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
 				messageAction.queue();
 			}

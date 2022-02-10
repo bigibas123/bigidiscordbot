@@ -34,10 +34,12 @@ public class QueueCommand extends MusicCommand {
 						String duration = Utils.formatDuration(track.getDuration());
 						ebb.appendDescription(String.format("[%d] %s - %s\r\n", i, title, duration));
 						i++;
-					} else {
+					}
+					else {
 						more++;
 					}
-				} else {
+				}
+				else {
 					more++;
 				}
 

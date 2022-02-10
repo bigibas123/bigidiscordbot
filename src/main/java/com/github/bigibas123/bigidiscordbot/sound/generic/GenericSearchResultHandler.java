@@ -80,7 +80,8 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 					int selection = emojiToInt(event.getReactionEmote());
 					if (selection != -1) {
 						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
-					} else {
+					}
+					else {
 						this.replyContext.reply(Emoji.WARNING);
 					}
 				}
@@ -100,7 +101,8 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 					int selection = Integer.parseInt(event.getButton().getId());
 					if (selection != -1) {
 						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
-					} else {
+					}
+					else {
 						this.replyContext.reply(Emoji.WARNING.s());
 					}
 				}
@@ -120,7 +122,8 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		for (TrackInfo<T> track : search.getTracks()) {
 			if (first) {
 				first = false;
-			} else {
+			}
+			else {
 				number.append("\r\n");
 				title.append("\r\n");
 				time.append("\r\n");

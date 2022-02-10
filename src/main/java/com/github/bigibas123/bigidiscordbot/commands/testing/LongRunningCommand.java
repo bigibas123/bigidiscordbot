@@ -45,7 +45,8 @@ public class LongRunningCommand extends ICommand {
 		Member owner = g.retrieveMemberById(Reference.ownerID).complete();
 		if (owner != null) {
 			list.add(CommandPrivilege.enable(owner.getUser()));
-		} else {
+		}
+		else {
 			Main.log.info("Could not find info for: " + Reference.ownerID);
 		}
 		return list;

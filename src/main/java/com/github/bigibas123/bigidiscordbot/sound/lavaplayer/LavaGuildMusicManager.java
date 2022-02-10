@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@Getter(AccessLevel.PRIVATE)
-public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> {
+@Getter(AccessLevel.PRIVATE) public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> {
 
 	private static AudioPlayerManager manager;
 	@Getter(value = AccessLevel.PROTECTED, lazy = true) private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName() + "-" + this.getGuild().getName());
@@ -55,12 +54,20 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 	}
 
 	@Override
-	protected void search(String search, Runnable onNothingFound, Consumer<TrackInfo<AudioTrack>> onTrackFound, Consumer<PlayListInfo<AudioTrack>> onPlayListFound, Consumer<PlayListInfo<AudioTrack>> onSearchResults, Consumer<Throwable> onException) {
+	protected void search(
+			String search,
+			Runnable onNothingFound,
+			Consumer<TrackInfo<AudioTrack>> onTrackFound,
+			Consumer<PlayListInfo<AudioTrack>> onPlayListFound,
+			Consumer<PlayListInfo<AudioTrack>> onSearchResults,
+			Consumer<Throwable> onException
+	) {
 		manager.loadItem(search, new FunctionalResultHandler(track -> onTrackFound.accept(convert(track)), playlist -> {
 			PlayListInfo<AudioTrack> pl = convert(playlist);
 			if (playlist.isSearchResult()) {
 				onSearchResults.accept(pl);
-			} else {
+			}
+			else {
 				onPlayListFound.accept(pl);
 			}
 		}, onNothingFound, onException::accept));
@@ -120,7 +127,8 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 		if (this.player.getPlayingTrack() != null && this.player.getPlayingTrack().isSeekable()) {
 			this.player.getPlayingTrack().setPosition(location);
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -137,7 +145,8 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 			if (!this.player.startTrack(track.getTrack(), true)) {
 				getLogger().error("Failed loading track: " + track + " in guild: " + this.getGuild().getName());
 				this.getCurrentReplyContext().reply("Failed starting next track");
-			} else {
+			}
+			else {
 				getLogger().trace("Track " + track + " loaded successfully");
 			}
 		}

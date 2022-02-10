@@ -33,17 +33,20 @@ public class SeekCommand extends MusicCommand {
 						replyContext.reply(Emoji.FAST_FORWARD);
 						Main.log.trace("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " successfull");
 						return true;
-					} else {
+					}
+					else {
 						replyContext.reply("Can not seek on track:", gmm.getCurrentTrack().getTitle());
 						Main.log.debug("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " failed");
 					}
 				} catch (NumberFormatException e) {
 					replyContext.reply("invalid time:", args[0]);
 				}
-			} else {
+			}
+			else {
 				replyContext.reply("no song is currently playing");
 			}
-		} else {
+		}
+		else {
 			replyContext.reply("no song is currently playing");
 		}
 		return false;
