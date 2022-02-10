@@ -46,8 +46,7 @@ import java.util.function.Consumer;
 	public boolean connect(AudioChannel channel) {
 		if (this.getAudioManager().isConnected()) {
 			return Utils.isSameThing(this.getAudioManager().getConnectedChannel(), channel);
-		}
-		else {
+		} else {
 			try {
 				this.getAudioManager().openAudioConnection(channel);
 				this.state = PlayState.STOPPED;
@@ -86,8 +85,7 @@ import java.util.function.Consumer;
 		if (this.state == PlayState.PAUSED) {
 			this.state = PlayState.PLAYING;
 			this.updateState();
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Player is in " + this.state + " but is should be in " + PlayState.PAUSED);
 		}
 	}
@@ -120,8 +118,7 @@ import java.util.function.Consumer;
 		if (position < this.getQueue().size()) {
 			@SuppressWarnings("unchecked") TrackInfo<T>[] trackInfos = this.getQueue().toArray(new TrackInfo[0]);
 			return trackInfos[position];
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -133,8 +130,7 @@ import java.util.function.Consumer;
 			if (!search.startsWith("ytsearch:")) {
 				replyContext.reply("Searching youtube for: " + search);
 				this.queue("ytsearch:" + search, replyContext);
-			}
-			else {
+			} else {
 				replyContext.reply("Found nothing for: " + search);
 			}
 		}, singleTrack -> {
@@ -150,8 +146,7 @@ import java.util.function.Consumer;
 			});
 			if (count.get() == playlist.size()) {
 				replyContext.reply("queued " + playlist.size() + " tracks from " + playlist.getName());
-			}
-			else {
+			} else {
 				replyContext.reply("queued (" + count.get() + "/" + playlist.size() + ") tracks from " + playlist.getName());
 			}
 			onTrackAdded();
@@ -205,8 +200,7 @@ import java.util.function.Consumer;
 	protected TrackInfo<T> pollNextTrack() {
 		if ((this.currentTrack = getQueue().poll()) != null) {
 			return this.currentTrack;
-		}
-		else {
+		} else {
 			this.state = PlayState.STOPPED;
 			updateState();
 			return null;

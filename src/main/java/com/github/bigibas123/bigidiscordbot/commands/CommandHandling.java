@@ -109,8 +109,7 @@ public class CommandHandling {
 					if (cmdSuccess) {
 						rc.reply(CHECK_MARK);
 						Main.log.debug(String.format("User: %s executed %s successfully", rc.getUser(), cmd.getName()));
-					}
-					else {
+					} else {
 						rc.reply(CROSS);
 						Main.log.debug(String.format("User: %s executed %s unsuccessfully", rc.getUser(), cmd.getName()));
 					}
@@ -118,13 +117,11 @@ public class CommandHandling {
 					rc.reply(WARNING);
 					Main.log.error("Command failed:", e);
 				}
-			}
-			else {
+			} else {
 				if (cmd != null && !cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
 					rc.reply(STOP_SIGN);
 					Main.log.debug(String.format("User: %s got permission denied for %s", rc.getUser(), cmd.getName()));
-				}
-				else {
+				} else {
 					rc.reply(SHRUG);
 					Main.log.debug(String.format("User: %s tried to execute: %s but not found", rc.getUser(), rc.getOriginalText()));
 				}
@@ -139,13 +136,11 @@ public class CommandHandling {
 		if (args.length <= 1) {
 			message.addReaction(QUESTION.s()).queue();
 			return;
-		}
-		else {
+		} else {
 			if (args[0].matches("<@(!|&|)\\d{18}>")) {
 				scmd = args[1];
 				args = Arrays.copyOfRange(args, 2, args.length);
-			}
-			else {
+			} else {
 				scmd = args[0];
 				args = Arrays.copyOfRange(args, 1, args.length);
 			}

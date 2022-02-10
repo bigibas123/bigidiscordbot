@@ -35,8 +35,7 @@ public class ReactionScheduler {
 		MessageReaction msg;
 		if ((msg = reactions.get(messageID)) != null && msg.getReactionEmote().getName().equals(emoteName)) {
 			msg.removeReaction().queue();
-		}
-		else {
+		} else {
 			if (!toFind.containsKey(messageID)) {
 				toFind.put(messageID, new ArrayList<>());
 			}

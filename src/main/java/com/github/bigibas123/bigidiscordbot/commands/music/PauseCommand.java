@@ -14,16 +14,14 @@ public class PauseCommand extends MusicCommand {
 		if (!this.guildManagerExists(replyContext)) {
 			replyContext.reply("no song is currently playing");
 			return false;
-		}
-		else {
+		} else {
 			IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 
 			boolean playing = gmm.isPlaying();
 			if (playing) {
 				gmm.pause();
 				replyContext.reply(Emoji.PAUSE);
-			}
-			else {
+			} else {
 				gmm.unpause();
 				replyContext.reply(Emoji.PLAY);
 			}

@@ -36,8 +36,7 @@ public class HelpCommand extends ICommand {
 				first = false;
 				names.append(command.getName());
 				descriptions.append(command.getDescription());
-			}
-			else {
+			} else {
 				names.append("\r\n").append(command.getName());
 				descriptions.append("\r\n").append(command.getDescription());
 			}
@@ -60,8 +59,7 @@ public class HelpCommand extends ICommand {
 			ebb.addField("Aliases", String.join(", ", cmd.getAliases()), false);
 			message.reply(ebb.build());
 			return true;
-		}
-		else {
+		} else {
 			message.reply(String.format("Command %s not found", args[0]));
 			return false;
 		}
@@ -72,8 +70,7 @@ public class HelpCommand extends ICommand {
 
 		if (args.length > 0) {
 			return sendCommandDescription(replyContext, args);
-		}
-		else {
+		} else {
 			return sendCommandList(replyContext);
 		}
 	}

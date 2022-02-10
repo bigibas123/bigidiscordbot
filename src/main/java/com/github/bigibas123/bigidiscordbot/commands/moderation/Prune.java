@@ -27,8 +27,7 @@ public class Prune extends ICommand {
 		int amount;
 		if (args.length < 1) {
 			amount = 5;
-		}
-		else {
+		} else {
 			try {
 				amount = Integer.parseInt(args[0]);
 			} catch (NumberFormatException e) {
@@ -40,8 +39,7 @@ public class Prune extends ICommand {
 		if (orig == -1) {
 			if (replyContext.getChannel().hasLatestMessage()) {
 				orig = replyContext.getChannel().getLatestMessageIdLong();
-			}
-			else {
+			} else {
 				replyContext.reply("No messages in channel yet can't purge anything");
 				return false;
 			}
@@ -53,8 +51,7 @@ public class Prune extends ICommand {
 				hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm
 						.delete()
 						.queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
-			}
-			else {
+			} else {
 				while (amount > 0) {
 					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
 					hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm
@@ -63,13 +60,11 @@ public class Prune extends ICommand {
 					amount -= 100;
 				}
 			}
-		}
-		else {
+		} else {
 			if (amount <= 100) {
 				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
 				hist.parallelStream().forEach(hm -> hm.delete().complete());
-			}
-			else {
+			} else {
 				while (amount > 0) {
 					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
 					hist.parallelStream().forEach(hm -> hm.delete().complete());
@@ -84,12 +79,10 @@ public class Prune extends ICommand {
 	public boolean hasPermission(User user, Member member, MessageChannel channel) {
 		if (channel instanceof PrivateChannel) {
 			return true;
-		}
-		else if (channel instanceof TextChannel tc) {
+		} else if (channel instanceof TextChannel tc) {
 			if (member == null) {
 				throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
-			}
-			else {
+			} else {
 				return PermissionUtil.checkPermission(tc, member, Permission.MESSAGE_MANAGE);
 			}
 		}

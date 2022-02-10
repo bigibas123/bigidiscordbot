@@ -69,8 +69,7 @@ import java.util.stream.Collectors;
 				hookLock.unlock();
 				Main.log.warn("Exception in setting interaction hook", throwable);
 			});
-		}
-		else {
+		} else {
 			this.interactionHook = null;
 			hookLock.unlock();
 		}
@@ -97,28 +96,24 @@ import java.util.stream.Collectors;
 					mb = new MessageBuilder();
 					sl.accept(mb, null);
 					this.currentReply = this.original.reply(mb.build()).complete();
-				}
-				else {
+				} else {
 					mb = new MessageBuilder(currentReply);
 					sl.accept(mb, this.currentReply);
 					this.currentReply = this.currentReply.editMessage(mb.build()).complete();
 				}
-			}
-			else if (sCmdEvent != null) {
+			} else if (sCmdEvent != null) {
 				if (interactionHook != null) {
 					var mb = new MessageBuilder(currentReply);
 					sl.accept(mb, this.currentReply);
 					this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
-				}
-				else {
+				} else {
 					Main.log.warn("No interaction hook present!", new EmptyStackException());
 					var mb = new MessageBuilder();
 					sl.accept(mb, this.currentReply);
 					this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
 					this.currentReply = this.interactionHook.retrieveOriginal().complete();
 				}
-			}
-			else {
+			} else {
 				printUnrecognizedSource();
 			}
 		}
@@ -137,8 +132,7 @@ import java.util.stream.Collectors;
 			for (Emoji e : emojis) {
 				if (this.currentReply != null) {
 					this.currentReply.addReaction(e.s()).queue();
-				}
-				else {
+				} else {
 					mb.append(e);
 				}
 			}
@@ -150,11 +144,9 @@ import java.util.stream.Collectors;
 	Guild getGuild() {
 		if (isRegularMessage()) {
 			return this.original.getGuild();
-		}
-		else if (sCmdEvent != null) {
+		} else if (sCmdEvent != null) {
 			return Objects.requireNonNull(this.sCmdEvent.getGuild());
-		}
-		else {
+		} else {
 			printUnrecognizedSource();
 			//noinspection ConstantConditions
 			return null;
@@ -189,8 +181,7 @@ import java.util.stream.Collectors;
 		slashSplit((mb, msg) -> {
 			if (this.currentReply != null) {
 				this.currentReply.addReaction(e.s()).queue();
-			}
-			else {
+			} else {
 				mb.append(e);
 			}
 		});
@@ -201,8 +192,7 @@ import java.util.stream.Collectors;
 		slashSplit((mb, sce) -> {
 			if (isRegularMessage()) {
 				fut.complete(this.getOriginal().getContentRaw());
-			}
-			else {
+			} else {
 				fut.complete(this.sCmdEvent.getName() + " " + this.sCmdEvent.getOptions().stream().map(OptionMapping::getAsString).collect(Collectors.joining(" ")));
 			}
 		});

@@ -21,8 +21,7 @@ import java.time.ZoneOffset;
 	public String getReactionEmoteLogString(MessageReaction.ReactionEmote emote) {
 		if (emote.isEmote()) {
 			return ":" + emote.getName() + ":";
-		}
-		else {
+		} else {
 			return emote.getAsCodepoints();
 		}
 	}
@@ -55,11 +54,9 @@ import java.time.ZoneOffset;
 		long scs = duration.toSecondsPart();
 		if (dys > 0) {
 			return String.format("%02d:%02d:%02d:%02d", dys, hrs, mns, scs);
-		}
-		else if (hrs > 0) {
+		} else if (hrs > 0) {
 			return String.format("%02d:%02d:%02d", hrs, mns, scs);
-		}
-		else {
+		} else {
 			return String.format("%02d:%02d", mns, scs);
 		}
 	}
@@ -103,11 +100,9 @@ import java.time.ZoneOffset;
 		boolean result;
 		if (member == null) {
 			result = false;
-		}
-		else if (guild.getRolesByName("DJ", true).size() > 0) {
+		} else if (guild.getRolesByName("DJ", true).size() > 0) {
 			result = member.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("DJ"));
-		}
-		else {
+		} else {
 			result = true;
 		}
 		Main.log.trace(user.getName() + " is DJ " + result);
@@ -128,17 +123,13 @@ import java.time.ZoneOffset;
 		boolean result;
 		if (u1 == null && u2 == null) {
 			result = true;
-		}
-		else if (u1 == null || u2 == null) {
+		} else if (u1 == null || u2 == null) {
 			result = false;
-		}
-		else if (u1 == u2) {
+		} else if (u1 == u2) {
 			result = true;
-		}
-		else if (u1.getIdLong() == u2.getIdLong()) {
+		} else if (u1.getIdLong() == u2.getIdLong()) {
 			result = true;
-		}
-		else {
+		} else {
 			result = u1.getId().equals(u2.getId());
 		}
 		Main.log.trace(u1 + " is " + (result ? "" : " not ") + "the same as " + u2);

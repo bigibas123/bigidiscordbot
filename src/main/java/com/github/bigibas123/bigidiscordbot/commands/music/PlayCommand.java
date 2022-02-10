@@ -31,24 +31,19 @@ public class PlayCommand extends MusicCommand {
 								gmm.queue(search, replyContext);
 								return true;
 							}
-						}
-						else {
+						} else {
 							HelpCommand.sendCommandDescription(replyContext, "play");
 						}
-					}
-					else {
+					} else {
 						replyContext.reply("you need to join a voice channel for this command to work");
 					}
-				}
-				else {
+				} else {
 					replyContext.reply("Error retrieving voiceState from member");
 				}
-			}
-			else {
+			} else {
 				replyContext.reply("Error retrieving member from message");
 			}
-		}
-		else {
+		} else {
 			replyContext.reply("Wrong channel type");
 		}
 		return false;
