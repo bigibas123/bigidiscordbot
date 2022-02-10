@@ -8,8 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-@UtilityClass
-public class Utils {
+@UtilityClass public class Utils {
 
 	/**
 	 * Turns {@link MessageReaction.ReactionEmote ReactionEmotes} into Strings
@@ -36,7 +35,8 @@ public class Utils {
 	 */
 	public LocalDateTime idToTime(long id) {
 		return LocalDateTime.ofEpochSecond((id >> 22) + 1420070400000L, //Stolen from discord api docs,
-				0, ZoneOffset.UTC);
+										   0, ZoneOffset.UTC
+		);
 	}
 
 	/**
@@ -144,9 +144,8 @@ public class Utils {
 	 * @return tru if the message mentions the bot specifically, false if not mentioned or not specifically mentioned
 	 */
 	public boolean mentionsMe(Message message) {
-		return message.isMentioned(message.getJDA().getSelfUser()) && (message.getMentionedRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName())) || message.isMentioned(message
-				.getJDA()
-				.getSelfUser(), Message.MentionType.USER));
+		return message.isMentioned(message.getJDA().getSelfUser()) && (message.getMentionedRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName()))
+																	   || message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
 
 	}
 

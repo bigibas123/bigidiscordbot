@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Data
-@RequiredArgsConstructor
-public class PlayListInfo<T> {
+@Data @RequiredArgsConstructor public class PlayListInfo<T> {
 	private final String name;
 	private final List<TrackInfo<T>> tracks;
 

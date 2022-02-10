@@ -23,8 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-@Getter(AccessLevel.PROTECTED)
-public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<T> {
+@Getter(AccessLevel.PROTECTED) public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<T> {
 
 	private final Guild guild;
 	private final AudioManager audioManager;
@@ -210,7 +209,14 @@ public abstract class GenericGuildMusicManager<T> implements IGuildMusicManager<
 
 	protected abstract void stopPlaying();
 
-	protected abstract void search(String search, Runnable onNothingFound, Consumer<TrackInfo<T>> onTrackFound, Consumer<PlayListInfo<T>> onPlayListFound, Consumer<PlayListInfo<T>> onSearchResults, Consumer<Throwable> onException);
+	protected abstract void search(
+			String search,
+			Runnable onNothingFound,
+			Consumer<TrackInfo<T>> onTrackFound,
+			Consumer<PlayListInfo<T>> onPlayListFound,
+			Consumer<PlayListInfo<T>> onSearchResults,
+			Consumer<Throwable> onException
+	);
 
 	protected abstract AudioSendHandler getSendHandler();
 

@@ -104,7 +104,6 @@ public class CommandHandling {
 		new Thread(() -> {
 			CallbackContext.getInstance().close();
 			if (cmd != null && cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
-				rc.reply(STOP_WATCH);
 				try {
 					boolean cmdSuccess = cmd.execute(rc, args);
 					if (cmdSuccess) {
@@ -164,7 +163,9 @@ public class CommandHandling {
 			cdl.countDown();
 		});
 		cdl.await();
-		guild.updateCommandPrivileges(map).queue(suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()), err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err));
+		guild.updateCommandPrivileges(map).queue(suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()),
+												 err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err)
+		);
 	}
 
 }

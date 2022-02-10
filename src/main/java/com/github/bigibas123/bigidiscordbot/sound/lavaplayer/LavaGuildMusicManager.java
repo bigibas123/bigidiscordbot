@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@Getter(AccessLevel.PRIVATE)
-public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> {
+@Getter(AccessLevel.PRIVATE) public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> {
 
 	private static AudioPlayerManager manager;
 	@Getter(value = AccessLevel.PROTECTED, lazy = true) private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName() + "-" + this.getGuild().getName());
@@ -55,7 +54,14 @@ public class LavaGuildMusicManager extends GenericGuildMusicManager<AudioTrack> 
 	}
 
 	@Override
-	protected void search(String search, Runnable onNothingFound, Consumer<TrackInfo<AudioTrack>> onTrackFound, Consumer<PlayListInfo<AudioTrack>> onPlayListFound, Consumer<PlayListInfo<AudioTrack>> onSearchResults, Consumer<Throwable> onException) {
+	protected void search(
+			String search,
+			Runnable onNothingFound,
+			Consumer<TrackInfo<AudioTrack>> onTrackFound,
+			Consumer<PlayListInfo<AudioTrack>> onPlayListFound,
+			Consumer<PlayListInfo<AudioTrack>> onSearchResults,
+			Consumer<Throwable> onException
+	) {
 		manager.loadItem(search, new FunctionalResultHandler(track -> onTrackFound.accept(convert(track)), playlist -> {
 			PlayListInfo<AudioTrack> pl = convert(playlist);
 			if (playlist.isSearchResult()) {

@@ -48,11 +48,15 @@ public class Prune extends ICommand {
 			AtomicInteger sleepCounter = new AtomicInteger();
 			if (amount <= 100) {
 				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
-				hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
+				hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm
+						.delete()
+						.queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
 			} else {
 				while (amount > 0) {
 					List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, Math.min(amount, 100)).complete().getRetrievedHistory();
-					hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm.delete().queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
+					hist.parallelStream().filter(msg -> Utils.isSameThing(msg.getAuthor(), replyContext.getJDA().getSelfUser())).forEach(hm -> hm
+							.delete()
+							.queueAfter(sleepCounter.getAndIncrement(), TimeUnit.SECONDS));
 					amount -= 100;
 				}
 			}

@@ -4,9 +4,7 @@ import com.github.bigibas123.bigidiscordbot.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data
-@AllArgsConstructor
-public class TrackInfo<T> {
+@Data @AllArgsConstructor public class TrackInfo<T> {
 
 	private final T track;
 	private final String title;
