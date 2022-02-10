@@ -82,7 +82,7 @@ import java.util.stream.Collectors;
 
 	public void reply(MessageEmbed embed) {
 		slashSplit((mb, msg) -> {
-			List<MessageEmbed> l = new LinkedList<>(msg.getEmbeds());
+			List<MessageEmbed> l = msg != null ? (new LinkedList<>(msg.getEmbeds())) : new LinkedList<>();
 			l.add(embed);
 			mb.setEmbeds(l.toArray(MessageEmbed[]::new));
 		});
