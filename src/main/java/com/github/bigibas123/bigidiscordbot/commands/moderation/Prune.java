@@ -5,6 +5,7 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -14,6 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static net.dv8tion.jda.api.requests.ErrorResponse.UNKNOWN_MESSAGE;
 
 public class Prune extends ICommand {
 
@@ -37,12 +40,25 @@ public class Prune extends ICommand {
 		}
 		var orig = replyContext.isRegularMessage() ? replyContext.getOriginal().getIdLong() : -1;
 		if (orig == -1) {
-			if (replyContext.getChannel().hasLatestMessage()) {
-				orig = replyContext.getChannel().getLatestMessageIdLong();
-			} else {
-				replyContext.reply("No messages in channel yet can't purge anything");
-				return false;
+
+			long latestID = replyContext.getChannel().getLatestMessageIdLong();
+
+			try {
+				if (replyContext.getChannel().retrieveMessageById(latestID).complete() != null) {
+					orig = latestID;
+				} else {
+					replyContext.reply("No messages in channel yet can't purge anything");
+					return false;
+				}
+			} catch (ErrorResponseException e) {
+				if (e.getErrorResponse() == UNKNOWN_MESSAGE) {
+					replyContext.reply("No messages in channel yet can't purge anything");
+					return false;
+				} else {
+					throw e;
+				}
 			}
+
 		}
 		if (replyContext.getChannel() instanceof PrivateChannel) {
 			AtomicInteger sleepCounter = new AtomicInteger();
