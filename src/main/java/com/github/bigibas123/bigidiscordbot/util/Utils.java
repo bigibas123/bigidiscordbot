@@ -144,8 +144,9 @@ import java.time.ZoneOffset;
 	 * @return tru if the message mentions the bot specifically, false if not mentioned or not specifically mentioned
 	 */
 	public boolean mentionsMe(Message message) {
-		return message.isMentioned(message.getJDA().getSelfUser()) && (message.getMentionedRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName()))
-																	   || message.isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
+		return message.getMentions().isMentioned(message.getJDA().getSelfUser())
+			   && (message.getMentions().getRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName()))
+				|| message.getMentions().isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
 
 	}
 
