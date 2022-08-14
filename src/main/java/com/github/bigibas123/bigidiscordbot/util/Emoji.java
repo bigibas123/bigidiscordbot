@@ -55,6 +55,10 @@ public enum Emoji {
 		return this.toString;
 	}
 
+	public net.dv8tion.jda.api.entities.emoji.EmojiUnion e(){
+		return net.dv8tion.jda.api.entities.emoji.Emoji.fromFormatted(this.toString);
+	}
+
 	@Override
 	public String toString() {
 		return this.toString;

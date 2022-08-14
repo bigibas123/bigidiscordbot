@@ -2,12 +2,10 @@ package com.github.bigibas123.bigidiscordbot.commands.testing;
 
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
-
-import java.util.Collection;
-import java.util.List;
 
 public class NoPermCommand extends ICommand {
 	public NoPermCommand() {
@@ -28,10 +26,4 @@ public class NoPermCommand extends ICommand {
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
 		return null;
 	}
-
-	@Override
-	protected Collection<CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
-		return list;
-	}
-
 }

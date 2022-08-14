@@ -4,13 +4,10 @@ import com.github.bigibas123.bigidiscordbot.Reference;
 import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.Emoji;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
-import net.dv8tion.jda.internal.requests.CallbackContext;
-
-import java.util.Collection;
-import java.util.List;
 
 public class ExitCommand extends ICommand {
 	public ExitCommand() {
@@ -35,13 +32,4 @@ public class ExitCommand extends ICommand {
 		return null;
 	}
 
-	@Override
-	protected Collection<CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
-		CallbackContext.getInstance().close();
-		Member owner = g.retrieveMemberById(Reference.ownerID).complete();
-		if (owner != null) {
-			list.add(CommandPrivilege.enable(owner.getUser()));
-		}
-		return list;
-	}
 }

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -53,17 +53,17 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		int bound = Math.min(MAX_SONG_COUNT, this.search.size());
 		Button[] buttons = new Button[bound];
 		for (int i = 1; i <= bound; i++) {
-			buttons[i - 1] = Button.primary(String.valueOf(i), net.dv8tion.jda.api.entities.Emoji.fromUnicode(oneToTen.get(i).s()));
+			buttons[i - 1] = Button.primary(String.valueOf(i), oneToTen.get(i).e());
 		}
 		this.replyContext.reply(embed);
 		this.replyContext.reply(ActionRow.of(buttons));
 		this.jda.addEventListener(this);
 	}
 
-	private int emojiToInt(MessageReaction.ReactionEmote reactionEmote) {
-		if (reactionEmote.isEmote()) return -1;
+	private int emojiToInt(EmojiUnion reactionEmote) {
+		if (reactionEmote.getType() == net.dv8tion.jda.api.entities.emoji.Emoji.Type.UNICODE) return -1;
 		for (Map.Entry<Integer, Emoji> entry : oneToTen.entrySet()) {
-			if (reactionEmote.getName().equals(entry.getValue().s())) {
+			if (reactionEmote.equals(entry.getValue().e())) {
 				return entry.getKey();
 			}
 		}
@@ -77,7 +77,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		if (replyContext.isIn(event.getChannel())) {
 			if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
 				if (Utils.isDJ(event.getUser(), event.getGuild())) {
-					int selection = emojiToInt(event.getReactionEmote());
+					int selection = emojiToInt(event.getEmoji());
 					if (selection != -1) {
 						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
 					} else {
@@ -101,7 +101,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 					if (selection != -1) {
 						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
 					} else {
-						this.replyContext.reply(Emoji.WARNING.s());
+						this.replyContext.reply(Emoji.WARNING.e());
 					}
 				}
 			}

@@ -16,7 +16,7 @@ public class ReactionScheduler {
 		reactions.put(reaction.getMessageIdLong(), reaction);
 		if (toFind.containsKey(reaction.getMessageIdLong())) {
 			ArrayList<String> list = toFind.get(reaction.getMessageIdLong());
-			list.stream().filter(toRemove -> reaction.getReactionEmote().getName().equals(toRemove)).findFirst().ifPresent(s -> {
+			list.stream().filter(toRemove -> reaction.getEmoji().getName().equals(toRemove)).findFirst().ifPresent(s -> {
 				list.remove(s);
 				reaction.removeReaction().queue();
 			});
@@ -33,7 +33,7 @@ public class ReactionScheduler {
 
 	public static void scheduleRemoval(long messageID, String emoteName) {
 		MessageReaction msg;
-		if ((msg = reactions.get(messageID)) != null && msg.getReactionEmote().getName().equals(emoteName)) {
+		if ((msg = reactions.get(messageID)) != null && msg.getEmoji().getName().equals(emoteName)) {
 			msg.removeReaction().queue();
 		} else {
 			if (!toFind.containsKey(messageID)) {

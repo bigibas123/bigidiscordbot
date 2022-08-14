@@ -6,12 +6,11 @@ import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -107,13 +106,9 @@ public class Prune extends ICommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		return c.setDefaultEnabled(true).addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
-	}
-
-	@Override
-	protected Collection<CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
-		roles.stream().filter(role -> role.hasPermission(Permission.MESSAGE_MANAGE)).map(CommandPrivilege::enable).forEach(list::add);
-		return list;
+		return c
+				.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE))
+				.addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
 	}
 
 }

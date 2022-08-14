@@ -45,7 +45,6 @@ public class Listener extends ListenerAdapter {
 	public void onGuildReady(@NotNull GuildReadyEvent event) {
 		super.onGuildReady(event);
 		this.handling = this.handling != null ? this.handling : new CommandHandling();
-		this.handling.registerSlashCommandPerms(event.getGuild());
 	}
 
 	@Override
