@@ -131,7 +131,7 @@ import java.util.stream.Collectors;
 		slashSplit((mb, b) -> {
 			for (Emoji e : emojis) {
 				if (this.currentReply != null) {
-					this.currentReply.addReaction(e.s()).queue();
+					this.currentReply.addReaction(e.e()).queue();
 				} else {
 					mb.append(e);
 				}
@@ -180,7 +180,7 @@ import java.util.stream.Collectors;
 	public void reply(@NonNull Emoji e) {
 		slashSplit((mb, msg) -> {
 			if (this.currentReply != null) {
-				this.currentReply.addReaction(e.s()).queue();
+				this.currentReply.addReaction(e.e()).queue();
 			} else {
 				mb.append(e);
 			}

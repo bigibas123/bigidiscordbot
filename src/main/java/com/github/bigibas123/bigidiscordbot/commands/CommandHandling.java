@@ -8,18 +8,17 @@ import com.github.bigibas123.bigidiscordbot.commands.music.*;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
-import lombok.SneakyThrows;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.internal.requests.CallbackContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.github.bigibas123.bigidiscordbot.util.Emoji.*;
@@ -134,7 +133,7 @@ public class CommandHandling {
 		var args = message.getContentRaw().split(" ");
 		String scmd;
 		if (args.length <= 1) {
-			message.addReaction(QUESTION.s()).queue();
+			message.addReaction(QUESTION.e()).queue();
 			return;
 		} else {
 			if (args[0].matches("<@(!|&|)\\d{18}>")) {
@@ -148,24 +147,6 @@ public class CommandHandling {
 		}
 		ICommand cmd = commands.get(scmd.toLowerCase());
 		this.handleCommand(cmd, new ReplyContext(message), args);
-	}
-
-	@SneakyThrows(InterruptedException.class)
-	public void registerSlashCommandPerms(Guild guild) {
-		Map<String, Collection<CommandPrivilege>> map = new HashMap<>();
-		var cdl = new CountDownLatch(2);
-		guild.getJDA().retrieveCommands().queue(s -> {
-			s.forEach(cmd -> map.put(cmd.getId(), getCommandList().get(cmd.getName()).getPrivileges(guild)));
-			cdl.countDown();
-		});
-		guild.retrieveCommands().queue(s -> {
-			s.forEach(cmd -> map.put(cmd.getId(), getCommandList().get(cmd.getName()).getPrivileges(guild)));
-			cdl.countDown();
-		});
-		cdl.await();
-		guild.updateCommandPrivileges(map).queue(suc -> Main.log.info("Updated commandPriveleges for: " + guild.getIdLong()),
-												 err -> Main.log.error("Error updating command privilegees for: " + guild.getIdLong(), err)
-		);
 	}
 
 }

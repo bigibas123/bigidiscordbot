@@ -3,6 +3,8 @@ package com.github.bigibas123.bigidiscordbot.util;
 import com.github.bigibas123.bigidiscordbot.Main;
 import lombok.experimental.UtilityClass;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -11,18 +13,18 @@ import java.time.ZoneOffset;
 @UtilityClass public class Utils {
 
 	/**
-	 * Turns {@link MessageReaction.ReactionEmote ReactionEmotes} into Strings
+	 * Turns {@link EmojiUnion EmojiUnion} into Strings
 	 * outputs codepoints if it is an unicode emoji and the name of the emote if it is not
 	 *
 	 * @param emote the emote to convert
 	 *
 	 * @return the name of the emote or the codepoint('s) in U+ notation if an emoji
 	 */
-	public String getReactionEmoteLogString(MessageReaction.ReactionEmote emote) {
-		if (emote.isEmote()) {
+	public String getReactionEmoteLogString(EmojiUnion emote) {
+		if (emote.getType() == Emoji.Type.CUSTOM) {
 			return ":" + emote.getName() + ":";
 		} else {
-			return emote.getAsCodepoints();
+			return emote.asUnicode().getAsCodepoints();
 		}
 	}
 
