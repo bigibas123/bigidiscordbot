@@ -3,11 +3,12 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
-
-import java.util.Collection;
-import java.util.List;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class NowPlayingCommand extends MusicCommand {
 
@@ -36,9 +37,7 @@ public class NowPlayingCommand extends MusicCommand {
 	}
 
 	@Override
-	protected Collection<CommandPrivilege> _getPrivilegesForGuild(Guild g, List<Role> roles, List<CommandPrivilege> list) {
-		list.add(CommandPrivilege.enable(g.getPublicRole()));
-		return list;
+	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
+		return super._getSlashCommandData(c).setDefaultPermissions(DefaultMemberPermissions.ENABLED);
 	}
-
 }

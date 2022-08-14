@@ -35,11 +35,10 @@ public class Main {
 		soundManager = new SoundManager();
 
 		final Collection<GatewayIntent> enabledIntents = List.of(GUILD_VOICE_STATES, GUILD_MESSAGES, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS);
-		final Collection<GatewayIntent> disabledIntents = List.of(GUILD_MEMBERS, GUILD_BANS, GUILD_EMOJIS, GUILD_WEBHOOKS, GUILD_INVITES, GUILD_PRESENCES, GUILD_MESSAGE_TYPING,
-																  DIRECT_MESSAGE_TYPING);
+		final Collection<GatewayIntent> disabledIntents = List.of(GUILD_MEMBERS, GUILD_BANS, GUILD_EMOJIS_AND_STICKERS, GUILD_WEBHOOKS, GUILD_INVITES, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING, MESSAGE_CONTENT);
 
-		final Collection<CacheFlag> enabledCaches = List.of(MEMBER_OVERRIDES, ROLE_TAGS, VOICE_STATE);
-		final Collection<CacheFlag> disabledCaches = List.of(ACTIVITY, EMOTE, CLIENT_STATUS, ONLINE_STATUS);
+		final Collection<CacheFlag> enabledCaches = List.of(VOICE_STATE, MEMBER_OVERRIDES, ROLE_TAGS);
+		final Collection<CacheFlag> disabledCaches = List.of(ACTIVITY, EMOJI, STICKER, CLIENT_STATUS, ONLINE_STATUS);
 
 		final SessionController sessionController = new ConcurrentSessionController();
 		sessionController.setConcurrency(Runtime.getRuntime().availableProcessors());
