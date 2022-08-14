@@ -134,7 +134,7 @@ public class CommandHandling {
 		var args = message.getContentRaw().split(" ");
 		String scmd;
 		if (args.length <= 1) {
-			message.addReaction(QUESTION.s()).queue();
+			message.addReaction(QUESTION.e()).queue();
 			return;
 		} else {
 			if (args[0].matches("<@(!|&|)\\d{18}>")) {
