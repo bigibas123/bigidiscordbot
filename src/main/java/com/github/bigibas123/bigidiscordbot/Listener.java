@@ -5,13 +5,13 @@ import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.MessageFormat;
@@ -54,7 +54,7 @@ public class Listener extends ListenerAdapter {
 			if (Utils.mentionsMe(event.getMessage())) {
 				handling.handleChatCommand(event.getMessage());
 			} else if (!event.isFromGuild()) {
-				MessageAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
+				MessageCreateAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
 				messageAction.queue();
 			}
 		}

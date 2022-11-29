@@ -3,10 +3,9 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 import com.github.bigibas123.bigidiscordbot.commands.general.HelpCommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
-import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
@@ -17,12 +16,12 @@ public class PlayCommand extends MusicCommand {
 
 	@Override
 	public boolean execute(ReplyContext replyContext, String... args) {
-		if (replyContext.getChannel().getType() == ChannelType.TEXT) {
+		if (replyContext.getChannel().getType().isMessage()) {
 			Member member = replyContext.getMember();
 			if (member != null) {
 				GuildVoiceState vs = member.getVoiceState();
 				if (vs != null) {
-					AudioChannel vc = vs.getChannel();
+					AudioChannelUnion vc = vs.getChannel();
 					if (vc != null) {
 						if (args.length > 0) {
 							IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);

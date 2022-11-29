@@ -1,1 +1,1 @@
-worker: java -jar --enable-preview target/bigidiscordbot-2.6-SNAPSHOT.jar
+worker: java -jar --enable-preview target/bigidiscordbot-2.7-SNAPSHOT.jar

@@ -4,7 +4,12 @@ import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -59,7 +64,7 @@ public class Prune extends ICommand {
 			}
 
 		}
-		if (replyContext.getChannel() instanceof PrivateChannel) {
+		if (replyContext.getChannel().getType() == ChannelType.PRIVATE) {
 			AtomicInteger sleepCounter = new AtomicInteger();
 			if (amount <= 100) {
 				List<Message> hist = replyContext.getChannel().getHistoryBefore(orig, amount).complete().getRetrievedHistory();
@@ -91,14 +96,14 @@ public class Prune extends ICommand {
 	}
 
 	@Override
-	public boolean hasPermission(User user, Member member, MessageChannel channel) {
-		if (channel instanceof PrivateChannel) {
+	public boolean hasPermission(User user, Member member, MessageChannelUnion channel) {
+		if (!channel.getType().isGuild()) {
 			return true;
-		} else if (channel instanceof TextChannel tc) {
+		} else if(channel.getType().isMessage()){
 			if (member == null) {
 				throw new IllegalArgumentException("User:" + user + " does not seem to be a member of:" + channel.getName());
 			} else {
-				return PermissionUtil.checkPermission(tc, member, Permission.MESSAGE_MANAGE);
+				return PermissionUtil.checkPermission((IPermissionContainer) channel, member, Permission.MESSAGE_MANAGE);
 			}
 		}
 		return false;
@@ -106,9 +111,7 @@ public class Prune extends ICommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		return c
-				.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE))
-				.addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
+		return c.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE)).addOption(OptionType.INTEGER, "amount", "Amount of messages to remove (default 5)");
 	}
 
 }
