@@ -10,8 +10,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 	}
 
 	@Override
-	public boolean connect(AudioChannel channel) {
+	public boolean connect(AudioChannelUnion channel) {
 		if (this.getAudioManager().isConnected()) {
 			return Utils.isSameThing(this.getAudioManager().getConnectedChannel(), channel);
 		} else {

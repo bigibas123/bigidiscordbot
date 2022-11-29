@@ -6,13 +6,17 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Data @RequiredArgsConstructor(access = AccessLevel.PRIVATE) public final class ReplyContext {
 
-	@Nonnull private final MessageChannel channel;
+	@Nonnull private final MessageChannelUnion channel;
 	@Nonnull private final User user;
 	@Nullable private final Member member;
 	@Nullable private final Message original;
@@ -75,8 +79,7 @@ import java.util.stream.Collectors;
 		}
 	}
 
-	public @Nonnull
-	JDA getJDA() {
+	public @Nonnull JDA getJDA() {
 		return this.channel.getJDA();
 	}
 
@@ -88,27 +91,26 @@ import java.util.stream.Collectors;
 		});
 	}
 
-	private void slashSplit(BiConsumer<MessageBuilder, Message> sl) {
+	private void slashSplit(BiConsumer<AbstractMessageBuilder<?, ?>, Message> sl) {
 		try (var ignored = hookLock.lock()) {
 			if (isRegularMessage()) {
-				MessageBuilder mb;
 				if (currentReply == null) {
-					mb = new MessageBuilder();
+					var mb = new MessageCreateBuilder();
 					sl.accept(mb, null);
 					this.currentReply = this.original.reply(mb.build()).complete();
 				} else {
-					mb = new MessageBuilder(currentReply);
+					var mb = new MessageEditBuilder();
 					sl.accept(mb, this.currentReply);
 					this.currentReply = this.currentReply.editMessage(mb.build()).complete();
 				}
 			} else if (sCmdEvent != null) {
 				if (interactionHook != null) {
-					var mb = new MessageBuilder(currentReply);
+					var mb = new MessageEditBuilder();
 					sl.accept(mb, this.currentReply);
 					this.currentReply = this.interactionHook.editOriginal(mb.build()).complete();
 				} else {
 					Main.log.warn("No interaction hook present!", new EmptyStackException());
-					var mb = new MessageBuilder();
+					var mb = new MessageCreateBuilder();
 					sl.accept(mb, this.currentReply);
 					this.interactionHook = this.sCmdEvent.reply(mb.build()).setEphemeral(false).complete();
 					this.currentReply = this.interactionHook.retrieveOriginal().complete();
@@ -128,20 +130,19 @@ import java.util.stream.Collectors;
 	}
 
 	public void reply(Emoji @NonNull ... emojis) {
-		slashSplit((mb, b) -> {
+		slashSplit((mb, msg) -> {
 			for (Emoji e : emojis) {
-				if (this.currentReply != null) {
-					this.currentReply.addReaction(e.e()).queue();
+				if (msg != null) {
+					msg.addReaction(e.e()).queue();
 				} else {
-					mb.append(e);
+					mb.setContent(e.s());
 				}
 			}
 		});
 
 	}
 
-	public @Nonnull
-	Guild getGuild() {
+	public @Nonnull Guild getGuild() {
 		if (isRegularMessage()) {
 			return this.original.getGuild();
 		} else if (sCmdEvent != null) {
@@ -158,14 +159,17 @@ import java.util.stream.Collectors;
 	}
 
 	public void reply(String message) {
-		slashSplit((mb, msg) -> mb.append(mb.length() > 0 ? "\n" : "").append(message));
+		slashSplit((mb, msg) -> {
+			var orig = msg != null ? msg.getContentRaw() : "";
+			mb.setContent(orig + (orig.length() > 0 ? "\n" : "") + message);
+		});
 	}
 
 	public void reply(ActionRow... rows) {
 		slashSplit((mb, msg) -> {
-			List<ActionRow> l = new LinkedList<>(msg.getActionRows());
+			List<ActionRow> l = msg != null ? new LinkedList<>(msg.getActionRows()) : new LinkedList<>();
 			l.addAll(Arrays.asList(rows));
-			mb.setActionRows(l);
+			mb.setComponents(l);
 		});
 	}
 
@@ -179,10 +183,10 @@ import java.util.stream.Collectors;
 
 	public void reply(@NonNull Emoji e) {
 		slashSplit((mb, msg) -> {
-			if (this.currentReply != null) {
-				this.currentReply.addReaction(e.e()).queue();
+			if (msg != null) {
+				msg.addReaction(e.e()).queue();
 			} else {
-				mb.append(e);
+				mb.setContent(e.s());
 			}
 		});
 	}

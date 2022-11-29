@@ -6,7 +6,7 @@
 
     <groupId>com.github.bigibas123</groupId>
     <artifactId>bigidiscordbot</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7-SNAPSHOT</version>
     <properties>
         <main.class>com.github.bigibas123.bigidiscordbot.Main</main.class>
 
