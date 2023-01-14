@@ -5,9 +5,9 @@ import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -34,7 +34,7 @@ public abstract class MusicCommand extends ICommand {
 	public boolean hasPermission(User user, Member member, MessageChannelUnion channel) {
 		if (channel.getType().isGuild()) {
 			if (channel.getType().isMessage()) {
-				return Utils.isDJ(user, ((TextChannel) channel).getGuild());
+				return Utils.isDJ(user, channel.asGuildMessageChannel().getGuild());
 			} else {
 				return false;
 			}

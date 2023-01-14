@@ -190,7 +190,6 @@ import java.util.function.Consumer;
 			}
 			case STOPPED -> {
 				this.getAudioManager().setSelfMuted(true);
-				this.getAudioManager().closeAudioConnection();
 				this.stopPlaying();
 				this.queue.clear();
 			}

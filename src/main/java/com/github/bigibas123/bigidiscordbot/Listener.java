@@ -2,7 +2,6 @@ package com.github.bigibas123.bigidiscordbot;
 
 import com.github.bigibas123.bigidiscordbot.commands.CommandHandling;
 import com.github.bigibas123.bigidiscordbot.util.ReactionScheduler;
-import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -16,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Listener extends ListenerAdapter {
 
@@ -31,7 +31,7 @@ public class Listener extends ListenerAdapter {
 		super.onReady(event);
 		int siID = event.getJDA().getShardInfo().getShardId();
 		event.getJDA().openPrivateChannelById(Reference.ownerID).queue(c -> c.sendMessage("Started shard:" + shardID + "_" + siID + " at " + LocalDateTime.now()).queue());
-		String activityString = MessageFormat.format("@mention help\t| [{0}/{1}]", siID != shardID ? (siID + 1) + "_" + (shardID + 1) : (siID + 1), event.getJDA().getShardInfo().getShardTotal());
+		String activityString = MessageFormat.format("/help\t| [{0}/{1}]", siID != shardID ? (siID + 1) + "_" + (shardID + 1) : (siID + 1), event.getJDA().getShardInfo().getShardTotal());
 		Activity act = Activity.of(Activity.ActivityType.PLAYING, activityString);
 		event.getJDA().getPresence().setPresence(OnlineStatus.ONLINE, act, false);
 		if (this.shardID == 0) {
@@ -50,13 +50,12 @@ public class Listener extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		super.onMessageReceived(event);
-		if (!event.getAuthor().isBot()) {
-			if (Utils.mentionsMe(event.getMessage())) {
+		if (!event.getAuthor().isBot() && !event.isFromGuild()) {
+			if (Objects.equals(event.getAuthor().getId(), Reference.ownerID)) {
 				handling.handleChatCommand(event.getMessage());
-			} else if (!event.isFromGuild()) {
-				MessageCreateAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
-				messageAction.queue();
 			}
+			MessageCreateAction messageAction = event.getChannel().sendMessage(event.getMessage().getContentRaw().replace("i", "o"));
+			messageAction.queue();
 		}
 	}
 

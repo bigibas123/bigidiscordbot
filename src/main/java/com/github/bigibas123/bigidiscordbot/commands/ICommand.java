@@ -15,7 +15,7 @@ import java.util.Objects;
 
 
 /**
- * Class representing a command with it's info
+ * Class representing a command with its info
  */
 @Getter public abstract class ICommand {
 
@@ -40,7 +40,7 @@ import java.util.Objects;
 	@NonNull private final String[] aliases;
 
 	public ICommand(@NonNull String name, @NonNull String description, @NonNull String syntax, String... aliases) {
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.description = description;
 		this.syntax = syntax;
 		this.aliases = Objects.requireNonNullElseGet(aliases, () -> new String[0]);
