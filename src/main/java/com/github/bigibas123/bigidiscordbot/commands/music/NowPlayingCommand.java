@@ -3,6 +3,7 @@ package com.github.bigibas123.bigidiscordbot.commands.music;
 import com.github.bigibas123.bigidiscordbot.Main;
 import com.github.bigibas123.bigidiscordbot.sound.IGuildMusicManager;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
+import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -22,7 +23,7 @@ public class NowPlayingCommand extends MusicCommand {
 			if (gmm.isPlaying()) {
 				Main.log.trace("Guild Playing Status: " + gmm.isPlaying());
 				String title = gmm.getCurrentTrack().getTitle();
-				replyContext.reply("Currently playing:", title);
+				replyContext.reply("Currently playing:", title, Utils.formatDuration(gmm.getPosition()));
 				return true;
 			}
 		}
