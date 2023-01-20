@@ -124,6 +124,12 @@ import java.util.function.Consumer;
 	}
 
 	@Override
+	public void exit() {
+		this.audioManager.closeAudioConnection();
+		this.queue.clear();
+	}
+
+	@Override
 	public void queue(String search, ReplyContext replyContext) {
 		this.currentReplyContext = replyContext;
 		this.search(search, () -> {

@@ -47,4 +47,6 @@ public interface IGuildMusicManager<T> {
 	boolean seek(long location);
 
 	long getPosition();
+
+	void exit();
 }
