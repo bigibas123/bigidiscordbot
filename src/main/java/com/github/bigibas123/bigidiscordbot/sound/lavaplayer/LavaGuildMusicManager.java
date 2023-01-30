@@ -132,6 +132,11 @@ import java.util.stream.Collectors;
 	}
 
 	@Override
+	public long getPosition() {
+		return this.player.getPlayingTrack().getPosition();
+	}
+
+	@Override
 	protected void bootStrap() {
 		this.playNext();
 	}

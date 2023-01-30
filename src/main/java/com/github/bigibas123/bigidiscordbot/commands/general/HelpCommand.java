@@ -5,14 +5,14 @@ import com.github.bigibas123.bigidiscordbot.commands.ICommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class HelpCommand extends ICommand {
 
@@ -22,9 +22,8 @@ public class HelpCommand extends ICommand {
 
 	public static boolean sendCommandList(ReplyContext rc) {
 		EmbedBuilder ebb = new EmbedBuilder();
-		ebb.setFooter("Requested by @" + rc.getUser().getName(), rc.getUser().getEffectiveAvatarUrl());
 		ebb.setTitle("Help");
-		ebb.appendDescription(rc.getJDA().getSelfUser().getAsMention() + " help [command] - for more info");
+		ebb.appendDescription("/help [command] for more info");
 		ebb.setColor(Color.GREEN);
 		StringBuilder names = new StringBuilder();
 		StringBuilder descriptions = new StringBuilder();
@@ -48,13 +47,12 @@ public class HelpCommand extends ICommand {
 
 	public static boolean sendCommandDescription(ReplyContext message, String... args) {
 		EmbedBuilder ebb = new EmbedBuilder();
-		ebb.setFooter("Requested by @" + message.getUser().getName(), message.getUser().getEffectiveAvatarUrl());
 		ICommand cmd = CommandHandling.getCommandList().get(args[0].toLowerCase());
 		if (cmd != null) {
 			ebb.setTitle(cmd.getName());
 			ebb.setColor(Color.GREEN);
 			ebb.appendDescription(cmd.getDescription()).appendDescription("\r\n");
-			ebb.addField("Usage", String.format("%s %s %s", message.getJDA().getSelfUser().getAsMention(), cmd.getName(), cmd.getSyntax()), false);
+			ebb.addField("Usage", String.format("/%s %s", cmd.getName(), cmd.getSyntax()), false);
 			ebb.addField("Aliases", String.join(", ", cmd.getAliases()), false);
 			message.reply(ebb.build());
 			return true;
@@ -75,7 +73,7 @@ public class HelpCommand extends ICommand {
 	}
 
 	@Override
-	public boolean hasPermission(User user, Member member, MessageChannel channel) {
+	public boolean hasPermission(User user, Member member, MessageChannelUnion channel) {
 		return true;
 	}
 

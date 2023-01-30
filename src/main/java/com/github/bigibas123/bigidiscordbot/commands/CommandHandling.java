@@ -9,8 +9,8 @@ import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.internal.requests.CallbackContext;
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +92,7 @@ public class CommandHandling {
 	public void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) {
 		var opts = event.getOptions().stream().map(OptionMapping::getAsString).toArray(String[]::new);
 		var rc = new ReplyContext(event);
-		ICommand cmd = commands.get(rc.getSCmdEvent().getName());
+		ICommand cmd = commands.get(rc.getSCmdEvent() != null ? rc.getSCmdEvent().getName() : event);
 		this.handleCommand(cmd, rc, opts);
 	}
 

@@ -4,8 +4,8 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -15,7 +15,7 @@ import java.util.Objects;
 
 
 /**
- * Class representing a command with it's info
+ * Class representing a command with its info
  */
 @Getter public abstract class ICommand {
 
@@ -40,7 +40,7 @@ import java.util.Objects;
 	@NonNull private final String[] aliases;
 
 	public ICommand(@NonNull String name, @NonNull String description, @NonNull String syntax, String... aliases) {
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.description = description;
 		this.syntax = syntax;
 		this.aliases = Objects.requireNonNullElseGet(aliases, () -> new String[0]);
@@ -48,7 +48,7 @@ import java.util.Objects;
 
 	public abstract boolean execute(ReplyContext replyContext, String... args);
 
-	public abstract boolean hasPermission(User user, Member member, MessageChannel channel);
+	public abstract boolean hasPermission(User user, Member member, MessageChannelUnion channel);
 
 	public final CommandData getCommandData() {
 		return this._getSlashCommandData(Commands.slash(getName().toLowerCase(Locale.ROOT), getDescription()));

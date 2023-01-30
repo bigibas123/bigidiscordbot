@@ -7,7 +7,6 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -16,6 +15,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +48,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	}
 
 	private void sendMessage() {
-		MessageBuilder msg = new MessageBuilder(this.embed);
+		MessageCreateBuilder msg = new MessageCreateBuilder();
 		msg.setEmbeds(this.embed);
 		int bound = Math.min(MAX_SONG_COUNT, this.search.size());
 		Button[] buttons = new Button[bound];
@@ -75,7 +75,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		if (event.getUserIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
 
 		if (replyContext.isIn(event.getChannel())) {
-			if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+			if (replyContext.getCurrentReply() != null && replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
 				if (Utils.isDJ(event.getUser(), event.getGuild())) {
 					int selection = emojiToInt(event.getEmoji());
 					if (selection != -1) {
@@ -95,7 +95,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
 		if (replyContext.isIn(event.getChannel())) {
 			if (Utils.isDJ(event.getUser(), event.getGuild())) {
-				if (event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+				if (replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
 					replyContext.setInteractionHook(event.deferEdit());
 					int selection = Integer.parseInt(event.getButton().getId());
 					if (selection != -1) {

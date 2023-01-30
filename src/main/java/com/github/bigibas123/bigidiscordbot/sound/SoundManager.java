@@ -31,7 +31,9 @@ public class SoundManager {
 
 	public void removeGuildMusicManager(Guild guild) {
 		if (this.guildMusicManagers.containsKey(guild.getIdLong())) {
-			this.guildMusicManagers.get(guild.getIdLong()).stop();
+			var gmm = this.guildMusicManagers.get(guild.getIdLong());
+			gmm.stop();
+			gmm.exit();
 			this.guildMusicManagers.remove(guild.getIdLong());
 		}
 	}
