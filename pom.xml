@@ -14,6 +14,7 @@
         <lavaplayer.version>1.3.78</lavaplayer.version>
         <log4j.version>2.24.0</log4j.version>
         <lombok.version>1.18.34</lombok.version>
+		<typechecker.version>1.7.5</typechecker.version>
 
         <maven.compiler.source>21</maven.compiler.source><!-- don't forget system.properties!-->
         <maven.compiler.target>21</maven.compiler.target>
@@ -33,10 +34,10 @@
             <version>${lavaplayer.version}</version>
         </dependency>
         <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j2-impl</artifactId>
-		<version>${log4j.version}</version>
-	</dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -46,7 +47,7 @@
         <dependency>
             <groupId>edu.washington.cs.types.checker</groupId>
             <artifactId>checker-framework</artifactId>
-            <version>1.7.5</version>
+            <version>${typechecker.version}</version>
         </dependency>
     </dependencies>
 
