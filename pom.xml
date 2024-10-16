@@ -6,14 +6,15 @@
 
     <groupId>com.github.bigibas123</groupId>
     <artifactId>bigidiscordbot</artifactId>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.10-SNAPSHOT</version>
     <properties>
         <main.class>com.github.bigibas123.bigidiscordbot.Main</main.class>
 
-        <jda.version>5.0.0-beta.17</jda.version>
+        <jda.version>5.1.1</jda.version>
         <lavaplayer.version>1.3.78</lavaplayer.version>
-        <log4j.version>2.21.1</log4j.version>
-        <lombok.version>1.18.30</lombok.version>
+        <log4j.version>2.24.1</log4j.version>
+        <lombok.version>1.18.34</lombok.version>
+		<typechecker.version>1.7.5</typechecker.version>
 
         <maven.compiler.source>21</maven.compiler.source><!-- don't forget system.properties!-->
         <maven.compiler.target>21</maven.compiler.target>
@@ -34,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
         <dependency>
@@ -46,7 +47,7 @@
         <dependency>
             <groupId>edu.washington.cs.types.checker</groupId>
             <artifactId>checker-framework</artifactId>
-            <version>1.7.5</version>
+            <version>${typechecker.version}</version>
         </dependency>
     </dependencies>
 
@@ -55,7 +56,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.2</version>
                 <configuration>
                     <archive>
                         <index>true</index>
@@ -71,7 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -98,7 +99,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
