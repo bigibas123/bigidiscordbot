@@ -12,7 +12,7 @@
 
         <jda.version>5.1.1</jda.version>
         <lavaplayer.version>1.3.78</lavaplayer.version>
-        <log4j.version>2.24.0</log4j.version>
+        <log4j.version>2.24.1</log4j.version>
         <lombok.version>1.18.34</lombok.version>
 		<typechecker.version>1.7.5</typechecker.version>
 
