@@ -10,14 +10,14 @@
     <properties>
         <main.class>com.github.bigibas123.bigidiscordbot.Main</main.class>
 
-        <jda.version>5.1.1</jda.version>
+        <jda.version>5.2.1</jda.version>
         <lavaplayer.version>1.3.78</lavaplayer.version>
         <log4j.version>2.24.1</log4j.version>
         <lombok.version>1.18.36</lombok.version>
-		<typechecker.version>1.7.5</typechecker.version>
 
         <maven.compiler.source>21</maven.compiler.source><!-- don't forget system.properties!-->
         <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -43,11 +43,6 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>edu.washington.cs.types.checker</groupId>
-            <artifactId>checker-framework</artifactId>
-            <version>${typechecker.version}</version>
         </dependency>
     </dependencies>
 
@@ -88,7 +83,30 @@
                                     </manifestEntries>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer">
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                    <addHeader>false</addHeader>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/9/module-info.class</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>META-INF/DEPENDENCIES</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.squareup.okio:okio</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/okio.kotlin_module</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
@@ -103,7 +121,7 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
-<!--                    <compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
         </plugins>
