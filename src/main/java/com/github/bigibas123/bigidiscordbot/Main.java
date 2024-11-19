@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
@@ -35,15 +34,31 @@ public class Main {
 		soundManager = new SoundManager();
 
 		final Collection<GatewayIntent> enabledIntents = List.of(GUILD_VOICE_STATES, GUILD_MESSAGES, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS);
-		final Collection<GatewayIntent> disabledIntents = List.of(GUILD_MEMBERS, GUILD_BANS, GUILD_EMOJIS_AND_STICKERS, GUILD_WEBHOOKS, GUILD_INVITES, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING, MESSAGE_CONTENT);
+		final Collection<GatewayIntent> disabledIntents = List.of(
+				GUILD_MEMBERS,
+				GUILD_MODERATION,
+				GUILD_EXPRESSIONS,
+				GUILD_WEBHOOKS,
+				GUILD_INVITES,
+				GUILD_PRESENCES,
+				GUILD_MESSAGE_TYPING,
+				DIRECT_MESSAGE_TYPING,
+				MESSAGE_CONTENT,
+				GatewayIntent.SCHEDULED_EVENTS,
+				AUTO_MODERATION_CONFIGURATION,
+				AUTO_MODERATION_EXECUTION,
+				GUILD_MESSAGE_POLLS,
+				DIRECT_MESSAGE_POLLS
+		);
+
 
 		final Collection<CacheFlag> enabledCaches = List.of(VOICE_STATE, MEMBER_OVERRIDES, ROLE_TAGS);
-		final Collection<CacheFlag> disabledCaches = List.of(ACTIVITY, EMOJI, STICKER, CLIENT_STATUS, ONLINE_STATUS);
+		final Collection<CacheFlag> disabledCaches = List.of(ACTIVITY, EMOJI, STICKER, CLIENT_STATUS, ONLINE_STATUS, CacheFlag.SCHEDULED_EVENTS);
 
 		final SessionController sessionController = new ConcurrentSessionController();
 		sessionController.setConcurrency(Runtime.getRuntime().availableProcessors());
 
-		ShardManager b = DefaultShardManagerBuilder
+		DefaultShardManagerBuilder
 				.create(Reference.token, enabledIntents)
 				.enableIntents(enabledIntents)
 				.disableIntents(disabledIntents)
@@ -63,7 +78,6 @@ public class Main {
 				.setMaxReconnectDelay(64)
 				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
 				.setRawEventsEnabled(false)
-				.setRelativeRateLimit(true)
 				.setRequestTimeoutRetry(true)
 				.setGatewayEncoding(GatewayEncoding.ETF)
 				.setSessionController(sessionController)
