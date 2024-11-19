@@ -47,7 +47,7 @@ public class HelpCommand extends ICommand {
 
 	public static boolean sendCommandDescription(ReplyContext message, String... args) {
 		EmbedBuilder ebb = new EmbedBuilder();
-		ICommand cmd = CommandHandling.getCommandList().get(args[0].toLowerCase());
+		ICommand cmd = CommandHandling.getCommands().get(args[0].toLowerCase());
 		if (cmd != null) {
 			ebb.setTitle(cmd.getName());
 			ebb.setColor(Color.GREEN);

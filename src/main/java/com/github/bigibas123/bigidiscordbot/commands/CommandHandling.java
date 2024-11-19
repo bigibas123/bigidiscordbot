@@ -8,6 +8,7 @@ import com.github.bigibas123.bigidiscordbot.commands.music.*;
 import com.github.bigibas123.bigidiscordbot.commands.testing.LongRunningCommand;
 import com.github.bigibas123.bigidiscordbot.commands.testing.NoPermCommand;
 import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -25,8 +26,8 @@ import static com.github.bigibas123.bigidiscordbot.util.Emoji.*;
 
 public class CommandHandling {
 
-	private static final ArrayList<ICommand> helpList = new ArrayList<>();
-	private static final HashMap<String, ICommand> commands = new HashMap<>();
+	@Getter private static final ArrayList<ICommand> helpList = new ArrayList<>();
+	@Getter private static final HashMap<String, ICommand> commands = new HashMap<>();
 
 	static {
 		registerCommand(new HelpCommand());
@@ -64,7 +65,9 @@ public class CommandHandling {
 		//				event.getJDA().deleteCommandById(cmd.getIdLong()).queue();
 		//			});
 		//		});
-		event.getJDA().updateCommands().addCommands(getHelpList().stream().map(ICommand::getCommandData).filter(Objects::nonNull).collect(Collectors.toList())).queue();
+		event.getJDA().updateCommands().addCommands(getHelpList().stream().map(ICommand::getCommandData).filter(Objects::nonNull).collect(Collectors.toList()))
+
+			 .onSuccess(commandsList -> Main.log.debug(STR."Registed commands: \{String.join(", ", commandsList.stream().map(command -> STR."</\{command.getName()}:\{command.getIdLong()}>").toList())}")).queue();
 		//		Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
 		//		assert debugGuild != null;
 		//		debugGuild.retrieveCommands()
@@ -79,14 +82,6 @@ public class CommandHandling {
 		//				.map(ICommand::getCommandData)
 		//				.collect(Collectors.toList())
 		//		).queue();
-	}
-
-	public static ArrayList<ICommand> getHelpList() {
-		return helpList;
-	}
-
-	public static HashMap<String, ICommand> getCommandList() {
-		return commands;
 	}
 
 	public void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) {

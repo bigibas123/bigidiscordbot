@@ -16,9 +16,10 @@
         <lombok.version>1.18.36</lombok.version>
         <spotbugs.version>4.8.6</spotbugs.version>
 
-        <maven.compiler.source>21</maven.compiler.source><!-- don't forget system.properties!-->
-        <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.source>${maven.compiler.release}</maven.compiler.source><!-- don't forget system.properties!-->
+        <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -130,7 +131,9 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                     <release>${maven.compiler.release}</release>
-                    <compilerArgs>-proc:full</compilerArgs>
+                    <enablePreview>true</enablePreview>
+                    <proc>full</proc>
+                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
         </plugins>
