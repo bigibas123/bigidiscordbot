@@ -67,7 +67,7 @@ public class CommandHandling {
 		//		});
 		event.getJDA().updateCommands().addCommands(getHelpList().stream().map(ICommand::getCommandData).filter(Objects::nonNull).collect(Collectors.toList()))
 
-			 .onSuccess(commandsList -> Main.log.debug(STR."Registed commands: \{String.join(", ", commandsList.stream().map(command -> STR."</\{command.getName()}:\{command.getIdLong()}>").toList())}")).queue();
+			 .onSuccess(commandsList -> Main.log.debug("Registed commands: " + String.join(", ", commandsList.stream().map(command -> "<" + command.getName() + ":" + command.getIdLong() + ">").toList()) + "}")).queue();
 		//		Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
 		//		assert debugGuild != null;
 		//		debugGuild.retrieveCommands()
