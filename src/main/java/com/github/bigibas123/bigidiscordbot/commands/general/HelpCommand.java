@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.awt.Color;
 
@@ -79,12 +80,7 @@ public class HelpCommand extends ICommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		var optionData = new OptionData(OptionType.SUB_COMMAND, "command", "Command you want to print help for", false).addChoices(CommandHandling
-																																		   .getHelpList()
-																																		   .stream()
-																																		   .map(ICommand::getName)
-																																		   .map(k -> new Command.Choice(k, k))
-																																		   .toList());
-		return c.addOptions(optionData);
+		c.addSubcommands(CommandHandling.getHelpList().stream().map(k -> new SubcommandData(k.getName(), k.getDescription())).toList());
+		return c;
 	}
 }

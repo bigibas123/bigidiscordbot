@@ -4,6 +4,7 @@ package com.github.bigibas123.bigidiscordbot;
 import com.github.bigibas123.bigidiscordbot.sound.SoundManager;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -66,7 +67,7 @@ public class Main {
 				.enableCache(enabledCaches)
 				.disableCache(disabledCaches)
 				.setActivity(null)
-				.setAudioSendFactory(new DefaultSendFactory())
+				.setAudioModuleConfig(new AudioModuleConfig().withAudioSendFactory(new DefaultSendFactory()))
 				.setAutoReconnect(true)
 				.setBulkDeleteSplittingEnabled(false)
 				.setChunkingFilter(ChunkingFilter.NONE)
