@@ -80,7 +80,11 @@ public class HelpCommand extends ICommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		c.addSubcommands(CommandHandling.getHelpList().stream().map(k -> new SubcommandData(k.getName(), k.getDescription())).toList());
-		return c;
+		return c.addOptions(new OptionData(OptionType.STRING, "command", "Command you want to print help for", false).addChoices(CommandHandling
+																																		 .getHelpList()
+																																		 .stream()
+																																		 .map(ICommand::getName)
+																																		 .map(k -> new Command.Choice(k, k))
+																																		 .toList()));
 	}
 }
