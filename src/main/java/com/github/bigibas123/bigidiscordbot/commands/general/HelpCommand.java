@@ -79,11 +79,12 @@ public class HelpCommand extends ICommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		return c.addOptions(new OptionData(OptionType.STRING, "command", "Command you want to print help for", false).addChoices(CommandHandling
-																																		 .getHelpList()
-																																		 .stream()
-																																		 .map(ICommand::getName)
-																																		 .map(k -> new Command.Choice(k, k))
-																																		 .toList()));
+		var optionData = new OptionData(OptionType.SUB_COMMAND, "command", "Command you want to print help for", false).addChoices(CommandHandling
+																																		   .getHelpList()
+																																		   .stream()
+																																		   .map(ICommand::getName)
+																																		   .map(k -> new Command.Choice(k, k))
+																																		   .toList());
+		return c.addOptions(optionData);
 	}
 }
