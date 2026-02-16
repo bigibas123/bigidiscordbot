@@ -11,14 +11,13 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.awt.Color;
 
 public class HelpCommand extends ICommand {
 
 	public HelpCommand() {
-		super("Help", "Displays this menu", "[command]", "h");
+		super("Help", "Displays the help menu", "[command]", "h");
 	}
 
 	public static boolean sendCommandList(ReplyContext rc) {

@@ -7,7 +7,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -167,17 +166,17 @@ import java.util.stream.Collectors;
 	public void reply(String message) {
 		slashSplit((mb, msg) -> {
 			var orig = msg != null ? msg.getContentRaw() : "";
-			mb.setContent(orig + (orig.length() > 0 ? "\n" : "") + message);
+			mb.setContent(orig + (!orig.isEmpty() ? "\n" : "") + message);
 		});
 	}
 
 	public void reply(ActionRow... rows) {
 		slashSplit((mb, msg) -> {
 			List<MessageTopLevelComponent> components;
-			if(msg != null){
+			if (msg != null) {
 				components = new LinkedList<>(msg.getComponents());
 				components.addAll(Arrays.asList(rows));
-			}else{
+			} else {
 				components = new LinkedList<>(Arrays.asList(rows));
 			}
 			mb.setComponents(components);
@@ -204,7 +203,7 @@ import java.util.stream.Collectors;
 
 	public String getOriginalText() {
 		CompletableFuture<String> fut = new CompletableFuture<>();
-		slashSplit((mb, sce) -> {
+		slashSplit((_, _) -> {
 			if (isRegularMessage()) {
 				fut.complete(this.getOriginal().getContentRaw());
 			} else {
@@ -214,7 +213,7 @@ import java.util.stream.Collectors;
 		try {
 			return fut.get();
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			Main.log.error("Interrupted while trying to retrieve original text", e);
 			return e.getMessage();
 		}
 	}

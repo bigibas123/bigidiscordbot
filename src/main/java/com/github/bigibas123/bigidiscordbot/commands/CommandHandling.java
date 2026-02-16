@@ -67,7 +67,10 @@ public class CommandHandling {
 		//		});
 		event.getJDA().updateCommands().addCommands(getHelpList().stream().map(ICommand::getCommandData).filter(Objects::nonNull).collect(Collectors.toList()))
 
-			 .onSuccess(commandsList -> Main.log.debug("Registed commands: " + String.join(", ", commandsList.stream().map(command -> "<" + command.getName() + ":" + command.getIdLong() + ">").toList()) + "}")).queue();
+			 .onSuccess(commandsList -> Main.log.debug(
+					 "Registered commands: {}}",
+					 String.join(", ", commandsList.stream().map(command -> "<" + command.getName() + ":" + command.getIdLong() + ">").toList())
+			 )).queue();
 		//		Guild debugGuild = event.getJDA().getGuildById(232516313099141121L);
 		//		assert debugGuild != null;
 		//		debugGuild.retrieveCommands()
@@ -92,9 +95,9 @@ public class CommandHandling {
 	}
 
 	public void handleCommand(ICommand cmd, ReplyContext rc, String[] args) {
-		Main.log.trace("Starting command thread for: " + (cmd != null ? cmd : "unrecognized command"));
-		Main.log.trace("\tcmd args: " + Arrays.toString(args));
-		Main.log.trace("\tReplycontext: " + rc.toString());
+		Main.log.trace("Starting command thread for: {}", cmd != null ? cmd : "unrecognized command");
+		Main.log.trace("\tcmd args: {}", Arrays.toString(args));
+		Main.log.trace("\tReplycontext: {}", rc.toString());
 		new Thread(() -> {
 			CallbackContext.getInstance().close();
 			if (cmd != null && cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
@@ -102,10 +105,10 @@ public class CommandHandling {
 					boolean cmdSuccess = cmd.execute(rc, args);
 					if (cmdSuccess) {
 						rc.reply(CHECK_MARK);
-						Main.log.debug(String.format("User: %s executed %s successfully", rc.getUser(), cmd.getName()));
+						Main.log.debug("User: {} executed {} successfully", rc.getUser(), cmd.getName());
 					} else {
 						rc.reply(CROSS);
-						Main.log.debug(String.format("User: %s executed %s unsuccessfully", rc.getUser(), cmd.getName()));
+						Main.log.debug("User: {} executed {} unsuccessfully", rc.getUser(), cmd.getName());
 					}
 				} catch (Throwable e) {
 					rc.reply(WARNING);
@@ -114,10 +117,10 @@ public class CommandHandling {
 			} else {
 				if (cmd != null && !cmd.hasPermission(rc.getUser(), rc.getMember(), rc.getChannel())) {
 					rc.reply(STOP_SIGN);
-					Main.log.debug(String.format("User: %s got permission denied for %s", rc.getUser(), cmd.getName()));
+					Main.log.debug("User: {} got permission denied for {}", rc.getUser(), cmd.getName());
 				} else {
 					rc.reply(SHRUG);
-					Main.log.debug(String.format("User: %s tried to execute: %s but not found", rc.getUser(), rc.getOriginalText()));
+					Main.log.debug("User: {} tried to execute: {} but not found", rc.getUser(), rc.getOriginalText());
 				}
 
 			}

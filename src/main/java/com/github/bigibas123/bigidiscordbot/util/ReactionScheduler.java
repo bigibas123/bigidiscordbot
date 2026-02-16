@@ -20,7 +20,7 @@ public class ReactionScheduler {
 				list.remove(s);
 				reaction.removeReaction().queue();
 			});
-			if (list.size() == 0) toFind.remove(reaction.getMessageIdLong(), list);
+			if (list.isEmpty()) toFind.remove(reaction.getMessageIdLong(), list);
 		}
 		cleanLists();
 	}

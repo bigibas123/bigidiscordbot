@@ -5,29 +5,29 @@ import java.util.Map;
 
 //https://itpro.cz/juniconv/
 public enum Emoji {
-	STOP_SIGN("\uD83D\uDED1"),  //🛑
-	RUNNER("\uD83C\uDFC3"),     //🏃
-	CHECK_MARK("\u2705"),       //✅
-	CROSS("\u274C"),            //❌
-	STOP_WATCH("\u23F1"),       //⏱
-	QUESTION("\u2753"),         //❓
-	SHRUG("\uD83E\uDD37"),      //🤷
-	WAVE("\uD83D\uDC4B"),       //👋
-	PAUSE("\u23F8"),            //⏸
-	PLAY("\u25B6"),             //▶
-	FAST_FORWARD("\u23E9"),     //⏩
-	STOP("\u23F9"),             //⏹
-	ONE("\u0031\u20E3"),        //1️⃣
-	TWO("\u0032\u20E3"),        //2️⃣
-	THREE("\u0033\u20E3"),      //3️⃣
-	FOUR("\u0034\u20E3"),       //4️⃣
-	FIVE("\u0035\u20E3"),       //5️⃣
-	SIX("\u0036\u20E3"),        //6️⃣
-	SEVEN("\u0037\u20E3"),      //7️⃣
-	EIGHT("\u0038\u20E3"),      //8️⃣
-	NINE("\u0039\u20E3"),       //9️⃣
-	TEN("\uD83D\uDD1F"),        //🔟
-	WARNING("\u26A0")           //⚠️
+	STOP_SIGN("\uD83D\uDED1"),  	//🛑
+	RUNNER("\uD83C\uDFC3"),     	//🏃
+	CHECK_MARK("✅"),       		//✅
+	CROSS("❌"),            		//❌
+	STOP_WATCH("⏱"),       		//⏱
+	QUESTION("❓"),       	  	//❓
+	SHRUG("\uD83E\uDD37"),      	//🤷
+	WAVE("\uD83D\uDC4B"),       	//👋
+	PAUSE("⏸"),            		//⏸
+	PLAY("▶"),             		//▶
+	FAST_FORWARD("⏩"),     		//⏩
+	STOP("⏹"),             		//⏹
+	ONE("1\u20E3"),        		//1️⃣
+	TWO("2\u20E3"),        		//2️⃣
+	THREE("3\u20E3"),      		//3️⃣
+	FOUR("4\u20E3"),       		//4️⃣
+	FIVE("5\u20E3"),       		//5️⃣
+	SIX("6\u20E3"),        		//6️⃣
+	SEVEN("7\u20E3"),      		//7️⃣
+	EIGHT("8\u20E3"),      		//8️⃣
+	NINE("9\u20E3"),       		//9️⃣
+	TEN("\uD83D\uDD1F"),        	//🔟
+	WARNING("⚠")           		//⚠️
 	;
 
 	public static final Map<Integer, Emoji> oneToTen = new HashMap<>();
@@ -55,7 +55,7 @@ public enum Emoji {
 		return this.toString;
 	}
 
-	public net.dv8tion.jda.api.entities.emoji.EmojiUnion e(){
+	public net.dv8tion.jda.api.entities.emoji.EmojiUnion e() {
 		return net.dv8tion.jda.api.entities.emoji.Emoji.fromFormatted(this.toString);
 	}
 

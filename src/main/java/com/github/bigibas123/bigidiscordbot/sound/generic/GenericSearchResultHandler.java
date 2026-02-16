@@ -42,7 +42,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		this.jda = jda;
 		this.search = search.limit(MAX_SONG_COUNT);
 		int i = 1;
-		for (TrackInfo<T> t : search.getTracks()) {
+		for (TrackInfo<T> t : search.tracks()) {
 			t.setNumber(i++);
 		}
 		this.embed = buildEmbed();
@@ -76,7 +76,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		if (event.getUserIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
 
 		if (replyContext.isIn(event.getChannel())) {
-			if (replyContext.getCurrentReply() != null && replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+			if (replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
 				if (Utils.isDJ(event.getUser(), event.getGuild())) {
 					int selection = emojiToInt(event.getEmoji());
 					if (selection != -1) {
@@ -121,7 +121,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		StringBuilder title = new StringBuilder();
 		StringBuilder time = new StringBuilder();
 		boolean first = true;
-		for (TrackInfo<T> track : search.getTracks()) {
+		for (TrackInfo<T> track : search.tracks()) {
 			if (first) {
 				first = false;
 			} else {

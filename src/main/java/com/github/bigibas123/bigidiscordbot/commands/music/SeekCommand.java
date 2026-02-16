@@ -28,14 +28,14 @@ public class SeekCommand extends MusicCommand {
 				}
 				try {
 					long loc = Utils.StringToDuration(args[0]);
-					Main.log.trace(" Trying seeking to: " + loc + " in " + replyContext.getGuild().getName());
+					Main.log.trace(" Trying seeking to: {} in {}", loc, replyContext.getGuild().getName());
 					if (gmm.seek(loc)) {
 						replyContext.reply(Emoji.FAST_FORWARD);
-						Main.log.trace("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " successfull");
+						Main.log.trace("Seeking to: {} in {} successfull", loc, replyContext.getGuild().getName());
 						return true;
 					} else {
 						replyContext.reply("Can not seek on track:", gmm.getCurrentTrack().getTitle());
-						Main.log.debug("Seeking to: " + loc + " in " + replyContext.getGuild().getName() + " failed");
+						Main.log.debug("Seeking to: {} in {} failed", loc, replyContext.getGuild().getName());
 					}
 				} catch (NumberFormatException e) {
 					replyContext.reply("invalid time:", args[0]);
