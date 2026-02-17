@@ -1,6 +1,7 @@
 package com.github.bigibas123.bigidiscordbot;
 
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import com.github.bigibas123.bigidiscordbot.sound.SoundManager;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -67,7 +68,7 @@ public class Main {
 				.enableCache(enabledCaches)
 				.disableCache(disabledCaches)
 				.setActivity(null)
-				.setAudioModuleConfig(new AudioModuleConfig().withAudioSendFactory(new DefaultSendFactory()))
+				.setAudioModuleConfig(new AudioModuleConfig().withAudioSendFactory(new DefaultSendFactory()).withDaveSessionFactory(new JDaveSessionFactory()))
 				.setAutoReconnect(true)
 				.setBulkDeleteSplittingEnabled(false)
 				.setChunkingFilter(ChunkingFilter.NONE)

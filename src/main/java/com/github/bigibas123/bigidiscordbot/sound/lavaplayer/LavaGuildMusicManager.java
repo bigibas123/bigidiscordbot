@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -42,6 +43,8 @@ import java.util.stream.Collectors;
 	private static AudioPlayerManager getManager() {
 		if (manager == null) {
 			DefaultAudioPlayerManager apm = new DefaultAudioPlayerManager();
+			var audioConfig = apm.getConfiguration();
+			audioConfig.setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
 			AudioSourceManagers.registerRemoteSources(apm);
 			manager = apm;
 		}
@@ -62,14 +65,18 @@ import java.util.stream.Collectors;
 			Consumer<PlayListInfo<AudioTrack>> onSearchResults,
 			Consumer<Throwable> onException
 	) {
-		manager.loadItem(search, new FunctionalResultHandler(track -> onTrackFound.accept(convert(track)), playlist -> {
-			PlayListInfo<AudioTrack> pl = convert(playlist);
-			if (playlist.isSearchResult()) {
-				onSearchResults.accept(pl);
-			} else {
-				onPlayListFound.accept(pl);
-			}
-		}, onNothingFound, onException::accept));
+		manager.loadItem(
+				search, new FunctionalResultHandler(
+						track -> onTrackFound.accept(convert(track)), playlist -> {
+					PlayListInfo<AudioTrack> pl = convert(playlist);
+					if (playlist.isSearchResult()) {
+						onSearchResults.accept(pl);
+					} else {
+						onPlayListFound.accept(pl);
+					}
+				}, onNothingFound, onException::accept
+				)
+		);
 	}
 
 	@Override
