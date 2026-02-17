@@ -1,14 +1,8 @@
 package com.github.bigibas123.bigidiscordbot.sound.objects;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 
-@Data @RequiredArgsConstructor public class PlayListInfo<T> {
-	private final String name;
-	private final List<TrackInfo<T>> tracks;
-
+public record PlayListInfo<T>(String name, List<TrackInfo<T>> tracks) {
 	public int size() {
 		return this.tracks.size();
 	}
@@ -25,7 +19,7 @@ import java.util.List;
 	}
 
 	public TrackInfo<T> get(int i) {
-		return this.getTracks().get(i);
+		return this.tracks().get(i);
 	}
 
 }

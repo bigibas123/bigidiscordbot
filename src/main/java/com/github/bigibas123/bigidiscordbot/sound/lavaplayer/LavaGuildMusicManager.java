@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -42,6 +43,8 @@ import java.util.stream.Collectors;
 	private static AudioPlayerManager getManager() {
 		if (manager == null) {
 			DefaultAudioPlayerManager apm = new DefaultAudioPlayerManager();
+			var audioConfig = apm.getConfiguration();
+			audioConfig.setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
 			AudioSourceManagers.registerRemoteSources(apm);
 			manager = apm;
 		}
@@ -62,14 +65,18 @@ import java.util.stream.Collectors;
 			Consumer<PlayListInfo<AudioTrack>> onSearchResults,
 			Consumer<Throwable> onException
 	) {
-		manager.loadItem(search, new FunctionalResultHandler(track -> onTrackFound.accept(convert(track)), playlist -> {
-			PlayListInfo<AudioTrack> pl = convert(playlist);
-			if (playlist.isSearchResult()) {
-				onSearchResults.accept(pl);
-			} else {
-				onPlayListFound.accept(pl);
-			}
-		}, onNothingFound, onException::accept));
+		manager.loadItem(
+				search, new FunctionalResultHandler(
+						track -> onTrackFound.accept(convert(track)), playlist -> {
+					PlayListInfo<AudioTrack> pl = convert(playlist);
+					if (playlist.isSearchResult()) {
+						onSearchResults.accept(pl);
+					} else {
+						onPlayListFound.accept(pl);
+					}
+				}, onNothingFound, onException::accept
+				)
+		);
 	}
 
 	@Override
@@ -146,10 +153,10 @@ import java.util.stream.Collectors;
 		TrackInfo<AudioTrack> track = this.pollNextTrack();
 		if (track != null) {
 			if (!this.player.startTrack(track.getTrack(), true)) {
-				getLogger().error("Failed loading track: " + track + " in guild: " + this.getGuild().getName());
+				getLogger().error("Failed loading track: {} in guild: {}", track, this.getGuild().getName());
 				this.getCurrentReplyContext().reply("Failed starting next track");
 			} else {
-				getLogger().trace("Track " + track + " loaded successfully");
+				getLogger().trace("Track {} loaded successfully", track);
 			}
 		}
 	}
@@ -173,7 +180,7 @@ import java.util.stream.Collectors;
 		public void onPlayerPause(AudioPlayer player) {
 			getLogger().trace("AEL.onPlayerPause");
 			if (gmm.getState() != PlayState.PAUSED) {
-				getLogger().error("Player paused but super class was not in paused state but in " + gmm.getState());
+				getLogger().error("Player paused but super class was not in paused state but in {}", gmm.getState());
 				gmm.pausePlaying();
 			}
 		}
@@ -182,7 +189,7 @@ import java.util.stream.Collectors;
 		public void onPlayerResume(AudioPlayer player) {
 			getLogger().trace("AEL.onPlayerResume");
 			if (gmm.getState() != PlayState.PLAYING) {
-				getLogger().error("Player paused but super class was not in playing state but in " + gmm.getState());
+				getLogger().error("Player paused but super class was not in playing state but in {}", gmm.getState());
 			}
 		}
 
@@ -199,12 +206,12 @@ import java.util.stream.Collectors;
 
 		@Override
 		public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-			getLogger().error("AEL.onTrackException: " + "player = " + player + ", track = " + track + ", exception = " + exception);
+			getLogger().error("AEL.onTrackException: player = {}, track = {}, exception = {}", player, track, exception);
 		}
 
 		@Override
 		public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-			getLogger().warn("AEL.onTrackStuck: " + "player = " + player + ", track = " + track + ", thresholdMs = " + thresholdMs);
+			getLogger().warn("AEL.onTrackStuck: player = {}, track = {}, thresholdMs = {}", player, track, thresholdMs);
 		}
 
 	}

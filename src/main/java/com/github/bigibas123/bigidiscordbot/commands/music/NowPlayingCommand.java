@@ -21,7 +21,7 @@ public class NowPlayingCommand extends MusicCommand {
 		if (this.guildManagerExists(replyContext)) {
 			IGuildMusicManager<?> gmm = this.getGuildManager(replyContext);
 			if (gmm.isPlaying()) {
-				Main.log.trace("Guild Playing Status: " + gmm.isPlaying());
+				Main.log.trace("Guild Playing Status: {}", gmm.isPlaying());
 				String title = gmm.getCurrentTrack().getTitle();
 				replyContext.reply("Currently playing:", title, Utils.formatDuration(gmm.getPosition()));
 				return true;

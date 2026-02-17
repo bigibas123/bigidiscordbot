@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -36,8 +37,9 @@ import java.time.ZoneOffset;
 	 * @return the date when that snowflake was made
 	 */
 	public LocalDateTime idToTime(long id) {
-		return LocalDateTime.ofEpochSecond((id >> 22) + 1420070400000L, //Stolen from discord api docs,
-										   0, ZoneOffset.UTC
+		return LocalDateTime.ofEpochSecond(
+				(id >> 22) + 1420070400000L, //Stolen from discord api docs,
+				0, ZoneOffset.UTC
 		);
 	}
 
@@ -97,17 +99,21 @@ import java.time.ZoneOffset;
 	 *
 	 * @return if the user is allowed to be a dj in that guild
 	 */
-	public boolean isDJ(User user, Guild guild) {
-		Member member = guild.retrieveMember(user).complete();
+	public boolean isDJ(User user, @Nullable Guild guild) {
 		boolean result;
-		if (member == null) {
+		if (guild == null) {
 			result = false;
-		} else if (guild.getRolesByName("DJ", true).size() > 0) {
-			result = member.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("DJ"));
 		} else {
-			result = true;
+			Member member = guild.retrieveMember(user).complete();
+			if (member == null) {
+				result = false;
+			} else if (!guild.getRolesByName("DJ", true).isEmpty()) {
+				result = member.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("DJ"));
+			} else {
+				result = true;
+			}
 		}
-		Main.log.trace(user.getName() + " is DJ " + result);
+		Main.log.trace("{} is DJ {}", user.getName(), result);
 		return result;
 	}
 
@@ -134,7 +140,7 @@ import java.time.ZoneOffset;
 		} else {
 			result = u1.getId().equals(u2.getId());
 		}
-		Main.log.trace(u1 + " is " + (result ? "" : " not ") + "the same as " + u2);
+		Main.log.trace("{} is {}the same as {}", u1, result ? "" : " not ", u2);
 		return result;
 	}
 
@@ -146,9 +152,9 @@ import java.time.ZoneOffset;
 	 * @return tru if the message mentions the bot specifically, false if not mentioned or not specifically mentioned
 	 */
 	public boolean mentionsMe(Message message) {
-		return message.getMentions().isMentioned(message.getJDA().getSelfUser())
-			   && (message.getMentions().getRoles().stream().anyMatch(r -> r.getName().equals(message.getJDA().getSelfUser().getName()))
-				|| message.getMentions().isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
+		return message.getMentions().isMentioned(message.getJDA().getSelfUser()) && (message.getMentions().getRoles().stream().anyMatch(r -> r
+				.getName()
+				.equals(message.getJDA().getSelfUser().getName())) || message.getMentions().isMentioned(message.getJDA().getSelfUser(), Message.MentionType.USER));
 
 	}
 

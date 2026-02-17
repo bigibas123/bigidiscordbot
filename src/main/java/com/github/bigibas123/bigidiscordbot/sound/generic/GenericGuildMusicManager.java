@@ -11,7 +11,7 @@ import lombok.Getter;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 	}
 
 	@Override
-	public boolean connect(AudioChannelUnion channel) {
+	public boolean connect(AudioChannel channel) {
 		if (this.getAudioManager().isConnected()) {
 			return Utils.isSameThing(this.getAudioManager().getConnectedChannel(), channel);
 		} else {
@@ -54,7 +54,7 @@ import java.util.function.Consumer;
 				this.setVolume(20);
 				return true;
 			} catch (InsufficientPermissionException | UnsupportedOperationException | IllegalArgumentException e) {
-				Main.log.error("Could not connect to channel: " + channel.getName() + ", " + channel.getGuild(), e);
+				Main.log.error("Could not connect to channel: {}, {}", channel.getName(), channel.getGuild(), e);
 				return false;
 			}
 		}
@@ -133,9 +133,9 @@ import java.util.function.Consumer;
 	public void queue(String search, ReplyContext replyContext) {
 		this.currentReplyContext = replyContext;
 		this.search(search, () -> {
-			if (!search.startsWith("ytsearch:")) {
-				replyContext.reply("Searching youtube for: " + search);
-				this.queue("ytsearch:" + search, replyContext);
+			if (!search.startsWith("scsearch:")) {
+				replyContext.reply("Searching SoundCloud for: " + search);
+				this.queue("scsearch:" + search, replyContext);
 			} else {
 				replyContext.reply("Found nothing for: " + search);
 			}
@@ -145,18 +145,18 @@ import java.util.function.Consumer;
 			onTrackAdded();
 		}, playlist -> {
 			AtomicInteger count = new AtomicInteger();
-			playlist.getTracks().forEach(e -> {
+			playlist.tracks().forEach(e -> {
 				if (this.queue.offer(e)) {
 					count.incrementAndGet();
 				}
 			});
 			if (count.get() == playlist.size()) {
-				replyContext.reply("queued " + playlist.size() + " tracks from " + playlist.getName());
+				replyContext.reply("queued " + playlist.size() + " tracks from " + playlist.name());
 			} else {
-				replyContext.reply("queued (" + count.get() + "/" + playlist.size() + ") tracks from " + playlist.getName());
+				replyContext.reply("queued (" + count.get() + "/" + playlist.size() + ") tracks from " + playlist.name());
 			}
 			onTrackAdded();
-		}, searchResult -> new GenericSearchResultHandler<>(replyContext, searchResult, (e, u) -> {
+		}, searchResult -> new GenericSearchResultHandler<>(replyContext, searchResult, (e, _) -> {
 			this.queue.offer(e);
 			replyContext.reply("queued: " + e.getTitle());
 			onTrackAdded();
@@ -174,7 +174,7 @@ import java.util.function.Consumer;
 	}
 
 	private void updateState() {
-		getLogger().debug("GGMM state is:" + state);
+		getLogger().debug("GGMM state is: {}", state);
 		switch (state) {
 			case PLAYING -> {
 				this.getAudioManager().setSelfMuted(false);

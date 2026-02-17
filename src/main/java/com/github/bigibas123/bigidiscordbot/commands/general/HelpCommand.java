@@ -17,7 +17,7 @@ import java.awt.Color;
 public class HelpCommand extends ICommand {
 
 	public HelpCommand() {
-		super("Help", "Displays this menu", "[command]", "h");
+		super("Help", "Displays the help menu", "[command]", "h");
 	}
 
 	public static boolean sendCommandList(ReplyContext rc) {

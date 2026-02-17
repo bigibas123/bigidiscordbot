@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -44,13 +45,15 @@ import java.util.stream.Collectors;
 	public ReplyContext(SlashCommandInteractionEvent sCmdEvent) {
 		this(sCmdEvent.getChannel(), sCmdEvent.getUser(), sCmdEvent.getMember(), null, sCmdEvent);
 		this.hookLock.lock();
-		this.sCmdEvent.deferReply().queue(ih -> {
-			interactionHook = ih;
-			hookLock.unlock();
-		}, throwable -> {
-			hookLock.unlock();
-			Main.log.warn("Exception on first setting interaction hook", throwable);
-		});
+		this.sCmdEvent.deferReply().queue(
+				ih -> {
+					interactionHook = ih;
+					hookLock.unlock();
+				}, throwable -> {
+					hookLock.unlock();
+					Main.log.warn("Exception on first setting interaction hook", throwable);
+				}
+		);
 	}
 
 	private static String unsafeJoin(Object... elements) {
@@ -66,13 +69,15 @@ import java.util.stream.Collectors;
 	public <T extends RestAction<InteractionHook>> void setInteractionHook(@Nullable T rcA) {
 		hookLock.lock();
 		if (rcA != null) {
-			rcA.queue(interactionHook1 -> {
-				this.interactionHook = interactionHook1;
-				hookLock.unlock();
-			}, throwable -> {
-				hookLock.unlock();
-				Main.log.warn("Exception in setting interaction hook", throwable);
-			});
+			rcA.queue(
+					interactionHook1 -> {
+						this.interactionHook = interactionHook1;
+						hookLock.unlock();
+					}, throwable -> {
+						hookLock.unlock();
+						Main.log.warn("Exception in setting interaction hook", throwable);
+					}
+			);
 		} else {
 			this.interactionHook = null;
 			hookLock.unlock();
@@ -161,15 +166,20 @@ import java.util.stream.Collectors;
 	public void reply(String message) {
 		slashSplit((mb, msg) -> {
 			var orig = msg != null ? msg.getContentRaw() : "";
-			mb.setContent(orig + (orig.length() > 0 ? "\n" : "") + message);
+			mb.setContent(orig + (!orig.isEmpty() ? "\n" : "") + message);
 		});
 	}
 
 	public void reply(ActionRow... rows) {
 		slashSplit((mb, msg) -> {
-			List<ActionRow> l = msg != null ? new LinkedList<>(msg.getActionRows()) : new LinkedList<>();
-			l.addAll(Arrays.asList(rows));
-			mb.setComponents(l);
+			List<MessageTopLevelComponent> components;
+			if (msg != null) {
+				components = new LinkedList<>(msg.getComponents());
+				components.addAll(Arrays.asList(rows));
+			} else {
+				components = new LinkedList<>(Arrays.asList(rows));
+			}
+			mb.setComponents(components);
 		});
 	}
 
@@ -193,7 +203,7 @@ import java.util.stream.Collectors;
 
 	public String getOriginalText() {
 		CompletableFuture<String> fut = new CompletableFuture<>();
-		slashSplit((mb, sce) -> {
+		slashSplit((_, _) -> {
 			if (isRegularMessage()) {
 				fut.complete(this.getOriginal().getContentRaw());
 			} else {
@@ -203,7 +213,7 @@ import java.util.stream.Collectors;
 		try {
 			return fut.get();
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			Main.log.error("Interrupted while trying to retrieve original text", e);
 			return e.getMessage();
 		}
 	}

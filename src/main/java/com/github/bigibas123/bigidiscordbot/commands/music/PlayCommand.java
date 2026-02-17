@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public class PlayCommand extends MusicCommand {
 	public PlayCommand() {
-		super("play", "plays some music in your voicechannel", "<url|ytsearch:|scsearch:> [search_terms]", "p");
+		super("play", "plays some music in your voicechannel", "<url|scsearch:> [search_terms]", "p");
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class PlayCommand extends MusicCommand {
 
 	@Override
 	protected SlashCommandData _getSlashCommandData(SlashCommandData c) {
-		return super._getSlashCommandData(c).addOption(OptionType.STRING, "search-term", "searchterm, \"ytsearch: term\" for youtube \"scsearch: term\" for soundcloud", true);
+		return super._getSlashCommandData(c).addOption(OptionType.STRING, "search-term", "searchterm, \"scsearch: term\" for soundcloud", true);
 	}
 
 }

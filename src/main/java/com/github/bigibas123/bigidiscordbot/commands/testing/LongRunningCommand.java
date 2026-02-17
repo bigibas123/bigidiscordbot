@@ -21,7 +21,7 @@ public class LongRunningCommand extends ICommand {
 			Thread.sleep(4000);
 			Main.log.info("Tock");
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Main.log.warn("Interrupted while doing long running command",e);
 		}
 		return true;
 	}

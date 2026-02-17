@@ -7,19 +7,20 @@ import com.github.bigibas123.bigidiscordbot.util.ReplyContext;
 import com.github.bigibas123.bigidiscordbot.util.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -41,7 +42,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		this.jda = jda;
 		this.search = search.limit(MAX_SONG_COUNT);
 		int i = 1;
-		for (TrackInfo<T> t : search.getTracks()) {
+		for (TrackInfo<T> t : search.tracks()) {
 			t.setNumber(i++);
 		}
 		this.embed = buildEmbed();
@@ -51,9 +52,9 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		MessageCreateBuilder msg = new MessageCreateBuilder();
 		msg.setEmbeds(this.embed);
 		int bound = Math.min(MAX_SONG_COUNT, this.search.size());
-		Button[] buttons = new Button[bound];
+		ArrayList<Button> buttons = new ArrayList<>(bound);
 		for (int i = 1; i <= bound; i++) {
-			buttons[i - 1] = Button.primary(String.valueOf(i), oneToTen.get(i).e());
+			buttons.add(Button.primary(String.valueOf(i), oneToTen.get(i).e()));
 		}
 		this.replyContext.reply(embed);
 		this.replyContext.reply(ActionRow.of(buttons));
@@ -75,7 +76,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		if (event.getUserIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
 
 		if (replyContext.isIn(event.getChannel())) {
-			if (replyContext.getCurrentReply() != null && replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
+			if (replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
 				if (Utils.isDJ(event.getUser(), event.getGuild())) {
 					int selection = emojiToInt(event.getEmoji());
 					if (selection != -1) {
@@ -97,11 +98,14 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 			if (Utils.isDJ(event.getUser(), event.getGuild())) {
 				if (replyContext.getCurrentReply() != null && event.getMessageIdLong() == replyContext.getCurrentReply().getIdLong()) {
 					replyContext.setInteractionHook(event.deferEdit());
-					int selection = Integer.parseInt(event.getButton().getId());
-					if (selection != -1) {
-						this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
-					} else {
-						this.replyContext.reply(Emoji.WARNING.e());
+					String customId = event.getButton().getCustomId();
+					if(customId != null) {
+						int selection = Integer.parseInt(customId);
+						if (selection != -1) {
+							this.selectionHandler.accept(this.search.get(selection - 1), event.getMember());
+						} else {
+							this.replyContext.reply(Emoji.WARNING.e());
+						}
 					}
 				}
 			}
@@ -117,7 +121,7 @@ public class GenericSearchResultHandler<T> extends ListenerAdapter {
 		StringBuilder title = new StringBuilder();
 		StringBuilder time = new StringBuilder();
 		boolean first = true;
-		for (TrackInfo<T> track : search.getTracks()) {
+		for (TrackInfo<T> track : search.tracks()) {
 			if (first) {
 				first = false;
 			} else {
