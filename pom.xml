@@ -18,7 +18,7 @@
         <jdave.version>0.1.8</jdave.version>
 
         <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
-        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 
         <maven.compiler.release>25</maven.compiler.release>
